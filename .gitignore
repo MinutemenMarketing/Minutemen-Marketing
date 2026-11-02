@@ -1,0 +1,13 @@
+node_modules/
+.env
+.env.*
+!.env.example
+/assets/drafts/
+dist/
+.vercel/
+.DS_Store
+Thumbs.db
+
+# Archived Sept 2026 site and the raw logo drop (copied into /brand)
+/legacy/
+/Images/
