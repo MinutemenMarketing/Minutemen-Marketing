@@ -31,11 +31,14 @@ One continuous story, inspired by pear.no: dark, restrained, premium.
    same navy coat (no red coats that read as British).
 3. **Push-in:** a smooth, deliberate camera move toward him. His position in the scene stays fixed;
    neighbours and the stone wall slide to the edges through perspective. Face, hat, coat, hands,
-   musket, light and geography stay consistent. Ends in a **medium close side profile facing
-   screen-right** (head, upper torso, hands, stock, enough barrel to read the action).
+   musket, light and geography stay consistent. Ends in a **full-body side view facing screen-right**:
+   hat to boots with comfortable margins, the **entire musket** visible from stock at the shoulder to
+   muzzle tip, him slightly left of center, the **right third of the frame open** beyond the muzzle.
+   No early close-up that crops his body or the gun.
 4. **Fire:** he is already aimed (barrel about horizontal toward screen-right, cheek to the stock, eye
-   along the barrel). One discharge: brief warm muzzle flash, restrained recoil, expanding white-gray
-   black-powder smoke.
+   along the barrel). One discharge with his full body and the whole gun still in frame: brief muzzle
+   flash, restrained recoil, expanding white-gray black-powder smoke. Only **after the ball visibly
+   clears the muzzle** does the camera smoothly start following it.
 5. **The ball:** extreme close side view of the muzzle as a single **round lead musket ball** (never a
    modern pointed bullet or cartridge) emerges in extreme slow motion. It travels screen-right along
    the barrel axis; the camera tracks alongside as the muzzle and soldier fall back into soft focus.
@@ -63,6 +66,9 @@ interface elements or borders.
   match the navy brand:** every later stage must match this grade, so drop "warm golden-hour" from the
   STYLE LOCK in new prompts and describe cool steel-blue light instead. It is a local file, so it must
   go up with `init_upload` to be a Runway reference. Slight mauve in the far hills was accepted.
+- **K2 v1** (`assets/drafts/k2-v1.png`, Runway task `af215836-1672-4bee-99a5-9257ff86677d`) — medium
+  close aim; Noah liked the soldier, uniform, pose, style and grade but it is too tight. Not approved;
+  use it as the identity reference for the full-body K2.
 - **Approved warm original: `assets/keyframes/k1.png`** = opening v4 (Runway task
   `913bb252-82a3-4a28-b648-dbfb0ee2a5f2`, 5504×3072). Featured soldier center-right, aiming
   screen-right, no flash yet. Accepted as-is: two brown/olive coats left of center, his muzzle sits
