@@ -57,11 +57,17 @@ one prompt. No automatic variations, upscales, retries or model switches. Approv
 overwritten; new versions are saved under new names. Artwork has no lettering, signatures, watermarks,
 interface elements or borders.
 
-- **APPROVED opening still: `assets/keyframes/k1.png`** = opening v4 (Runway task
+- **APPROVED opening still (current): `assets/keyframes/k1-cool.png`** — `k1.png` with a local
+  cool color grade (0 credits; GDI+ color matrix: red cut, blue lifted, saturation ~0.75). Steel-blue
+  sky, cooler smoke, gray-olive field, coats near the logo navy. **Noah wants the sequence cool, to
+  match the navy brand:** every later stage must match this grade, so drop "warm golden-hour" from the
+  STYLE LOCK in new prompts and describe cool steel-blue light instead. It is a local file, so it must
+  go up with `init_upload` to be a Runway reference. Slight mauve in the far hills was accepted.
+- **Approved warm original: `assets/keyframes/k1.png`** = opening v4 (Runway task
   `913bb252-82a3-4a28-b648-dbfb0ee2a5f2`, 5504×3072). Featured soldier center-right, aiming
   screen-right, no flash yet. Accepted as-is: two brown/olive coats left of center, his muzzle sits
   just above his right-hand neighbour's hat (leave that man out of the muzzle close-up), face partly
-  covered by hands/stock. Use it as the reference for the closer character view.
+  covered by hands/stock. Kept for reference; `k1-cool.png` is the reference for the next stage.
 - **Opening base before approval:** opening v3 (Runway task `4acb642e-73e2-4595-b31c-07abe01d5b23`, 5504×3072,
   `assets/drafts/opening-v3.png`) — fresh composition, whole militia facing right. Narrower framing
   and the corner signature are accepted by Noah.
