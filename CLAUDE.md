@@ -24,16 +24,18 @@ One continuous story, inspired by pear.no: dark, restrained, premium.
 1. **Wide opening:** a very wide 18th-century oil painting of **one unified militia formation**, all
    facing screen-right (no opposing line), with broad landscape, stone walls, the distant white
    meetinghouse and open sky for text. No oversized or isolated foreground soldier.
-2. **Our Minuteman is already in the group** — slightly right of center, same scale and depth as the
-   men beside him, dark navy coat, black tricorn, musket held vertically (muzzle up, butt near hip).
-   He only becomes the focal point as the camera moves closer.
+2. **Our Minuteman is already in the group** — center-right, normal scale and spacing, black tricorn,
+   **already aiming**: musket at the shoulder toward screen-right, eye/shoulder/hands/stock/barrel
+   aligned, poised just before the shot (no flash, smoke or recoil from his barrel yet). Others may
+   already be firing. Nobody blocks the camera's path to his face and musket. Every soldier wears the
+   same navy coat (no red coats that read as British).
 3. **Push-in:** a smooth, deliberate camera move toward him. His position in the scene stays fixed;
    neighbours and the stone wall slide to the edges through perspective. Face, hat, coat, hands,
    musket, light and geography stay consistent. Ends in a **medium close side profile facing
    screen-right** (head, upper torso, hands, stock, enough barrel to read the action).
-4. **Aim and fire:** one continuous action — he lowers the upright musket to the shoulder, barrel about
-   horizontal toward screen-right, cheek to the stock, eye along the barrel. One discharge: brief warm
-   muzzle flash, restrained recoil, expanding white-gray black-powder smoke.
+4. **Fire:** he is already aimed (barrel about horizontal toward screen-right, cheek to the stock, eye
+   along the barrel). One discharge: brief warm muzzle flash, restrained recoil, expanding white-gray
+   black-powder smoke.
 5. **The ball:** extreme close side view of the muzzle as a single **round lead musket ball** (never a
    modern pointed bullet or cartridge) emerges in extreme slow motion. It travels screen-right along
    the barrel axis; the camera tracks alongside as the muzzle and soldier fall back into soft focus.
@@ -55,6 +57,9 @@ one prompt. No automatic variations, upscales, retries or model switches. Approv
 overwritten; new versions are saved under new names. Artwork has no lettering, signatures, watermarks,
 interface elements or borders.
 
+- **Opening base:** opening v3 (Runway task `4acb642e-73e2-4595-b31c-07abe01d5b23`, 5504×3072,
+  `assets/drafts/opening-v3.png`) — fresh composition, whole militia facing right. Narrower framing
+  and the corner signature are accepted by Noah.
 - **Selected style reference:** K1 variation B (Runway task `a35c7f7f-af20-4f69-8541-940dc8d78a0a`,
   5504×3072, local copy `assets/drafts/k1-b.png`) — navy-coated figure, stone walls, meetinghouse.
   Always reference the original generated files, never photos of a monitor.
