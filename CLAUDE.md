@@ -57,7 +57,12 @@ one prompt. No automatic variations, upscales, retries or model switches. Approv
 overwritten; new versions are saved under new names. Artwork has no lettering, signatures, watermarks,
 interface elements or borders.
 
-- **Opening base:** opening v3 (Runway task `4acb642e-73e2-4595-b31c-07abe01d5b23`, 5504×3072,
+- **APPROVED opening still: `assets/keyframes/k1.png`** = opening v4 (Runway task
+  `913bb252-82a3-4a28-b648-dbfb0ee2a5f2`, 5504×3072). Featured soldier center-right, aiming
+  screen-right, no flash yet. Accepted as-is: two brown/olive coats left of center, his muzzle sits
+  just above his right-hand neighbour's hat (leave that man out of the muzzle close-up), face partly
+  covered by hands/stock. Use it as the reference for the closer character view.
+- **Opening base before approval:** opening v3 (Runway task `4acb642e-73e2-4595-b31c-07abe01d5b23`, 5504×3072,
   `assets/drafts/opening-v3.png`) — fresh composition, whole militia facing right. Narrower framing
   and the corner signature are accepted by Noah.
 - **Selected style reference:** K1 variation B (Runway task `a35c7f7f-af20-4f69-8541-940dc8d78a0a`,
