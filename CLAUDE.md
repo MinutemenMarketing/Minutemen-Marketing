@@ -66,9 +66,13 @@ interface elements or borders.
   match the navy brand:** every later stage must match this grade, so drop "warm golden-hour" from the
   STYLE LOCK in new prompts and describe cool steel-blue light instead. It is a local file, so it must
   go up with `init_upload` to be a Runway reference. Slight mauve in the far hills was accepted.
+- **APPROVED K2 (end of push-in): `assets/keyframes/k2.png`** = K2 v2 (Runway task
+  `8c07f123-1043-440f-8284-a17c56b44287`, 5504×3072). Full body hat to boots, whole musket, him about
+  a third across, muzzle about two-thirds across, right third open smoke. Aiming, not fired; cool grade
+  matches. Accepted as-is: tight bottom margin at the boots, slightly upright stance, a faint white
+  farmhouse in the smoke just under the muzzle, faint corner marks. Reference for the firing stage.
 - **K2 v1** (`assets/drafts/k2-v1.png`, Runway task `af215836-1672-4bee-99a5-9257ff86677d`) — medium
-  close aim; Noah liked the soldier, uniform, pose, style and grade but it is too tight. Not approved;
-  use it as the identity reference for the full-body K2.
+  close aim, too tight; not approved. Same soldier/face as k2.png, useful as a close identity reference.
 - **Approved warm original: `assets/keyframes/k1.png`** = opening v4 (Runway task
   `913bb252-82a3-4a28-b648-dbfb0ee2a5f2`, 5504×3072). Featured soldier center-right, aiming
   screen-right, no flash yet. Accepted as-is: two brown/olive coats left of center, his muzzle sits
