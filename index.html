@@ -49,26 +49,33 @@
     <section class="hero" id="top" aria-label="Introduction">
       <div class="hero__stage">
         <canvas class="hero__canvas" aria-hidden="true"></canvas>
+        <div class="hero__grain" aria-hidden="true"></div>
         <div class="hero__beats">
           <div class="beat beat--1" data-beat="1">
-            <h1 class="beat__title">Minutemen Marketing.</h1>
-            <p class="beat__sub"><em>Ready at a minute's notice.</em></p>
+            <h1 class="beat__title" data-words>Minutemen Marketing.</h1>
+            <p class="beat__sub" data-words><em>Ready at a minute's notice.</em></p>
           </div>
           <div class="beat beat--2" data-beat="2">
-            <p class="beat__title">Response time as fast as a bullet.</p>
+            <p class="beat__title" data-words>Response time <em>as fast as a bullet.</em></p>
           </div>
           <div class="beat beat--3" data-beat="3">
-            <p class="beat__title">With the right website, you can reach an audience around the world.</p>
+            <p class="beat__title" data-words>With the right website, you can reach <em>an audience around the world.</em></p>
           </div>
         </div>
-        <div class="hero__load" aria-hidden="true"><span></span></div>
+        <!-- Scroll progress, drawn as the bullet's trail. -->
+        <div class="hero__trail" aria-hidden="true"><span></span></div>
+        <p class="hero__cue" aria-hidden="true">Scroll</p>
+        <!-- Preloader: the logo's open ring draws itself as the opening frames arrive. -->
+        <div class="preload" aria-hidden="true">
+          <svg viewBox="0 0 120 120"><path class="preload__ring" pathLength="1" d="M43.6 105.1 A48 48 0 1 1 76.4 105.1" /></svg>
+        </div>
       </div>
     </section>
 
     <main id="main">
       <section class="intro shell" aria-labelledby="intro-h">
         <h2 class="intro__h" id="intro-h">Websites for Long Island businesses, <em>built quickly and built properly.</em></h2>
-        <p class="lede">We design, build and look after the website your customers find first.</p>
+        <p class="lede intro__lede">We design, build and look after the website your customers find first.</p>
       </section>
 
       <section class="section shell" id="services" aria-labelledby="services-h">
@@ -108,28 +115,28 @@
       <div class="chapters" aria-label="How we work">
         <section class="chapter" id="ready" aria-labelledby="ready-h">
           <div class="chapter__head shell">
-            <div class="opener"><span class="shot" aria-hidden="true"></span><p class="eyebrow"><span class="num">01</span> How we work</p></div>
+            <div class="opener"><span class="shot" aria-hidden="true"></span><p class="eyebrow"><span class="num">01 / 04</span> How we work</p></div>
             <h2 class="chapter__h" id="ready-h">Ready</h2>
           </div>
           <p class="chapter__text shell">We learn your business, your customers and what the site has to do.</p>
         </section>
         <section class="chapter" id="aim" aria-labelledby="aim-h">
           <div class="chapter__head shell">
-            <div class="opener"><span class="shot" aria-hidden="true"></span><p class="eyebrow"><span class="num">02</span> How we work</p></div>
+            <div class="opener"><span class="shot" aria-hidden="true"></span><p class="eyebrow"><span class="num">02 / 04</span></p></div>
             <h2 class="chapter__h" id="aim-h">Aim</h2>
           </div>
           <p class="chapter__text shell">We plan the pages and design them around the people you want to reach.</p>
         </section>
         <section class="chapter" id="fire" aria-labelledby="fire-h">
           <div class="chapter__head shell">
-            <div class="opener"><span class="shot" aria-hidden="true"></span><p class="eyebrow"><span class="num">03</span> How we work</p></div>
+            <div class="opener"><span class="shot" aria-hidden="true"></span><p class="eyebrow"><span class="num">03 / 04</span></p></div>
             <h2 class="chapter__h" id="fire-h">Fire</h2>
           </div>
           <p class="chapter__text shell">We build it, test it on every screen and put it live.</p>
         </section>
         <section class="chapter" id="heard" aria-labelledby="heard-h">
           <div class="chapter__head shell">
-            <div class="opener"><span class="shot" aria-hidden="true"></span><p class="eyebrow"><span class="num">04</span> How we work</p></div>
+            <div class="opener"><span class="shot" aria-hidden="true"></span><p class="eyebrow"><span class="num">04 / 04</span></p></div>
             <h2 class="chapter__h" id="heard-h">Heard</h2>
           </div>
           <p class="chapter__text shell">We keep it fast, found and up to date after launch.</p>
@@ -148,25 +155,25 @@
           <li class="plate">
             <figure>
               <img src="/work/work-smiles-1600.webp" srcset="/work/work-smiles-900.webp 900w, /work/work-smiles-1600.webp 1600w" sizes="(min-width: 1024px) 66vw, 100vw" width="1600" height="1000" loading="lazy" alt="The Smiles by Nilou homepage" />
-              <figcaption><span class="plate__name">Smiles by Nilou</span><span class="plate__meta">Teeth whitening studio · Website design and build</span></figcaption>
+              <figcaption><span class="plate__num">01</span><span class="plate__name">Smiles by Nilou</span><span class="plate__meta">Teeth whitening studio · Website design and build</span></figcaption>
             </figure>
           </li>
           <li class="plate">
             <figure>
               <img src="/work/work-beauty-1600.webp" srcset="/work/work-beauty-900.webp 900w, /work/work-beauty-1600.webp 1600w" sizes="(min-width: 1024px) 66vw, 100vw" width="1600" height="1000" loading="lazy" alt="The Beauty and Wellness addict NY homepage" />
-              <figcaption><span class="plate__name">Beauty &amp; Wellness addict NY</span><span class="plate__meta">Medical wellness practice · Website design and build</span></figcaption>
+              <figcaption><span class="plate__num">02</span><span class="plate__name">Beauty &amp; Wellness addict NY</span><span class="plate__meta">Medical wellness practice · Website design and build</span></figcaption>
             </figure>
           </li>
           <li class="plate plate--phone">
             <figure>
               <img src="/work/work-muses-phone-480.webp" width="480" height="1000" loading="lazy" alt="The Muses Nails site on a phone" />
-              <figcaption><span class="plate__name">Muses Nails</span><span class="plate__meta">Nail salon, Saint James, NY · Website design and build</span></figcaption>
+              <figcaption><span class="plate__num">03</span><span class="plate__name">Muses Nails</span><span class="plate__meta">Nail salon, Saint James, NY · Website design and build</span></figcaption>
             </figure>
           </li>
           <li class="plate">
             <figure>
               <img src="/work/work-wealth-1600.webp" srcset="/work/work-wealth-900.webp 900w, /work/work-wealth-1600.webp 1600w" sizes="(min-width: 1024px) 66vw, 100vw" width="1600" height="1000" loading="lazy" alt="The Wealth Advisory Group homepage" />
-              <figcaption><span class="plate__name">Wealth Advisory Group</span><span class="plate__meta">Financial advisory firm · Website design and build</span></figcaption>
+              <figcaption><span class="plate__num">04</span><span class="plate__name">Wealth Advisory Group</span><span class="plate__meta">Financial advisory firm · Website design and build</span></figcaption>
             </figure>
           </li>
         </ul>
@@ -184,8 +191,10 @@
         </dl>
       </section>
 
-      <!-- Work → Contact cross-fade (pear.no column-to-tree). TODO: Noah to choose the image pair;
-           placeholder is the painted battlefield dissolving into the brand-colored globe. -->
+      <!-- Work → Contact cross-fade (pear.no column-to-tree). Planned: a real "before" screenshot of
+           Smiles by Nilou's old site dissolving into the site we built. TODO(client): Noah to send the
+           old-site screenshot (Wayback has no usable capture) and confirm Nilou's permission. Never a
+           fake "before". Placeholder until then: the painted battlefield dissolving into navy. -->
       <div class="bridge" aria-hidden="true">
         <div class="bridge__frame">
           <img class="bridge__a" src="/hero/v1/k1-1280.webp" alt="" width="1280" height="714" loading="lazy" />
@@ -196,8 +205,12 @@
       <section class="contact" id="contact" aria-labelledby="contact-h">
         <div class="contact__inner shell">
           <div class="contact__ring" aria-hidden="true"></div>
-          <div class="opener opener--dark"><span class="shot" aria-hidden="true"></span><p class="eyebrow">Contact</p></div>
-          <h2 class="h2" id="contact-h">Tell us what you need. <em>We answer quickly.</em></h2>
+          <div class="contact__intro">
+            <div class="opener opener--dark"><span class="shot" aria-hidden="true"></span><p class="eyebrow">Contact</p></div>
+            <h2 class="h2" id="contact-h">Tell us what you need. <em>We answer quickly.</em></h2>
+            <!-- TODO(client): real email address -->
+            <p class="contact__alt">Prefer email? <a href="mailto:hello@minutemenmarketing.com">hello@minutemenmarketing.com</a></p>
+          </div>
           <form class="form" data-form novalidate>
             <div class="field"><label for="f-name">Your name</label><input id="f-name" name="name" autocomplete="name" required /></div>
             <div class="field"><label for="f-email">Email</label><input id="f-email" name="email" type="email" autocomplete="email" required /></div>
@@ -207,21 +220,25 @@
             <button class="btn btn--light" type="submit">Send</button>
             <p class="form__status" role="status" aria-live="polite" data-status></p>
           </form>
-          <!-- TODO(client): real email address -->
-          <p class="contact__alt">Or email <a href="mailto:hello@minutemenmarketing.com">hello@minutemenmarketing.com</a></p>
         </div>
       </section>
     </main>
 
     <footer class="footer">
       <div class="footer__inner shell">
-        <p class="footer__mark">Minutemen Marketing</p>
-        <nav aria-label="Footer">
+        <div class="footer__brand">
+          <p class="footer__mark">Minutemen Marketing</p>
+          <p class="footer__tag"><em>Ready at a minute's notice.</em></p>
+        </div>
+        <nav class="footer__nav" aria-label="Footer">
           <a href="#services">Services</a><a href="#ready">How we work</a><a href="#work">Work</a><a href="#contact">Contact</a>
         </nav>
-        <!-- TODO(client): Instagram and LinkedIn URLs -->
-        <p>Serving Long Island, New York — and remote</p>
-        <p>© <span data-year>2026</span> Minutemen Marketing</p>
+        <div class="footer__meta">
+          <!-- TODO(client): real email address; Instagram and LinkedIn URLs -->
+          <a href="mailto:hello@minutemenmarketing.com">hello@minutemenmarketing.com</a>
+          <p>Serving Long Island, New York — and remote</p>
+        </div>
+        <p class="footer__legal">© <span data-year>2026</span> Minutemen Marketing</p>
       </div>
     </footer>
 

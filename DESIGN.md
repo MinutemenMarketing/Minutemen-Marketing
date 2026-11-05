@@ -37,6 +37,7 @@ off-white, a serif + sans) sits right next to it. We deliberately deviate:
 | `--ink` | `#032249` | Navy — headings, body, buttons, the signature line (sampled from the logo) | 14.4:1 on paper |
 | `--ink-2` | `#4A5A72` | Secondary text — captions, meta, helper text | 6.3:1 on paper |
 | `--rule` | `#D9D3C4` | Hairlines only — too pale for text | — |
+| `--paper-2` | `#EFEADF` | The mat around work screenshots — never text | — |
 | `--navy-deep` | `#021733` | Dark band ground (contact, footer) | — |
 | `--on-navy` | `#F7F4EC` | Text on the dark band | 16.3:1 on navy-deep |
 | `--on-navy-2` | `#A9B6C9` | Secondary text on the dark band | 8.7:1 on navy-deep |
@@ -110,6 +111,29 @@ behind the "Start a project" heading, so the page ends where the hero did.
 built quickly and built properly."* Services lede *"Everything a local business needs to be found
 and chosen online."* Contact *"Tell us what you need. We answer quickly."* No "elevate", "seamless",
 "journey", no invented numbers, no triads.
+
+## Creative-director pass (2026-11-05) — what changed and why
+
+Against pear.no and this spec, ten things kept the first build from feeling premium; each is fixed:
+
+1. **Hero type was small and could sink into busy frames** → larger Caslon beats, italic key phrase,
+   staggered word reveal, soft blurred scrim behind each beat.
+2. **Hero ended on a logo floating in empty space** → logo settles to 78% and the intro follows with
+   almost no gap.
+3. **Nav felt utilitarian** (hard border, cramped links) → frosted paper bar, hairline shadow, quieter
+   links with an underline for the current section, slimmer CTA.
+4. **Intro statement wrapped awkwardly with the lede far below** → 10-column statement, lede set to the
+   right (columns 7–11), balanced wrapping.
+5. **Service names broke onto three lines** → wider name column, sticky section heading, more air.
+6. **Chapters left a big empty field and repeated "How we work" four times** → word left, sentence
+   right on desktop; "01 / 04" counters, "How we work" once.
+7. **Work screenshots looked like raw captures** → paper mat, numbered captions, larger names.
+8. **The Work → Contact bridge showed a ring that didn't match Contact** → dissolves into plain navy,
+   shorter pin (70%), so it flows straight into the contact band.
+9. **Contact was a lone form in a wide navy field** → two columns (heading + email left, form right),
+   quieter inputs, label eyebrows, a wider Send button.
+10. **Footer was sparse and default-styled** → wordmark with the italic tagline, three columns, a
+    hairline legal row.
 
 ## Components
 

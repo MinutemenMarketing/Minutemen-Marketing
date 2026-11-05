@@ -132,9 +132,23 @@ interface elements or borders.
   small round ball, arc behind/in front, Long Island glint. Globe ≈ 67% of frame height (code scales
   it to the 50% target). Start and end frame of C4. (Ideogram precise edit can't be used: it rejects
   images over 16MP and can't read Runway uploads.)
-- **C2b v1 — rejected:** `assets/drafts/c2b-v1.mp4` (task `0784a479-d1b0-4ee6-94d9-fc5b2d23cb22`).
-  Good whip-pan into side-tracking and open-sky ending, but the ball rendered as shiny chrome. v2
-  regenerated with an explicit matte, painted cast-lead ball.
+- **APPROVED C2b (follow the bullet): `assets/clips/c2b-follow.mp4`** = C2b v1 (task
+  `0784a479-d1b0-4ee6-94d9-fc5b2d23cb22`). Its chrome ball was fixed **for free at extraction**: the
+  ball is repainted per frame as a matte, upper-left-lit lead sphere with grain (auto-detected before
+  2.4s, a hand-measured track after), and the first frames get the same warm-gold flash as C2.
+  Frames: `public/hero/v1/c2b/` (15fps, 92). Last frame `assets/keyframes/c2b-last.png` = C3's start.
+  (C2b v2, task `130bef5a-…`, was matte but egg-shaped and huge — not used.)
+- **APPROVED C4 (orbit): `assets/clips/c4-orbit.mp4`** (task `dbb25ecc-895f-4f88-baeb-03cc158fd6a4`),
+  start = end = `k4.png`. Ball passes cleanly behind the globe. Frames `public/hero/v1/c4/` (15fps,
+  91), played through `CHOREO.c4Remap` so the hidden stretch (≈2.2–3.8s) takes ~0.7% of the scroll;
+  beat 3 shows while the ball comes round the front.
+- **Hero finish (2026-11-05):** every clip opens on the previous clip's last frame with a 5-frame
+  cross-dissolve; one CSS grade on the canvas plus one grain tile over the whole hero; beats in large
+  Caslon with the key phrase italic, words staggered, a soft blurred scrim (no box); preloader = the
+  logo's open ring drawing itself; scroll progress = the bullet's trail with a gold dot; a "Scroll"
+  cue that fades on the first move. The globe scene is zoomed to the 50% circle over a blurred,
+  globe-free copy of itself with softly erased edges, so no edge shows; globe → brand globe → logo
+  use slow sine fades with all three on the same circle (no size jump).
 - **K4 v1 — superseded, not approved:** `assets/keyframes/superseded/k4-v1.png` (Runway task
   `89047228-3b71-4b66-b7e2-ff6b7ed00ec7`). Kept what worked (centered, North America facing, deep
   blue-black sky, painted clouds below, gold arc passing behind, the glint at Long Island) but the
