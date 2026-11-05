@@ -82,6 +82,13 @@ interface elements or borders.
   a third across, muzzle about two-thirds across, right third open smoke. Aiming, not fired; cool grade
   matches. Accepted as-is: tight bottom margin at the boots, slightly upright stance, a faint white
   farmhouse in the smoke just under the muzzle, faint corner marks. Reference for the firing stage.
+- **APPROVED C2 firing clip (draft): `assets/clips/c2-firing.mp4`** — Kling 4.0, 5s, 1280×716,
+  start `k2.png` → end K3 v1 (`assets/drafts/k3-v1.png`, task `7881e024-2587-4b53-a956-65ca5b221eb4`),
+  task `f31d4a21-699b-4688-8145-92edb0b9fcde`. Pan flash ~2.8s, muzzle ~3.1s, ball travels to the end.
+  **Free fixes to apply when extracting frames:** trim the start to ~1s before the pan flash (begin at
+  ~1.8s); tone the muzzle flash down to warm gold, never pure white; strip the audio.
+- **C2 last frame: `assets/keyframes/c2-last.png`** (1280×716, exported from the clip) — the **start
+  frame for the globe clip C3**, not K3, so C2 → C3 joins without a jump.
 - **K2 v1** (`assets/drafts/k2-v1.png`, Runway task `af215836-1672-4bee-99a5-9257ff86677d`) — medium
   close aim, too tight; not approved. Same soldier/face as k2.png, useful as a close identity reference.
 - **Approved warm original: `assets/keyframes/k1.png`** = opening v4 (Runway task
