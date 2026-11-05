@@ -1,9 +1,11 @@
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { existsSync, readFileSync } from 'node:fs';
+import { relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
+import { SITE } from './src/site-config.js';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
+const ORIGIN = 'https://minutemenmarketing.com';
 
 // The four pages. Each is a real HTML file, so every route loads directly and works without JS.
 const PAGES = {
@@ -13,46 +15,93 @@ const PAGES = {
   contact: { file: 'contact/index.html', path: '/contact' },
 };
 
-// Shared nav and footer: `<!-- @nav -->` / `<!-- @footer -->` in a page are replaced with the
-// partials from src/partials, and the current page's tab gets aria-current="page".
-function partials() {
+const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+
+// Contact details from src/site-config.js. Empty values are TODO(client) and are not rendered.
+function detailsHtml() {
+  const rows = [];
+  const add = (label, text, href, ext) =>
+    rows.push(
+      `<div><dt>${label}</dt><dd><a href="${esc(href)}"${ext ? ' target="_blank" rel="noopener"' : ''}>${esc(text)}</a></dd></div>`,
+    );
+  if (SITE.workEmail) add('Email', SITE.workEmail, `mailto:${SITE.workEmail}`);
+  if (SITE.otherEmail) add('Also', SITE.otherEmail, `mailto:${SITE.otherEmail}`);
+  if (SITE.phone) add('Phone', SITE.phone, `tel:${SITE.phone.replace(/[^\d+]/g, '')}`);
+  if (SITE.instagram) add('Instagram', SITE.instagram.replace(/^https?:\/\/(www\.)?/, ''), SITE.instagram, true);
+  if (SITE.linkedin) add('LinkedIn', 'LinkedIn', SITE.linkedin, true);
+  for (const o of SITE.other || []) if (o?.url) add(o.label || 'Link', o.label || o.url, o.url, true);
+  return rows.join('');
+}
+
+// Build-time page assembly:
+// - `<!-- @nav -->` / `<!-- @footer -->` → partials from src/partials, current tab aria-current="page"
+// - `<!-- @head -->` → icon + Open Graph / Twitter tags from the page's own title, description, canonical
+// - contact details and the contact form's on/off state from src/site-config.js
+function pages({ dev }) {
   const read = (name) => readFileSync(resolve(__dirname, 'src/partials', `${name}.html`), 'utf8');
-  const pageOf = (file) => {
-    const rel = file.replace(/\\/g, '/').replace(/^.*?\/(?=(?:about|portfolio|contact)\/index\.html$|index\.html$)/, '');
-    return Object.entries(PAGES).find(([, p]) => p.file === rel)?.[1].path;
+  const pathOf = (file) => {
+    const rel = relative(__dirname, file).replace(/\\/g, '/');
+    return Object.values(PAGES).find((p) => p.file === rel)?.path || '/';
   };
   return {
-    name: 'mm-partials',
+    name: 'mm-pages',
+    // Dev server: serve /about, /portfolio, /contact like Vercel's cleanUrls does in production.
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const [path, query = ''] = req.url.split('?');
+        const page = Object.values(PAGES).find((p) => p.path !== '/' && (path === p.path || path === `${p.path}/`));
+        if (page) req.url = `/${page.file}${query ? `?${query}` : ''}`;
+        next();
+      });
+    },
     transformIndexHtml: {
       order: 'pre',
       handler(html, ctx) {
-        const current = pageOf(ctx.filename) || '/';
+        const current = pathOf(ctx.filename);
         const mark = (s) =>
           s.replace(/<a ([^>]*?)href="([^"]+)"([^>]*)data-tab/g, (m, a, href, b) =>
             `<a ${a}href="${href}"${b}${href === current ? 'aria-current="page"' : ''}`,
           );
-        return html.replace('<!-- @nav -->', mark(read('nav'))).replace('<!-- @footer -->', mark(read('footer')));
+        const title = html.match(/<title>([^<]*)<\/title>/)?.[1] || 'Minutemen Marketing';
+        const desc = html.match(/<meta name="description" content="([^"]*)"/)?.[1] || '';
+        const url = `${ORIGIN}${current === '/' ? '/' : current}`;
+        const head = [
+          '<link rel="icon" href="/brand/logo-mark.svg" type="image/svg+xml" />',
+          '<meta property="og:type" content="website" />',
+          '<meta property="og:site_name" content="Minutemen Marketing" />',
+          `<meta property="og:title" content="${title}" />`,
+          `<meta property="og:description" content="${desc}" />`,
+          `<meta property="og:url" content="${url}" />`,
+          `<meta property="og:image" content="${ORIGIN}/og.jpg" />`,
+          '<meta property="og:image:width" content="1200" />',
+          '<meta property="og:image:height" content="630" />',
+          '<meta name="twitter:card" content="summary_large_image" />',
+        ].join('\n    ');
+        let out = html
+          .replace('<!-- @head -->', head)
+          .replace('<!-- @nav -->', mark(read('nav')))
+          .replace('<!-- @footer -->', mark(read('footer')))
+          .replace('<dl class="details" data-details-list></dl>', `<dl class="details" data-details-list>${detailsHtml()}</dl>`);
+        // The form shows only with a Web3Forms key (always in dev, so it can be tested).
+        if (SITE.web3formsKey || dev) {
+          out = out.replace('<form class="form" data-form novalidate hidden>', '<form class="form" data-form novalidate>');
+          out = out.replace(/<p class="form-off" data-form-off>[^<]*<\/p>/, '');
+        }
+        return out;
       },
     },
   };
 }
 
-export default defineConfig({
-  plugins: [partials()],
+export default defineConfig(({ command }) => ({
+  plugins: [pages({ dev: command === 'serve' })],
   build: {
     rollupOptions: {
       input: Object.fromEntries(
         Object.entries(PAGES)
           .map(([name, p]) => [name, resolve(__dirname, p.file)])
-          .filter(([, f]) => {
-            try {
-              readFileSync(f);
-              return true;
-            } catch {
-              return false; // pages not written yet
-            }
-          }),
+          .filter(([, f]) => existsSync(f)),
       ),
     },
   },
-});
+}));

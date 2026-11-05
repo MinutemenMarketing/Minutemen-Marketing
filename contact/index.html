@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#032249" />
+    <title>Book a Free Consultation | Minutemen Marketing</title>
+    <meta name="description" content="Book a free consultation with Minutemen Marketing. Tell us about your business and which services you need: SEO, AI search, websites, domains or social media." />
+    <link rel="canonical" href="https://minutemenmarketing.com/contact" />
+    <!-- @head -->
+  </head>
+  <body>
+    <!-- @nav -->
+
+    <main id="main" class="page">
+      <header class="page__head shell">
+        <div class="opener"><span class="shot" aria-hidden="true"></span><p class="eyebrow">Contact</p></div>
+        <h1 class="page__h">Book a free <em>consultation.</em></h1>
+        <p class="lede">Tell us about your business and what you need. We answer quickly.</p>
+      </header>
+
+      <section class="section shell contact-page" aria-label="Contact form and details">
+        <div class="contact-page__form">
+          <!-- Shown when src/site-config.js has a Web3Forms key (always in dev, for testing). -->
+          <form class="form" data-form novalidate hidden>
+            <div class="field"><label for="f-name">Your name</label><input id="f-name" name="name" autocomplete="name" required /></div>
+            <div class="field"><label for="f-biz">Business name</label><input id="f-biz" name="business" autocomplete="organization" required /></div>
+            <div class="field field--wide"><label for="f-email">Email</label><input id="f-email" name="email" type="email" autocomplete="email" required /></div>
+            <fieldset class="field field--wide checks">
+              <legend>What can we help with? <span class="opt">(optional)</span></legend>
+              <label class="check"><input type="checkbox" name="services" value="SEO" /> SEO</label>
+              <label class="check"><input type="checkbox" name="services" value="GEO (AI search)" /> GEO (AI search)</label>
+              <label class="check"><input type="checkbox" name="services" value="Website Design &amp; Development" /> Website Design &amp; Development</label>
+              <label class="check"><input type="checkbox" name="services" value="Domain Acquisition" /> Domain Acquisition</label>
+              <label class="check"><input type="checkbox" name="services" value="Social Media Management" /> Social Media Management</label>
+            </fieldset>
+            <div class="field field--wide"><label for="f-msg">Message</label><textarea id="f-msg" name="message" rows="5" required></textarea></div>
+            <!-- Honeypot: people never see or fill this; bots do. -->
+            <div class="hp" aria-hidden="true"><label for="f-botcheck">Leave this empty</label><input id="f-botcheck" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" /></div>
+            <button class="btn btn--primary btn--big" type="submit" data-submit>Send message</button>
+            <p class="form__status" role="status" aria-live="polite" data-status></p>
+          </form>
+          <p class="form-off" data-form-off>Our contact form isn't connected yet. Please check back soon.</p>
+        </div>
+
+        <aside class="contact-page__details" aria-label="Other ways to reach us" data-details>
+          <!-- Filled from src/site-config.js; any empty item is TODO(client) and not rendered. -->
+          <h2 class="eyebrow">Other ways to reach us</h2>
+          <dl class="details" data-details-list></dl>
+          <p class="details__area">Serving Long Island, New York</p>
+        </aside>
+      </section>
+    </main>
+
+    <!-- @footer -->
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
