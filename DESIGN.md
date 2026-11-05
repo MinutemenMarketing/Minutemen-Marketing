@@ -132,8 +132,10 @@ and chosen online."* Contact *"Tell us what you need. We answer quickly."* No "e
 ## Motion
 
 - `--ease: cubic-bezier(0.22, 0.61, 0.36, 1)` · `--dur: 600ms` · micro `200ms` · line draw `900ms`.
-- Reveals: opacity + 12px translateY, 600ms, stagger 40ms, via ScrollTrigger (already in the stack);
-  only headings, ledes and plates — rows and body text do not animate.
+- **Scroll motion is limited to three things** (Noah, 2026-11-05 — "no other scroll tricks"):
+  the shot lines drawing once as a section arrives, one brief pinned moment per chapter (Ready, Aim,
+  Fire, Heard) where its headline fades in on the shot line, and one image cross-fade between Work
+  and Contact. Headings, plates and body text do not fade or slide in.
 - Lenis smooth scroll continues from the hero; anchor links scroll with it and move focus to the
   target heading.
 - **`prefers-reduced-motion`:** no Lenis, lines already drawn, reveals resolve instantly, the process
