@@ -6,7 +6,9 @@ Conversion goals: 1) start a project (form) 2) email 3) look at the work
 
 Scope: everything after the hero hands off to the logo circle — nav, intro, services, process, work,
 contact, footer. The hero and the globe-to-logo transition follow the hero spec in `CLAUDE.md`, not
-this file. Status: **draft for Noah's approval — no markup until approved.**
+this file. Status: **approved by Noah 2026-11-05** with his changes (four-chapter process, plain
+service names, turnaround TODO, hidden testimonials slot, gold shot-line dot). Change this file before
+the build deviates from it.
 
 ## Anti-default stance
 
@@ -14,9 +16,10 @@ The generic AI look this brief could collapse into is **warm cream + a bold high
 warm accent, three icon cards for services, centered everything** — and our brief (navy on warm
 off-white, a serif + sans) sits right next to it. We deliberately deviate:
 
-- **One ink, no accent.** Navy is the only color on the page, the way a 1775 broadside was printed in
-  a single ink. No terracotta, no gold buttons, no gradients. Hierarchy comes from size, weight,
-  italic and space — not from a second color.
+- **One ink, one spark.** Navy is the only color on the page, the way a 1775 broadside was printed in
+  a single ink. The single exception is the shot-line dot, in a muted musket-flash gold — the spark
+  of the shot, never text, never buttons, never fills. No terracotta, no gradients. Hierarchy comes
+  from size, weight, italic and space — not from a second color.
 - **Caslon at regular weight, set large, with real italics** for the turn of a sentence — never a
   bold display serif. Caslon is the face the Declaration was printed in; it carries the period so
   the layout doesn't need costume (no parchment, no ornaments, no faux-aged textures).
@@ -37,6 +40,7 @@ off-white, a serif + sans) sits right next to it. We deliberately deviate:
 | `--navy-deep` | `#021733` | Dark band ground (contact, footer) | — |
 | `--on-navy` | `#F7F4EC` | Text on the dark band | 16.3:1 on navy-deep |
 | `--on-navy-2` | `#A9B6C9` | Secondary text on the dark band | 8.7:1 on navy-deep |
+| `--flash` | `#A67C2E` | Muted musket-flash gold — **the shot-line dot only.** Never text, borders, fills or buttons | 3.4:1 on paper, 4.7:1 on navy-deep (non-text, ≥ 3:1) |
 | `--error` | `#9B1C1C` | Form errors only, always with text | 7.4:1 on paper |
 
 Tokens only in components, never raw hex. Body text ≥ 7:1 (it is 14.4:1). No dark mode.
@@ -58,11 +62,13 @@ Tokens only in components, never raw hex. Body text ≥ 7:1 (it is 14.4:1). No d
 
 The ball leaves the muzzle travelling screen-right; after the hero it keeps going. **Every section
 opens with a single 1px navy line that draws left → right across the shell and ends in a small solid
-dot (the ball, 7px).** The section's eyebrow sits on the line where the dot stops.
+dot (the ball, 7px, `--flash` gold).** The section's eyebrow sits on the line where the dot stops.
+The line is navy; only the dot is gold.
 
 - **Section openers:** the line draws once when the section enters (900ms), then stays.
-- **Process:** one long line runs through all seven stages; each stage is a stop on it (the dot
-  travels stop to stop as you scroll). This is the only place the dot moves after it lands.
+- **Process:** one long line runs through the four chapters — Ready, Aim, Fire, Heard; each chapter
+  is a stop on it (the dot travels stop to stop as you scroll). This is the only place the dot moves
+  after it lands.
 - **Primary buttons and text links:** on hover/focus a short line + dot slides in under the label.
 - **Never used:** in the nav, in the footer, on cards or images, or as decoration in empty space —
   it marks an arrival, so it only appears where something begins.
@@ -89,11 +95,13 @@ behind the "Start a project" heading, so the page ends where the hero did.
 
 | Section | Job | Content |
 |---|---|---|
-| **Nav** | Get anywhere in one tap | Fades in when the hero settles. Wordmark left; Services · Process · Work · Contact; *Start a project* button. Current section underlined. Mobile: menu button (44px) → full-height sheet, focus-trapped, Esc closes. |
+| **Nav** | Get anywhere in one tap | Fades in when the hero settles. Wordmark left; Services · Ready · Aim · Fire · Heard · Work; *Start a project* button (→ Contact). The four chapter names link to their process chapters, same names as on the page. Current section underlined. Mobile: menu button (44px) → full-height sheet, focus-trapped, Esc closes; in the sheet the chapters sit under a small "How we work" label so first-time visitors know what they are. |
 | **Intro** | Say what we do in one breath | The logo circle (end of the hero) above one Caslon statement at display size, then a one-line lede. Copy drafted below for approval. |
-| **Services** | Show the offer plainly | Index of the eight real services in three groups: **Build** (Web Design, Development, Branding, Conversion) · **Get found** (SEO, Local SEO, GEO) · **Keep it running** (Website Management). Each row: Caslon name left, one plain sentence right, hairline between rows. No icons. |
-| **Process** | Show how a project runs | The seven real stages in order — Discovery, Strategy, Design, Development, Optimization, Launch, Growth — on the shot line, numbered 01–07 (a true sequence). One sentence each. No durations or timelines unless Noah supplies them. |
+| **Services** | Show the offer plainly | Index of the real services in plain words a local owner uses, in three groups. **Your website:** Website design · Building your website · Logo and brand · More calls and bookings from your site. **Getting found:** Showing up on Google · Google Maps and local search · Showing up in AI answers (ChatGPT, Google's AI). **Keeping it running:** Updates, fixes and upkeep. Each row: Caslon name left, one plain sentence right, hairline between rows. No icons, no jargon labels ("GEO", "Conversion", "SEO" only inside a sentence if at all). |
+| **Process** | Show how a project runs | Four chapters on the shot line, numbered 01–04 (a true sequence), same names as the nav. **Ready** — *We learn your business, your customers and what the site has to do.* **Aim** — *We plan the pages and design them around the people you want to reach.* **Fire** — *We build it, test it on every screen and put it live.* **Heard** — *We keep it fast, found and up to date after launch.* (Covers the seven Sept-site stages: Discovery + Strategy, Design, Development + Launch, Optimization + Growth.) No durations except the turnaround figure Noah supplies. |
+| **Speed line** | Back the speed promise with a real number | One line under the process: *"Most sites go live in `TODO(client): turnaround`."* Hidden until Noah supplies the figure — never estimated. |
 | **Work** | Prove it | Real sites, photographed from the real builds (`legacy/tools/capture.mjs` method). Large plates, one per row, alternating text left/right: client name, town, what we built. Each plate links to the live site. See facts below for what may be shown. |
+| **Testimonials** | Let clients say it | Slot after Work: up to three quotes, Caslon italic, client name + business + town. Built with `TODO(client):` placeholders and **hidden (not rendered, not in the DOM) until real, attributed quotes exist.** No invented quotes, no star ratings, no review counts. |
 | **Team** | Who you'll talk to | Noah — design. Ethan — strategy. Names and roles only; set typographically, no stock portraits. |
 | **Contact** (navy band) | Start a project | Open-ring motif, Caslon heading, short form (name, email, business, current website optional, what you need), plus the email address as a plain alternative. |
 | **Footer** (navy-deep) | Close | Wordmark, section links, email, socials, "Serving Long Island, New York — and remote", © year. |
@@ -136,7 +144,7 @@ and chosen online."* Contact *"Tell us what you need. We answer quickly."* No "e
 
 | Page | Purpose | Sections |
 |---|---|---|
-| `index.html` | Everything | Hero → Nav, Intro, Services, Process, Work, Team, Contact, Footer |
+| `index.html` | Everything | Hero → Nav, Intro, Services, Process (Ready · Aim · Fire · Heard) + speed line, Work, Testimonials (hidden until real), Team, Contact, Footer |
 | `404.html` | Lost visitor | Shot line, one sentence, link home |
 | `privacy.html` | Form data notice | Plain text — only if the form goes live (`TODO(client)`) |
 
@@ -150,14 +158,16 @@ Head boilerplate on every page: title, description, canonical, OG/Twitter image,
 | Name | Minutemen Marketing | Noah's brief (2026-11-02) |
 | What we do | Premium websites for local businesses | Noah's brief |
 | Where | Long Island, New York — and remote | Sept 2026 site (`legacy/`), inferred there; confirm |
-| Services (8) | Web Design, Development, SEO, Local SEO, GEO, Branding, Conversion, Website Management | Sept 2026 site brief |
-| Process (7) | Discovery, Strategy, Design, Development, Optimization, Launch, Growth | Sept 2026 site brief |
+| Services (8) | Web Design, Development, SEO, Local SEO, GEO, Branding, Conversion, Website Management — shown under plain-language names (see Sections) | Sept 2026 site brief; names per Noah 2026-11-05 |
+| Process | Four chapters: Ready, Aim, Fire, Heard | Noah 2026-11-05 (replaces the seven Sept stages) |
+| Turnaround | `TODO(client)` — Noah will supply | Noah 2026-11-05 |
 | Team | Noah (design), Ethan (strategy) | Sept 2026 site brief |
 | Email | hello@minutemenmarketing.com — placeholder | Sept 2026 site, still `TODO(client)` |
 | Portfolio | Smiles by Nilou, Beauty & Wellness addict NY, Muses Nails, Wealth Advisory Group, Gym Grindz, Ray Nail Spa | Builds in `C:\Claude Code` |
 
-**Never on this site:** stats, client counts, years in business, prices, turnaround promises,
-awards, ratings or testimonials — none are verified.
+**Never on this site:** stats, client counts, years in business, prices, awards, ratings, review
+counts, or any turnaround time or testimonial Noah hasn't supplied — none are verified. The speed
+line and testimonials stay hidden until he does.
 
 `TODO(client):` — needed from Noah before launch
 1. Real email address and a phone number (or confirm there is none).
@@ -169,3 +179,6 @@ awards, ratings or testimonials — none are verified.
 5. Inquiry endpoint (Resend keys or a webhook) — until then the form explains and shows the email.
 6. Production domain confirmation (`minutemenmarketing.com`).
 7. Approve or rewrite the draft copy lines above.
+8. **Real turnaround time** for the speed line ("Most sites go live in …").
+9. **Testimonials:** up to three real quotes, each with the client's name, business, town and
+   permission. The section stays hidden until at least one exists.

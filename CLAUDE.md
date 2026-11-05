@@ -56,6 +56,10 @@ One continuous story, inspired by pear.no: dark, restrained, premium.
    b) The brand-colored globe fades into our **logo circle**, with the **Minuteman and wordmark**
       appearing inside it.
    c) The page settles into the normal site.
+   **Shared circle target (set 2026-11-05):** in the 16:9 hero frame the painted globe (K4), the
+   brand-colored globe and the logo circle all sit **dead center, diameter = 50% of frame height**
+   (≈ 28% of frame width). The code positions the logo ring to that same box so the hand-off
+   doesn't jump; on portrait/mobile the canvas `cover`-crop keeps it centered.
    Anything beyond these three stages is undocumented — ask Noah before inventing choreography.
 
 Scrolling down plays forward; scrolling up plays backward (canvas image-sequence scrubbed by scroll).
