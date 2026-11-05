@@ -63,6 +63,7 @@ function initMotion() {
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add((time) => lenis.raf(time * 1000));
   gsap.ticker.lagSmoothing(0);
+  if (import.meta.env.DEV) window.__lenis = lenis;
 
   // In-page anchor links (#main, #founders) travel with Lenis and land focus on the target heading.
   $$('a[href^="#"]').forEach((a) =>

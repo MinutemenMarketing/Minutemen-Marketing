@@ -53,7 +53,9 @@ export function initHero({ lenis, nav, navH }) {
   const skip = $('[data-skip]');
   skip.addEventListener('click', () => {
     const intro = $('#main');
-    lenis.scrollTo(intro, { immediate: true, force: true, offset: -navH() });
+    lenis.resize(); // the pin may have grown the page since Lenis last measured
+    const y = intro.getBoundingClientRect().top + window.scrollY - navH();
+    lenis.scrollTo(y, { immediate: true, force: true });
     ScrollTrigger.update();
     ScrollTrigger.getById('hero')?.getTween()?.progress(1);
     const h = $('h1, h2', intro);
@@ -135,6 +137,7 @@ export function initHero({ lenis, nav, navH }) {
   // (it moves every section below it).
   ScrollTrigger.sort();
   ScrollTrigger.refresh();
+  lenis.resize();
 }
 
 // Wrap each word in a span (keeping <em> and other inline markup) so words can reveal in turn.
