@@ -54,20 +54,11 @@ function duotone(img) {
   return c;
 }
 
-// The logo file sits on a warm near-white; force it to pure white so `multiply` hides it fully.
-function whiten(img) {
+function rasterize(img, width) {
   const c = document.createElement('canvas');
-  c.width = img.naturalWidth;
-  c.height = img.naturalHeight;
-  const ctx = c.getContext('2d', { willReadFrequently: true });
-  ctx.drawImage(img, 0, 0);
-  const id = ctx.getImageData(0, 0, c.width, c.height);
-  const d = id.data;
-  for (let i = 0; i < d.length; i += 4) {
-    const l = (0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2]) / 255;
-    if (l > 0.93) d[i] = d[i + 1] = d[i + 2] = 255;
-  }
-  ctx.putImageData(id, 0, 0);
+  c.width = width;
+  c.height = Math.round((width * img.naturalHeight) / img.naturalWidth);
+  c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
   return c;
 }
 
@@ -405,7 +396,7 @@ export function createStage(canvas, onProgress) {
           });
         }
       } else if (kind === 'logo') {
-        // The logo sits on white; multiply drops the white onto the paper.
+        // Navy ink on a transparent ground (multiply keeps it looking printed on the paper).
         const [alpha, scale] = rest;
         ctx.globalCompositeOperation = 'multiply';
         ctx.globalAlpha = alpha;
@@ -438,7 +429,8 @@ export function createStage(canvas, onProgress) {
       a.k4Blur = blurredSky(img, skyFill);
       a.duoBlur = blurredSky(a.duo, `rgb(${NAVY})`);
     }
-    a[key] = key === 'logo' && img ? whiten(img) : img;
+    // The stacked logo is a vector: rasterize it once, large enough to stay sharp on retina.
+    a[key] = key === 'logo' && img ? rasterize(img, 2400) : img;
   }
 
   // Frames load just ahead of the scroll position, not all at once. Every job carries the scroll
@@ -460,7 +452,7 @@ export function createStage(canvas, onProgress) {
     add('k1', still(ASSETS.k1), 0);
     add('k2', still(ASSETS.k2), S.k2Hold[0] - 4);
     add('k4', still(ASSETS.k4), S.c3[0] + 2);
-    add('logo', `${ASSETS.base}/${ASSETS.logo}`, S.toLogo[0] - 6);
+    add('logo', ASSETS.logo, S.toLogo[0] - 6);
     for (const name of Object.keys(SEG)) {
       const s = ASSETS[name];
       if (!s) continue;

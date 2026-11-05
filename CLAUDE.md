@@ -97,8 +97,8 @@ another between Work and Contact, like pear.no's column-to-tree. **No other scro
 
 **Placeholders until generated** (swap in by changing the config, not the logic): C1 = zoom on K1
 then crossfade to K2; C3 = pull back from the C2 last frame and crossfade into K4; brand globe =
-K4 duotoned navy/off-white in canvas; logo circle = `brand/logo-square.png` (until the Recraft
-vector exists).
+K4 duotoned navy/off-white in canvas; logo circle = `public/brand/logo-stacked.svg` (traced
+from `brand/logo-square.png`).
 
 ### Production stages (one candidate at a time, Noah approves each before the next)
 
@@ -164,8 +164,8 @@ interface elements or borders.
   `public/hero/v1/c3/` (15fps, 122). Its white-cloud middle is compressed (`CHOREO.c3Remap`), and over
   `CHOREO.c3Settle` its globe eases from full-frame onto the 50% circle so it hands C4 the same size.
   Measured: C3's last frame globe 0.675 of height vs K4 0.678, C4 0.658 — a seamless join.
-- **The hero now runs entirely on approved footage.** Only the logo circle is still a placeholder
-  (`brand/logo-square.png` until the Recraft vector exists). Hero frames total ≈ 20MB.
+- **The hero now runs entirely on approved footage.** It ends on the stacked logo vector
+  (`public/brand/logo-stacked.svg`, traced from `brand/logo-square.png`). Hero frames total ≈ 20MB.
 - **C2 last frame: `assets/keyframes/c2-last.png`** (1280×716, exported from the clip) — the **start
   frame for the globe clip C3**, not K3, so C2 → C3 joins without a jump.
 - **K2 v1** (`assets/drafts/k2-v1.png`, Runway task `af215836-1672-4bee-99a5-9257ff86677d`) — medium
@@ -238,8 +238,10 @@ the Vite stack and pushes to `main`, both by Noah's explicit choice.
   the Declaration of Independence was printed in — period-correct without being costume.
 - **Body: Hanken Grotesk** (variable, self-hosted via `@fontsource-variable`).
 - Logo files live in `/brand` (`logo-full.png`, `logo-square.png`, LinkedIn banners). `Images/` holds
-  the originals Noah dropped in and is not committed. A clean `brand/logo-mark.svg` will come from the
-  Recraft vector step.
+  the originals Noah dropped in and is not committed. Clean vectors traced from them (navy `#032249`,
+  2026-11-05) live in `public/brand/`: `logo-stacked.svg` (mark over MINUTEMEN MARKETING; the hero
+  ends on it), `logo-horizontal.svg` (mark beside the banner wordmark, no slogan or underline; the nav
+  on every page) and `logo-mark.svg` (the circle mark alone).
 
 ## Stack
 

@@ -241,11 +241,19 @@ em {
   height: 100%;
 }
 .nav__mark {
-  font-family: var(--serif);
-  font-size: 1.25rem;
-  letter-spacing: -0.01em;
-  text-decoration: none;
+  display: block;
   margin-right: auto;
+  line-height: 0;
+}
+.nav__mark img {
+  display: block;
+  height: 34px;
+  width: auto;
+}
+@media (min-width: 900px) {
+  .nav__mark img {
+    height: 40px;
+  }
 }
 .nav__links {
   display: none;

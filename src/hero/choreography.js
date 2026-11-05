@@ -56,7 +56,7 @@ export const ASSETS = {
   k1: 'k1', // + '-1920.webp' / '-1280.webp'
   k2: 'k2',
   k4: 'k4v2', // approved K4 (v2, ball shrunk)
-  logo: 'logo.webp', // placeholder until the Recraft vector exists
+  logo: '/brand/logo-stacked.svg', // stacked logo (mark over MINUTEMEN MARKETING), traced vector
   c1: { dir: 'c1', count: 92, pattern: 'f_%04d.webp' },
   c2: { dir: 'c2', count: 78, pattern: 'f_%04d.webp' },
   c2b: { dir: 'c2b', count: 92, pattern: 'f_%04d.webp' },
@@ -76,8 +76,9 @@ export const FOCUS = {
   c2bBall: { x: 0.5, y: 0.45 }, // ball in the side-tracking shot (C2b)
   // K4 v2 globe (and every C4 frame): centre and diameter as a fraction of image height.
   k4Globe: { x: 0.498, y: 0.505, d: 0.685 },
-  // Logo ring inside logo-square: centre and diameter (fraction of image width).
-  logoRing: { x: 0.5, y: 0.41, d: 0.674 },
+  // Logo ring inside /brand/logo-stacked.svg: centre (fractions of width / height) and diameter
+  // (fraction of width). Measured from logo-square, which the vector was traced from.
+  logoRing: { x: 0.4964, y: 0.4215, d: 0.8616 },
 };
 
 // Shared circle target (CLAUDE.md): centred, diameter = 50% of frame height,
