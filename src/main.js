@@ -80,7 +80,17 @@ function initMotion() {
   }
 
   // The hero (home only) loads its own module, so other pages never download it.
-  if ($('.hero')) import('./home-hero.js').then((m) => m.initHero({ lenis, nav, navH }));
+  // If that script fails to load or throws, the hero stays the still version (no .motion class).
+  if ($('.hero')) {
+    const qa = new URLSearchParams(location.search).get('herofail'); // ?herofail=script simulates it
+    (qa === 'script' ? Promise.reject(new Error('QA: hero script failure')) : import('./home-hero.js'))
+      .then((m) => m.initHero({ lenis, nav, navH }))
+      .catch(() => {
+        document.documentElement.classList.remove('motion');
+        ScrollTrigger.refresh();
+        lenis.resize();
+      });
+  }
 
   // Shot lines draw once as a section arrives.
   $$('.opener').forEach((op) => {

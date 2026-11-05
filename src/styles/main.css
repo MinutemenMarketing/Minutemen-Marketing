@@ -397,16 +397,71 @@ html.is-locked {
   object-position: 58% 50%;
   filter: saturate(0.92) contrast(1.03);
 }
+/* ---------- Hero, still version ----------
+   Reduced motion, or the story failed to load (no .motion class): the K1 painting full-screen
+   with only the first line, set as in the animated opening, then the stacked logo, then the site. */
+html:not(.motion) .hero__stage {
+  height: 100vh;
+  height: 100svh;
+}
 html:not(.motion) .hero__stage::after {
-  /* the scrim: paper from the left, so the stacked lines read over any part of the painting */
+  /* a soft paper lift at the top-left, where the line sits; the painting stays the picture */
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(247, 244, 236, 0.9) 0%, rgba(247, 244, 236, 0.72) 45%, rgba(247, 244, 236, 0) 80%);
+  background: radial-gradient(ellipse 70% 55% at 18% 18%, rgba(247, 244, 236, 0.7), rgba(247, 244, 236, 0) 70%);
+  pointer-events: none;
 }
 html:not(.motion) .hero__beats {
-  position: relative;
+  position: absolute;
+  inset: 0;
   z-index: 1;
+  display: block;
+  padding: 0;
+  max-width: none;
+  pointer-events: none;
+}
+html:not(.motion) .beat--2,
+html:not(.motion) .beat--3 {
+  display: none;
+}
+html:not(.motion) .beat--1 {
+  position: absolute;
+  left: var(--gutter);
+  right: var(--gutter);
+  top: calc(var(--nav-h) + clamp(32px, 7vh, 96px));
+  isolation: isolate;
+  color: var(--ink);
+}
+html:not(.motion) .beat--1::before {
+  content: '';
+  position: absolute;
+  inset: -30% -12% -35% -12%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(247, 244, 236, 0.62), rgba(247, 244, 236, 0.28) 55%, transparent);
+  filter: blur(28px);
+}
+@media (min-width: 1024px) {
+  html:not(.motion) .beat--1 {
+    top: calc(var(--nav-h) + clamp(24px, 5vh, 64px));
+  }
+  html:not(.motion) .beat--1 .beat__title {
+    max-width: none;
+  }
+}
+.hero__end {
+  display: grid;
+  place-items: center;
+  padding-block: clamp(80px, 12vw, 176px) clamp(24px, 4vw, 56px);
+  background: var(--paper);
+}
+.hero__end img {
+  width: min(58vw, 380px);
+  height: auto;
+}
+.motion .hero__end {
+  display: none;
 }
 .motion .hero__still {
   display: none;

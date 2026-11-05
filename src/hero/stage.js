@@ -62,7 +62,9 @@ function rasterize(img, width) {
   return c;
 }
 
-export function createStage(canvas, onProgress) {
+// onFail() fires once if the story cannot play: the opening frame fails, or most of the opening
+// window fails to load. The page then shows the still version instead.
+export function createStage(canvas, onProgress, onFail = () => {}) {
   let ctx = canvas.getContext('2d'); // reassigned while drawing into an offscreen group
   const a = { seq: {} };
   let p = 0;
@@ -514,7 +516,10 @@ export function createStage(canvas, onProgress) {
     const initial = jobs.filter((j) => j.at <= AHEAD).length;
     let initialDone = 0;
     const k1Job = jobs.splice(0, 1)[0];
-    onStill('k1', await loadImage(k1Job.src)); // the opening frame first, alone
+    const k1 = await loadImage(k1Job.src); // the opening frame first, alone
+    if (!k1) return onFail();
+    onStill('k1', k1);
+    let initialFailed = 0;
     onProgress(++initialDone / initial, true);
     request();
     const worker = async () => {
@@ -526,6 +531,7 @@ export function createStage(canvas, onProgress) {
           continue;
         }
         const img = await loadImage(job.src);
+        if (!img && job.at <= AHEAD && ++initialFailed > initial * 0.3) return onFail();
         const [name, idx] = job.key.split(':');
         if (idx !== undefined) a.seq[name][+idx] = img;
         else onStill(job.key, img);

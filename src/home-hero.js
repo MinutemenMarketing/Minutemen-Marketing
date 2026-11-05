@@ -33,15 +33,37 @@ export function initHero({ lenis, nav, navH }) {
       gsap.fromTo(words(1), HIDDEN, { ...SHOWN, duration: 1.1, ease: 'power2.out', stagger: 0.06, delay: 0.35 });
     }, 450);
   };
+  // If the story can't play (frames fail, or nothing arrives in 10s), drop to the still version:
+  // the painting with the first line, then the stacked logo. Never a list of raw text.
+  let failed = false;
+  const fallBack = () => {
+    if (failed) return;
+    failed = true;
+    mm?.revert(); // unpins the hero and undoes the scroll timeline
+    gsap.killTweensOf([ring, ...words(1)]);
+    gsap.set($$('.beat, .beat .w'), { clearProps: 'all' });
+    document.documentElement.classList.remove('motion');
+    nav.classList.remove('is-hidden');
+    ScrollTrigger.refresh();
+    lenis.resize();
+  };
+
   let haveFirst = false;
-  const stage = createStage($('.hero__canvas'), (f, first) => {
-    if (first) haveFirst = true;
-    const shown = Math.min(1, f / 0.3);
-    if (!lifted) gsap.to(ring, { strokeDashoffset: 1 - shown, duration: 0.5, ease: 'power1.out', overwrite: true });
-    // Lift once the battlefield is in and enough of the opening has arrived (never sooner than 0.9s).
-    if (haveFirst && shown >= 1) setTimeout(lift, Math.max(0, 900 - (performance.now() - shownAt)));
-  });
+  const stage = createStage(
+    $('.hero__canvas'),
+    (f, first) => {
+      if (first) haveFirst = true;
+      const shown = Math.min(1, f / 0.3);
+      if (!lifted) gsap.to(ring, { strokeDashoffset: 1 - shown, duration: 0.5, ease: 'power1.out', overwrite: true });
+      // Lift once the battlefield is in and enough of the opening has arrived (never sooner than 0.9s).
+      if (haveFirst && shown >= 1) setTimeout(lift, Math.max(0, 900 - (performance.now() - shownAt)));
+    },
+    fallBack,
+  );
   setTimeout(() => haveFirst && lift(), 4000); // slow connections: show the battlefield anyway
+  setTimeout(() => !haveFirst && fallBack(), 10000); // the opening frame never arrived
+  // QA: ?herofail shows what a failed frame load looks like on any build.
+  if (new URLSearchParams(location.search).has('herofail')) setTimeout(fallBack, 600);
   if (import.meta.env.DEV) window.__hero = stage;
 
   // Scroll cue fades after the first move; the trail line tracks progress through the hero.
