@@ -68,6 +68,9 @@ export const ASSETS = {
 export const FOCUS = {
   k1Soldier: { x: 0.585, y: 0.5 }, // featured soldier in k1-cool
   k2Soldier: { x: 0.36, y: 0.48 }, // soldier body in k2 / C2
+  // His whole figure plus the musket to just past the muzzle, in C1's end, the hold and C2. Portrait
+  // screens fit this box to their width so he is never cropped (Noah, 2026-11-05).
+  soldierBox: { x0: 0.2, x1: 0.72, y0: 0.1, y1: 1.0 },
   c2Muzzle: { x: 0.66, y: 0.26 }, // muzzle + flash in C2
   c2Ball: { x: 0.95, y: 0.25 }, // ball at the end of C2
   c2bBall: { x: 0.5, y: 0.45 }, // ball in the side-tracking shot (C2b)

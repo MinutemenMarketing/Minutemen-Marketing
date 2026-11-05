@@ -154,6 +154,16 @@ export function createStage(canvas, onProgress) {
   function globeScene(img, blurred, scale) {
     if (!img) return;
     cover(blurred, 1, 0.5, 0.5, 1);
+    const iw = img.naturalWidth || img.width;
+    const ih = img.naturalHeight || img.height;
+    const t = circleTarget(w, h);
+    const sc = (t.d * scale) / (FOCUS.k4Globe.d * ih);
+    feathered(img, t.x - FOCUS.k4Globe.x * iw * sc, t.y - FOCUS.k4Globe.y * ih * sc, iw * sc, ih * sc, 0.22);
+  }
+
+  // Draw img at (x0, y0, dw, dh) with any edge that falls inside the frame softly erased, so it
+  // melts into whatever was drawn underneath.
+  function feathered(img, x0, y0, dw, dh, frac, alpha = 1) {
     if (edgeLayer.width !== canvas.width || edgeLayer.height !== canvas.height) {
       edgeLayer.width = canvas.width;
       edgeLayer.height = canvas.height;
@@ -161,17 +171,9 @@ export function createStage(canvas, onProgress) {
     const e = edgeLayer.getContext('2d');
     e.setTransform(ctx.getTransform());
     e.clearRect(0, 0, w, h);
-    const iw = img.naturalWidth || img.width;
-    const ih = img.naturalHeight || img.height;
-    const t = circleTarget(w, h);
-    const sc = (t.d * scale) / (FOCUS.k4Globe.d * ih);
-    const x0 = t.x - FOCUS.k4Globe.x * iw * sc;
-    const y0 = t.y - FOCUS.k4Globe.y * ih * sc;
-    const dw = iw * sc;
-    const dh = ih * sc;
     e.drawImage(img, x0, y0, dw, dh);
     e.globalCompositeOperation = 'destination-out';
-    const f = Math.min(dw, dh) * 0.22;
+    const f = Math.min(dw, dh) * frac;
     const erase = (gx0, gy0, gx1, gy1, rx, ry, rw, rh) => {
       const g = e.createLinearGradient(gx0, gy0, gx1, gy1);
       g.addColorStop(0, 'rgba(0,0,0,1)');
@@ -186,8 +188,54 @@ export function createStage(canvas, onProgress) {
     e.globalCompositeOperation = 'source-over';
     ctx.save();
     ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalAlpha = alpha;
     ctx.drawImage(edgeLayer, 0, 0);
     ctx.restore();
+  }
+
+  // Portrait framing for the soldier: from cover (fit 0) to "his whole figure and musket fit the
+  // width" (fit 1). The space above and below fills with a soft, low-res copy of the same frame.
+  const softCopy = document.createElement('canvas');
+  softCopy.width = 3;
+  softCopy.height = 3;
+  const midCopy = document.createElement('canvas');
+  midCopy.width = 48;
+  midCopy.height = 27;
+  function framed(img, alpha, fx, fy, z, fit) {
+    if (!img || alpha <= 0) return;
+    if (!fit) return cover(img, alpha, fx, fy, z);
+    const iw = img.naturalWidth || img.width;
+    const ih = img.naturalHeight || img.height;
+    // cover rect (as cover() computes it, z = 1)
+    const csc = Math.max(w / iw, h / ih);
+    const cw = iw * csc;
+    const chh = ih * csc;
+    const cx = Math.min(0, Math.max(w - cw, w / 2 - fx * cw));
+    const cy = Math.min(0, Math.max(h - chh, h / 2 - fy * chh));
+    // fit rect: the subject box fills the width (with a little air), centred
+    const B = FOCUS.soldierBox;
+    const fsc = Math.min((w * 0.94) / ((B.x1 - B.x0) * iw), (h * 0.94) / ((B.y1 - B.y0) * ih));
+    const fw = iw * fsc;
+    const fh = ih * fsc;
+    const fx0 = w / 2 - ((B.x0 + B.x1) / 2) * fw;
+    // He stands on the bottom edge (his boots are at the very bottom of the frame), so only the
+    // top edge ever shows and is feathered into the soft copy.
+    const fy0 = Math.max(h - fh, h / 2 - ((B.y0 + B.y1) / 2) * fh);
+    const k = ease(fit);
+    const sx = softCopy.getContext('2d');
+    // Only the sky and treeline (top 45% of the frame), averaged to 3×3 and stretched back up:
+    // a smooth misty wash with no ghost of the figure in it.
+    // Two steps (frame → 48×27 → 3×3) so the colours are averaged, not point-sampled.
+    const mx = midCopy.getContext('2d');
+    mx.imageSmoothingQuality = 'high';
+    mx.drawImage(img, 0, 0, iw, ih * 0.45, 0, 0, 48, 27);
+    sx.imageSmoothingQuality = 'high';
+    sx.clearRect(0, 0, 3, 3);
+    sx.drawImage(midCopy, 0, 0, 3, 3);
+    ctx.globalAlpha = alpha;
+    ctx.drawImage(softCopy, 0.5, 0.5, 2, 2, 0, 0, w, h);
+    ctx.globalAlpha = 1;
+    feathered(img, lerp(cx, fx0, k), lerp(cy, fy0, k), lerp(cw, fw, k), lerp(chh, fh, k), 0.1, alpha);
   }
 
   // A small, soft copy of the globe scene with the globe itself painted out (sky and clouds only),
@@ -235,6 +283,10 @@ export function createStage(canvas, onProgress) {
   function layers() {
     const ops = [];
     const narrow = w / h < 1;
+    // Portrait / narrow screens: fit his whole figure and musket from late in the push-in through
+    // the shot (0 = normal full-screen crop, 1 = fit). Landscape screens never need it.
+    const portrait = w / h < 1.3;
+    const fitAt = (v) => (portrait ? v : 0);
     const k1 = ['img', 'k1', 1, FOCUS.k1Soldier.x, FOCUS.k1Soldier.y, 1];
     const k2 = (alpha = 1, z = 1) => ['img', 'k2', alpha, FOCUS.k2Soldier.x, FOCUS.k2Soldier.y, z];
     const c2Fx = (t) => (narrow ? lerp(FOCUS.k2Soldier.x, NARROW_FLIGHT_X, ease(t)) : FOCUS.k2Soldier.x);
@@ -242,7 +294,7 @@ export function createStage(canvas, onProgress) {
     const swing = (t) => ease(clamp01(t / 0.25));
     const c2bFx = (t) => lerp(c2Fx(1), FOCUS.c2bBall.x, swing(t));
     const c2bFy = (t) => lerp(FOCUS.k2Soldier.y, FOCUS.c2bBall.y, swing(t));
-    const c1Last = () => (ASSETS.c1 ? ['seq', 'c1', 1, 1, FOCUS.k2Soldier.x, FOCUS.k2Soldier.y] : k2());
+    const c1Last = () => (ASSETS.c1 ? ['seq', 'c1', 1, 1, FOCUS.k2Soldier.x, FOCUS.k2Soldier.y, 1, fitAt(1)] : k2());
     const globeFrame = () => (ASSETS.c4 ? ['globe', 'c4', 1, 1] : ['globe', 'k4', 1, 1]);
 
     if (p < S.c1[0]) {
@@ -254,7 +306,7 @@ export function createStage(canvas, onProgress) {
         const d = dissolve('c1', t);
         if (d < 1) ops.push(k1);
         const f = ease(t);
-        ops.push(['seq', 'c1', t, d, lerp(FOCUS.k1Soldier.x, FOCUS.k2Soldier.x, f), lerp(FOCUS.k1Soldier.y, FOCUS.k2Soldier.y, f)]);
+        ops.push(['seq', 'c1', t, d, lerp(FOCUS.k1Soldier.x, FOCUS.k2Soldier.x, f), lerp(FOCUS.k1Soldier.y, FOCUS.k2Soldier.y, f), 1, fitAt(clamp01((t - 0.6) / 0.4))]);
       } else {
         // Placeholder: push in on the soldier in K1, then dissolve to K2.
         ops.push(['img', 'k1', 1, FOCUS.k1Soldier.x, FOCUS.k1Soldier.y, lerp(1, 2.4, ease(clamp01(t / 0.85)))]);
@@ -268,12 +320,12 @@ export function createStage(canvas, onProgress) {
       const t = local(S.c2, p);
       const d = dissolve('c2', t);
       if (d < 1) ops.push(c1Last());
-      ops.push(['seq', 'c2', t, d, c2Fx(t), FOCUS.k2Soldier.y]);
+      ops.push(['seq', 'c2', t, d, c2Fx(t), FOCUS.k2Soldier.y, 1, fitAt(1)]);
     } else if (p < S.c3[0]) {
       const t = local(S.c2b, p);
       const d = dissolve('c2b', t);
-      if (d < 1) ops.push(['seq', 'c2', 1, 1, c2Fx(1), FOCUS.k2Soldier.y]);
-      ops.push(['seq', 'c2b', t, d, c2bFx(t), c2bFy(t)]);
+      if (d < 1) ops.push(['seq', 'c2', 1, 1, c2Fx(1), FOCUS.k2Soldier.y, 1, fitAt(1)]);
+      ops.push(['seq', 'c2b', t, d, c2bFx(t), c2bFy(t), 1, fitAt(1 - swing(t))]);
     } else if (p < S.k4Hold[0]) {
       const t = local(S.c3, p);
       if (ASSETS.c3) {
@@ -322,8 +374,8 @@ export function createStage(canvas, onProgress) {
         const [name, alpha, fx, fy, z] = rest;
         cover(a[name], alpha, fx, fy, z);
       } else if (kind === 'seq') {
-        const [name, t, alpha, fx, fy, z = 1] = rest;
-        cover(frame(name, t), alpha, fx, fy, z);
+        const [name, t, alpha, fx, fy, z = 1, fit = 0] = rest;
+        framed(frame(name, t), alpha, fx, fy, z, fit);
       } else if (kind === 'globe') {
         // Build the whole globe layer (sky + globe + feathered edges) at full strength, then fade it
         // as one piece — fading the parts separately leaves a seam at the image edge.
