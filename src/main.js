@@ -17,7 +17,6 @@ const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const reduceMotion =
   window.matchMedia('(prefers-reduced-motion: reduce)').matches && !new URLSearchParams(location.search).has('motion');
 const nav = $('[data-nav]');
-const actionbar = $('[data-actionbar]');
 const navH = () => nav.offsetHeight;
 
 $('[data-year]').textContent = new Date().getFullYear();
@@ -28,8 +27,8 @@ const menuBtn = $('[data-menu]');
 function setMenu(open) {
   sheet.hidden = !open;
   menuBtn.setAttribute('aria-expanded', String(open));
-  document.body.style.overflow = open ? 'hidden' : '';
-  if (open) $('a', sheet).focus();
+  document.documentElement.classList.toggle('is-locked', open);
+  if (open) $('.sheet__links a', sheet).focus();
   else menuBtn.focus();
 }
 menuBtn.addEventListener('click', () => setMenu(true));
@@ -47,6 +46,8 @@ $$('a', sheet).forEach((a) => a.addEventListener('click', () => setMenu(false)))
 /* ---------- Form: validate on blur, never report a false success ---------- */
 const form = $('[data-form]');
 const status = $('[data-status]');
+if (form) initForm();
+function initForm() {
 function check(field) {
   const input = $('input, textarea', field);
   let msg = '';
@@ -77,28 +78,10 @@ form.addEventListener('submit', (e) => {
   // TODO(client): inquiry endpoint. Until one exists, say so plainly and point to email.
   status.textContent = "Our form isn't connected yet. Please email hello@minutemenmarketing.com and we'll reply quickly.";
 });
+}
 
-/* ---------- Nav: current section ---------- */
-const links = $$('.nav__links a');
-const io = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((en) => {
-      if (!en.isIntersecting) return;
-      links.forEach((l) => l.setAttribute('aria-current', String(l.hash === `#${en.target.id}`)));
-    });
-  },
-  { rootMargin: '-45% 0px -50% 0px' },
-);
-links.forEach((l) => {
-  const target = $(l.hash);
-  if (target) io.observe(target);
-});
-
-/* ---------- Reduced motion: static page, nav visible, no scroll effects ---------- */
-if (reduceMotion) {
-  nav.classList.add('is-on');
-  actionbar.classList.add('is-on');
-} else {
+/* ---------- Reduced motion: static page, nav always visible, no scroll effects ---------- */
+if (!reduceMotion) {
   document.documentElement.classList.add('motion');
   initMotion();
 }
@@ -188,6 +171,7 @@ function initMotion() {
         trigger: '.hero',
         start: 'top top',
         end: `+=${length}%`,
+        id: 'hero',
         pin: '.hero__stage',
         scrub: CHOREO.scrub,
         invalidateOnRefresh: true,
@@ -222,13 +206,17 @@ function initMotion() {
     gsap.set(['[data-beat="2"]', '[data-beat="3"]'], { autoAlpha: 0 });
   });
 
-  // Nav and the mobile action bar appear once the hero has handed off to the site.
-  ScrollTrigger.create({
-    trigger: '.intro',
-    start: 'top 80%',
-    onEnter: () => (nav.classList.add('is-on'), actionbar.classList.add('is-on')),
-    onLeaveBack: () => (nav.classList.remove('is-on'), actionbar.classList.remove('is-on')),
+  // Nav: on at load; fades out as the reader scrolls down into the hero, back on scroll-up and for
+  // good once the hero ends. Keyboard focus always brings it back.
+  let lastY = 0;
+  lenis.on('scroll', ({ scroll: y }) => {
+    const pin = ScrollTrigger.getById('hero');
+    const inHero = pin && y > 24 && y < pin.end - 1;
+    if (!inHero || y < lastY - 2) nav.classList.remove('is-hidden');
+    else if (y > lastY + 2) nav.classList.add('is-hidden');
+    lastY = y;
   });
+  nav.addEventListener('focusin', () => nav.classList.remove('is-hidden'));
 
   /* ---------- Shot lines draw once as a section arrives ---------- */
   $$('.opener').forEach((op) => {
