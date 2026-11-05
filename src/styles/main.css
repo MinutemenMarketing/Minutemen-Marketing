@@ -1431,3 +1431,7 @@ html:not(.motion) .hero__beats {
 .contact-page__details:has(.details:empty) h2 {
   display: none;
 }
+/* First section on a page with no page header: clear the fixed nav. */
+.page__first {
+  padding-top: calc(var(--nav-h) + clamp(56px, 8vw, 128px));
+}
