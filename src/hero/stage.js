@@ -183,18 +183,22 @@ export function createStage(canvas, onProgress) {
       if (x > 0) ops.push(['k2', x, FOCUS.k2Soldier.x, FOCUS.k2Soldier.y, lerp(1.35, 1, x)]);
     } else if (p < S.c2[0]) {
       ops.push(['k2', 1, FOCUS.k2Soldier.x, FOCUS.k2Soldier.y, 1]);
-    } else if (p < S.c3[0]) {
+    } else if (p < S.c2b[0]) {
       const t = local(S.c2, p);
-      // On portrait screens drift the crop from the soldier toward the muzzle so the shot is seen.
-      // and the ball is still in frame during the mid-flight hold.
+      // On portrait screens drift the crop from the soldier toward the muzzle so the shot is seen
+      // and the ball is still in frame as C2 ends.
       const fx = narrow ? lerp(FOCUS.k2Soldier.x, NARROW_FLIGHT_X, ease(t)) : FOCUS.k2Soldier.x;
       ops.push(['c2', t, fx, FOCUS.k2Soldier.y]);
-    } else if (p < S.k4Hold[0]) {
-      // C3 placeholder: follow the ball out of the last C2 frame, dissolve into the globe.
-      const t = local(S.c3, p);
+    } else if (p < S.c3[0]) {
+      // C2b placeholder: travel in on the ball in the last C2 frame.
+      const t = ease(local(S.c2b, p));
       const fx = narrow ? NARROW_FLIGHT_X : FOCUS.k2Soldier.x;
-      ops.push(['c2', 1, lerp(fx, FOCUS.c2Ball.x, ease(clamp01(t / 0.6))), FOCUS.c2Ball.y, lerp(1, 2.2, ease(clamp01(t / 0.7)))]);
-      const x = ease(clamp01((t - 0.3) / 0.55));
+      ops.push(['c2', 1, lerp(fx, FOCUS.c2Ball.x, t), lerp(FOCUS.k2Soldier.y, FOCUS.c2Ball.y, t), lerp(1, 2.2, t)]);
+    } else if (p < S.k4Hold[0]) {
+      // C3 placeholder: from where C2b ends (close on the ball), dissolve into the globe.
+      const t = local(S.c3, p);
+      ops.push(['c2', 1, FOCUS.c2Ball.x, FOCUS.c2Ball.y, 2.2]);
+      const x = ease(clamp01(t / 0.7));
       if (x > 0) ops.push(['k4', x, lerp(1.6, 1, ease(t))]);
     } else if (p < S.toBrand[0]) {
       ops.push(['k4', 1, 1]);

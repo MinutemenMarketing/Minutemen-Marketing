@@ -11,19 +11,19 @@ export const CHOREO = {
     k1Hold: [0, 10], // battlefield (beat 1 fades in on load, out 6–10)
     c1: [10, 28], // push-in to the soldier — PLACEHOLDER: zoom K1, crossfade to K2
     k2Hold: [28, 32], // hold on the soldier
-    c2: [32, 46], // the shot and the ball leaving the muzzle
-    c2Hold: [46, 54], // hold mid-flight
-    c3: [54, 74], // ball climbs and wraps the globe — PLACEHOLDER until C3 exists
-    k4Hold: [74, 82], // hold on the globe
-    toBrand: [82, 88], // painted globe → navy-and-white globe
-    toLogo: [88, 94], // brand globe → logo circle with Minuteman and wordmark
-    toSite: [94, 100], // logo settles, page becomes the site
+    c2: [32, 44], // the shot and the ball leaving the muzzle
+    c2b: [44, 58], // FOLLOW THE BULLET — side-tracking with the ball — PLACEHOLDER until C2b exists
+    c3: [58, 72], // ball climbs to the globe — PLACEHOLDER until C3 exists (starts on C2b's last frame)
+    k4Hold: [72, 84], // the globe; C4 (ball orbits it) plays here — PLACEHOLDER: still K4
+    toBrand: [84, 89], // painted globe → navy-and-white globe
+    toLogo: [89, 95], // brand globe → logo circle with Minuteman and wordmark
+    toSite: [95, 100], // logo settles, page becomes the site
   },
 
   beats: {
     1: { in: 'load', out: 6 }, // "Minutemen Marketing. Ready at a minute's notice."
-    2: { in: 46, out: 51 }, // "Response time as fast as a bullet."
-    3: { in: 74, out: 79 }, // "With the right website…" — placed below the globe
+    2: { in: 47, out: 54 }, // "Response time as fast as a bullet." — over C2b
+    3: { in: 74, out: 81 }, // "With the right website…" — below the globe, during C4
   },
 };
 
@@ -36,7 +36,9 @@ export const ASSETS = {
   logo: 'logo.webp', // placeholder until the Recraft vector exists
   c2: { dir: 'c2', count: 78, pattern: 'f_%04d.webp' },
   c1: null, // TODO: generated push-in frames
+  c2b: null, // TODO: generated follow-the-bullet frames
   c3: null, // TODO: generated globe clip frames
+  c4: null, // TODO: generated orbit frames (or the code-drawn orbit fallback)
 };
 
 // Where things sit inside each still, as fractions of the image (measured from the files).

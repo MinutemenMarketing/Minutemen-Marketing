@@ -78,11 +78,12 @@ continuing.** Never lock or hijack the scroll. Every percentage lives in one con
 | 6–10% | K1 | Beat 1 fades out |
 | 10–28% | C1 push-in to the soldier (placeholder: K1 zoom → K2) | — |
 | 28–32% | HOLD on the soldier (K2) | — |
-| 32–46% | C2, the shot and the ball leaving the muzzle | — |
-| 46–54% | HOLD mid-flight (C2 last frame) | Beat 2: "Response time as fast as a bullet." — in, hold, out |
-| 54–74% | C3, the ball climbs and wraps the globe (placeholder until generated) | — |
-| 74–82% | HOLD on the globe (K4) | Beat 3: "With the right website, you can reach an audience around the world." — placed above or below the globe, **never overlapping it** |
-| 82–100% | Three slow fades: painted globe → navy-and-white globe → logo circle with Minuteman and wordmark → site | — |
+| 32–44% | C2, the shot and the ball leaving the muzzle | — |
+| 44–58% | **C2b, FOLLOW THE BULLET** — side-tracking with the spinning ball through the smoke (start frame `c2-last.png`) | Beat 2 (in 47%, out 54%): "Response time as fast as a bullet." |
+| 58–72% | C3, the ball climbs to the globe (start frame = C2b's last frame, end = K4) | — |
+| 72–84% | The globe; **C4, BULLET AROUND THE GLOBE** — the tiny ball makes one orbit, behind the globe on the far side (start = end = K4 with the ball shrunk). Fallback if the video can't pass the ball cleanly behind: a scroll-driven glowing ball + trail drawn in code over the still globe | Beat 3 (in 74%, out 81%): "With the right website, you can reach an audience around the world." — below the globe, **never overlapping it** |
+| 84–100% | Three slow fades: painted globe → navy-and-white globe → logo circle with Minuteman and wordmark → site | — |
+(Updated 2026-11-05 for C2b and C4; the numbers live in `src/hero/choreography.js`.)
 
 - **Pinned length:** about **900vh desktop, 600vh mobile**.
 - **Smoothness:** Lenis `lerp ≈ 0.08`; ScrollTrigger `scrub: 1`; draw on `requestAnimationFrame`
@@ -125,6 +126,10 @@ interface elements or borders.
   task `f31d4a21-699b-4688-8145-92edb0b9fcde`. Pan flash ~2.8s, muzzle ~3.1s, ball travels to the end.
   **Free fixes to apply when extracting frames:** trim the start to ~1s before the pan flash (begin at
   ~1.8s); tone the muzzle flash down to warm gold, never pure white; strip the audio.
+- **K4 v2 — the globe base:** `assets/drafts/k4-v2.png` (Runway task
+  `1021b28f-5f5a-456d-b871-bb0b1b205925`, 5504×3072). Noah chose to build C4 on it. More painterly
+  than v1, round ball, arc behind/in front, Long Island glint. Globe ≈ 67% of frame height (code
+  scales it to the 50% target); ball too large — to be shrunk with a cheap edit before C4.
 - **K4 v1 — superseded, not approved:** `assets/keyframes/superseded/k4-v1.png` (Runway task
   `89047228-3b71-4b66-b7e2-ff6b7ed00ec7`). Kept what worked (centered, North America facing, deep
   blue-black sky, painted clouds below, gold arc passing behind, the glint at Long Island) but the
