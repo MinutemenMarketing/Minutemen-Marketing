@@ -105,9 +105,7 @@ behind the closing heading, so the page ends where the hero did.
 ### Home `/`
 
 1. **Hero** (CLAUDE.md), ending on the stacked logo.
-2. **Intro**, one Caslon statement at display size: *"We help local businesses build a stronger
-   online presence, get discovered, and make it easy for customers to book or reach out."* (Noah's copy.)
-3. **Services: five cards.** This replaces the ruled index; Noah asked for cards. Flat paper-2 panels
+2. **Services: five cards.** This replaces the ruled index; Noah asked for cards. Flat paper-2 panels
    with a 1px rule, no shadows, no icons. A Caslon name, one sentence, and a small 01–05 numeral:
    - **SEO:** Help local customers find you when they search for what you offer.
    - **GEO (AI search):** Structure your content so AI search tools understand what you do and surface it in answers.
@@ -115,7 +113,7 @@ behind the closing heading, so the page ends where the hero did.
    - **Domain Acquisition:** Find, secure and connect a domain that fits your brand.
    - **Social Media Management:** Plan, create and manage content that keeps your channels active.
    Mobile: one column. Desktop: a 3 + 2 grid.
-4. **Client work carousel**, modelled on the Bang Bang Barbershop reviews carousel. The active card sits
+3. **Client work carousel**, modelled on the Bang Bang Barbershop reviews carousel. The active card sits
    centred at about 44% width, its neighbours at 50% opacity and 92% scale, and the row's edges fade
    out under a gradient mask. The track slides over 900ms. Prev/next buttons and dots; swipe on
    touch; arrow keys when focused. Cards: **Beauty & Wellness *addict* NY** and **Smiles by
@@ -123,11 +121,11 @@ behind the closing heading, so the page ends where the hero did.
    **Dev only:** a sample testimonial with a visible "Draft placeholder" label, injected by JS behind
    `import.meta.env.DEV`, so it never reaches the production HTML. A prominent **View Our Portfolio**
    button sits beside the carousel on desktop and below it on mobile.
-5. **Meet the Founders**, compact and typographic like the B&W founders section: heading left; a
+4. **Meet the Founders**, compact and typographic like the B&W founders section: heading left; a
    short paragraph and the two names on a hairline rule on the right. **Noah**: design direction,
    interface and build. **Ethan**: strategy, messaging and search. Photos `TODO(client)` (none exist;
    hidden until supplied, never generated). **Meet the Founders** button → `/about#founders`.
-6. **Closing**: *"A marketing plan built around your business."* (protected), one line on tailored
+5. **Closing**: *"A marketing plan built around your business."* (protected), one line on tailored
    services, and **Book a Free Consultation** → `/contact`. Navy band with the open-ring motif.
 
 ### About `/about`
