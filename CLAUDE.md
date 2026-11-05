@@ -193,8 +193,14 @@ The copy says "bullet" by Noah's choice; the artwork still shows a round lead mu
 
 ### Reduced motion
 
-With `prefers-reduced-motion: reduce`, there is no scrubbing and no Lenis smooth scroll: show a single
-still (the final logo-circle frame or the painting) with all three copy beats as stacked static text.
+With `prefers-reduced-motion: reduce`, there is no scrubbing and no Lenis smooth scroll: show the **still
+version**: the K1 painting full-screen with only "Minutemen Marketing. Ready at a minute's notice." in the
+Caslon opening style, then the stacked logo, then the site. Never a stacked list of the hero lines
+(Noah, 2026-11-05). The same still version appears automatically if the hero script fails to load or
+throws, the opening frame fails, over 30% of the opening frames fail, or nothing arrives in 10s.
+QA on any build: `?motion` forces the story, `?herofail` / `?herofail=script` show the failure path.
+Windows "Animation effects" off makes Chrome report reduced motion, which is why a desktop can show
+the still version.
 Note: the Claude desktop browser pane reports reduced motion — QA the motion path in a real browser.
 
 ## The site after the hero
