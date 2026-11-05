@@ -1,13 +1,16 @@
 # Minutemen Marketing — Design System (post-hero site)
 
-Minutemen Marketing · Long Island, New York (and remote) · hello@minutemenmarketing.com · `TODO(client):` phone
-Sector: web design agency for local businesses  Direction: **restrained, exact, quick**
-Conversion goals: 1) start a project (form) 2) email 3) look at the work
+Minutemen Marketing · Long Island, New York · contact details `TODO(client)` (hidden until supplied)
+Sector: web design and marketing agency for local businesses  Direction: **restrained, exact, quick**
+Conversion goals: 1) Book a Free Consultation (/contact form) 2) look at the work (/portfolio)
 
-Scope: everything after the hero hands off to the logo circle — nav, intro, services, process, work,
-contact, footer. The hero and the globe-to-logo transition follow the hero spec in `CLAUDE.md`, not
-this file. Status: **approved by Noah 2026-11-05** with his changes (four-chapter process, plain
-service names, turnaround TODO, hidden testimonials slot, gold shot-line dot). Change this file before
+Scope: the four pages (Home, About, Portfolio, Contact), the shared nav and footer, and everything on
+Home after the hero hands off to the logo. The hero and the globe-to-logo transition follow the hero
+spec in `CLAUDE.md`, not this file.
+
+Status: the one-page version was approved by Noah on 2026-11-05. **Revised the same day to four pages
+(Noah's 8-step brief): the single scrolling page and the Ready · Aim · Fire · Heard process are gone.**
+Brand, palette, type, the one-ink rule and the shot line carry over unchanged. Change this file before
 the build deviates from it.
 
 ## Anti-default stance
@@ -23,8 +26,9 @@ off-white, a serif + sans) sits right next to it. We deliberately deviate:
 - **Caslon at regular weight, set large, with real italics** for the turn of a sentence — never a
   bold display serif. Caslon is the face the Declaration was printed in; it carries the period so
   the layout doesn't need costume (no parchment, no ornaments, no faux-aged textures).
-- **Services as an index, not cards.** A ruled list you read down, grouped by what the client gets.
-- **One navy band** (contact) so "restrained" doesn't mean flat, and the page ends in the same navy
+- **Flat cards, not app tiles.** Noah asked for five service cards: flat paper panels with a hairline,
+  a Caslon name and one sentence. No icons, no shadows, no hover lift.
+- **One navy band** (the closing consultation band) so "restrained" doesn't mean flat, and the page ends in the same navy
   the hero lives in.
 - **Structural move:** the musket ball's path from the hero continues down the page as the
   signature line (below), so the site reads as the end of the same story, not a template bolted on.
@@ -38,7 +42,7 @@ off-white, a serif + sans) sits right next to it. We deliberately deviate:
 | `--ink-2` | `#4A5A72` | Secondary text — captions, meta, helper text | 6.3:1 on paper |
 | `--rule` | `#D9D3C4` | Hairlines only — too pale for text | — |
 | `--paper-2` | `#EFEADF` | The mat around work screenshots — never text | — |
-| `--navy-deep` | `#021733` | Dark band ground (contact, footer) | — |
+| `--navy-deep` | `#021733` | Dark band ground (closing band, footer) | — |
 | `--on-navy` | `#F7F4EC` | Text on the dark band | 16.3:1 on navy-deep |
 | `--on-navy-2` | `#A9B6C9` | Secondary text on the dark band | 8.7:1 on navy-deep |
 | `--flash` | `#A67C2E` | Muted musket-flash gold — **the shot-line dot only.** Never text, borders, fills or buttons | 3.4:1 on paper, 4.7:1 on navy-deep (non-text, ≥ 3:1) |
@@ -67,16 +71,13 @@ dot (the ball, 7px, `--flash` gold).** The section's eyebrow sits on the line wh
 The line is navy; only the dot is gold.
 
 - **Section openers:** the line draws once when the section enters (900ms), then stays.
-- **Process:** one long line runs through the four chapters — Ready, Aim, Fire, Heard; each chapter
-  is a stop on it (the dot travels stop to stop as you scroll). This is the only place the dot moves
-  after it lands.
 - **Primary buttons and text links:** on hover/focus a short line + dot slides in under the label.
 - **Never used:** in the nav, in the footer, on cards or images, or as decoration in empty space —
   it marks an arrival, so it only appears where something begins.
 
-Secondary motif (one only): **the logo's open ring** — the hero ends on the logo circle; the contact
+Secondary motif (one only): **the logo's open ring** — the hero ends on the logo circle; the closing
 band reuses that open ring (thin, `--on-navy-2`, broken at the bottom like the logo's ground line)
-behind the "Start a project" heading, so the page ends where the hero did.
+behind the closing heading, so the page ends where the hero did.
 
 ## Layout
 
@@ -86,125 +87,129 @@ behind the "Start a project" heading, so the page ends where the hero did.
 - **Section rhythm:** shot line + eyebrow → display heading → short lede → content.
 - **Asymmetry:** headings take columns 1–5, content 6–12 on desktop; the intro statement runs 1–10
   and leaves the right edge open (the direction of travel).
-- **Full-bleed:** work plates break the shell to the gutter edge; the contact band is full-bleed navy.
-- Breakpoints 375 / 768 / 1024 / 1440. No horizontal scroll at 375. `min-height: 100dvh` not `100vh`.
-- **Mobile:** sticky bottom action bar after the hero — *Email us* · *Start a project* (adds *Call*
-  once a phone number exists). Content reserves space for it.
-- z-index scale: content 0 · sticky bar 20 · nav 40 · menu sheet 100 · skip link 1000.
+- Breakpoints 375 / 720 / 1024 / 1440. No horizontal scroll at 375. `min-height: 100dvh` not `100vh`.
+- No mobile action bar (removed 2026-11-05): the nav is always one tap away and every page ends in
+  *Book a Free Consultation*.
+- z-index scale: content 0 · hero skip 3 · nav 40 · menu sheet 100 · skip link 1000.
 
-## Sections (single page after the hero)
+## Shared on every page
 
-| Section | Job | Content |
-|---|---|---|
-| **Nav** | Get anywhere in one tap | Fades in when the hero settles. Wordmark left; Services · Ready · Aim · Fire · Heard · Work; *Start a project* button (→ Contact). The four chapter names link to their process chapters, same names as on the page. Current section underlined. Mobile: menu button (44px) → full-height sheet, focus-trapped, Esc closes; in the sheet the chapters sit under a small "How we work" label so first-time visitors know what they are. |
-| **Intro** | Say what we do in one breath | The logo circle (end of the hero) above one Caslon statement at display size, then a one-line lede. Copy drafted below for approval. |
-| **Services** | Show the offer plainly | Index of the real services in plain words a local owner uses, in three groups. **Your website:** Website design · Building your website · Logo and brand · More calls and bookings from your site. **Getting found:** Showing up on Google · Google Maps and local search · Showing up in AI answers (ChatGPT, Google's AI). **Keeping it running:** Updates, fixes and upkeep. Each row: Caslon name left, one plain sentence right, hairline between rows. No icons, no jargon labels ("GEO", "Conversion", "SEO" only inside a sentence if at all). |
-| **Process** | Show how a project runs | Four chapters on the shot line, numbered 01–04 (a true sequence), same names as the nav. **Ready** — *We learn your business, your customers and what the site has to do.* **Aim** — *We plan the pages and design them around the people you want to reach.* **Fire** — *We build it, test it on every screen and put it live.* **Heard** — *We keep it fast, found and up to date after launch.* (Covers the seven Sept-site stages: Discovery + Strategy, Design, Development + Launch, Optimization + Growth.) No durations except the turnaround figure Noah supplies. |
-| **Speed line** | Back the speed promise with a real number | One line under the process: *"Most sites go live in `TODO(client): turnaround`."* Hidden until Noah supplies the figure — never estimated. |
-| **Work** | Prove it | Real sites, photographed from the real builds (`legacy/tools/capture.mjs` method). Large plates, one per row, alternating text left/right: client name, town, what we built. Each plate links to the live site. See facts below for what may be shown. |
-| **Testimonials** | Let clients say it | Slot after Work: up to three quotes, Caslon italic, client name + business + town. Built with `TODO(client):` placeholders and **hidden (not rendered, not in the DOM) until real, attributed quotes exist.** No invented quotes, no star ratings, no review counts. |
-| **Team** | Who you'll talk to | Noah — design. Ethan — strategy. Names and roles only; set typographically, no stock portraits. |
-| **Contact** (navy band) | Start a project | Open-ring motif, Caslon heading, short form (name, email, business, current website optional, what you need), plus the email address as a plain alternative. |
-| **Footer** (navy-deep) | Close | Wordmark, section links, email, socials, "Serving Long Island, New York — and remote", © year. |
+| Part | Spec |
+|---|---|
+| **Nav** | `src/partials/nav.html`, injected at build. Horizontal logo (`/brand/logo-horizontal.svg`) left; **Home · About · Portfolio · Contact**; current page underlined (`aria-current="page"`). Visible on load. On Home it fades out while you scroll down through the hero and comes back when you scroll up or the hero ends. ≥ 720px: the four tabs. Below: a 44px *Menu* button → full-height sheet (logo, Close, the four pages in large Caslon, *Book a Free Consultation*), focus-trapped, Esc closes. |
+| **Footer** (navy-deep) | `src/partials/footer.html`. Light horizontal logo + italic tagline · the four pages · *Book a Free Consultation* · "Serving Long Island, New York" · © year. Email, phone and socials appear only once Noah supplies them. |
+| **Every consultation button** | Links to `/contact`. Regular `<a href>` links everywhere, so each route loads on its own. |
 
-**Draft copy direction** (for approval — not final): intro *"Websites for Long Island businesses,
-built quickly and built properly."* Services lede *"Everything a local business needs to be found
-and chosen online."* Contact *"Tell us what you need. We answer quickly."* No "elevate", "seamless",
-"journey", no invented numbers, no triads.
+## Pages
 
-## Creative-director pass (2026-11-05) — what changed and why
+### Home `/`
 
-Against pear.no and this spec, ten things kept the first build from feeling premium; each is fixed:
+1. **Hero** (CLAUDE.md), ending on the stacked logo.
+2. **Intro**, one Caslon statement at display size: *"We help local businesses build a stronger
+   online presence, get discovered, and make it easy for customers to book or reach out."* (Noah's copy.)
+3. **Services: five cards.** This replaces the ruled index; Noah asked for cards. Flat paper-2 panels
+   with a 1px rule, no shadows, no icons. A Caslon name, one sentence, and a small 01–05 numeral:
+   - **SEO:** Help local customers find you when they search for what you offer.
+   - **GEO (AI search):** Structure your content so AI search tools understand what you do and surface it in answers.
+   - **Website Design & Development:** A custom, mobile-friendly site that makes the next step easy.
+   - **Domain Acquisition:** Find, secure and connect a domain that fits your brand.
+   - **Social Media Management:** Plan, create and manage content that keeps your channels active.
+   Mobile: one column. Desktop: a 3 + 2 grid.
+4. **Client work carousel**, modelled on the Bang Bang Barbershop reviews carousel. The active card sits
+   centred at about 44% width, its neighbours at 50% opacity and 92% scale, and the row's edges fade
+   out under a gradient mask. The track slides over 900ms. Prev/next buttons and dots; swipe on
+   touch; arrow keys when focused. Cards: **Beauty & Wellness *addict* NY** and **Smiles by
+   Nilou**, each with a screenshot, its town or tagline, and factual project highlights only.
+   **Dev only:** a sample testimonial with a visible "Draft placeholder" label, injected by JS behind
+   `import.meta.env.DEV`, so it never reaches the production HTML. A prominent **View Our Portfolio**
+   button sits beside the carousel on desktop and below it on mobile.
+5. **Meet the Founders**, compact and typographic like the B&W founders section: heading left; a
+   short paragraph and the two names on a hairline rule on the right. **Noah**: design direction,
+   interface and build. **Ethan**: strategy, messaging and search. Photos `TODO(client)` (none exist;
+   hidden until supplied, never generated). **Meet the Founders** button → `/about#founders`.
+6. **Closing**: *"A marketing plan built around your business."* (protected), one line on tailored
+   services, and **Book a Free Consultation** → `/contact`. Navy band with the open-ring motif.
 
-1. **Hero type was small and could sink into busy frames** → larger Caslon beats, italic key phrase,
-   staggered word reveal, soft blurred scrim behind each beat.
-2. **Hero ended on a logo floating in empty space** → logo settles to 78% and the intro follows with
-   almost no gap.
-3. **Nav felt utilitarian** (hard border, cramped links) → frosted paper bar, hairline shadow, quieter
-   links with an underline for the current section, slimmer CTA.
-4. **Intro statement wrapped awkwardly with the lede far below** → 10-column statement, lede set to the
-   right (columns 7–11), balanced wrapping.
-5. **Service names broke onto three lines** → wider name column, sticky section heading, more air.
-6. **Chapters left a big empty field and repeated "How we work" four times** → word left, sentence
-   right on desktop; "01 / 04" counters, "How we work" once.
-7. **Work screenshots looked like raw captures** → paper mat, numbered captions, larger names.
-8. **The Work → Contact bridge showed a ring that didn't match Contact** → dissolves into plain navy,
-   shorter pin (70%), so it flows straight into the contact band.
-9. **Contact was a lone form in a wide navy field** → two columns (heading + email left, form right),
-   quieter inputs, label eyebrows, a wider Send button.
-10. **Footer was sparse and default-styled** → wordmark with the italic tagline, three columns, a
-    hairline legal row.
+### About `/about`
+
+H1 + lede, then three parts: **Why we started** (Noah's stated belief from the Sept 2026 site),
+**The founders** (`#founders`: Noah and Ethan with roles; photos and surnames `TODO(client)`),
+**How we work** (you deal with the people who design and build your site; strategy first). Ends with
+**Book a Free Consultation**. Only details already published by Noah; anything else `TODO(client)`.
+
+### Portfolio `/portfolio`
+
+Beauty & Wellness *addict* NY, then Smiles by Nilou, each with a short write-up. **Each site sits in a
+browser-style window**: a paper-2 frame with three dots and the domain in a pill. Inside is an
+interactive, scrollable iframe, lazy-loaded (`loading="lazy"`, loaded once it nears the viewport),
+16:10 on desktop and 4:5 on phones so it stays usable. **Open Live Website ↗** sits outside the
+window. Sites that refuse framing show their screenshot in the same window.
+- beautyandwellnessny.com sends no frame headers → iframe.
+- www.smilesbynilou.com sends `X-Frame-Options: SAMEORIGIN`. We control it, so its `preview` branch
+  now allows `frame-ancestors` minutemenmarketing.com. Until that preview is promoted *and* this site
+  runs on minutemenmarketing.com, the window shows the screenshot.
+- Other finished sites join once each has a verified production URL (see TODO).
+
+### Contact `/contact`
+
+H1 *Book a free consultation*, one line, then the form: name, business name, email, five service
+checkboxes (the five services above), message. Web3Forms (`api.web3forms.com/submit`), a `botcheck`
+honeypot, a busy state, an inline success message, and a real error state. **Never a false success.**
+Beside it: work email, other email, phone, Instagram, LinkedIn and other links. **Each one renders only
+when it is filled in `src/site-config.js`; empty = `TODO(client)` and hidden.** The form needs the
+Web3Forms access key. Without it the live page hides the form and says plainly that it isn't connected.
 
 ## Components
 
-- **Buttons:** primary — navy fill, paper text, Hanken 500 16px, 2px radius, 48px min height, 24px
-  side padding; hover/focus: shot line + dot slides in under the label (200ms), fill unchanged.
-  Secondary — text link with a trailing → that moves 4px on hover. One primary per section.
-- **Rows instead of cards:** services, process and team are ruled rows (`--rule` hairlines). No
-  shadows anywhere; no rounded cards.
-- **Work plates:** screenshot at true aspect with `width`/`height` set (no CLS), AVIF/WebP via
-  `srcset`, lazy below the fold; 1px `--rule` frame; hover on desktop lifts the caption's shot line,
-  not the image.
-- **Forms:** visible labels above 48px inputs, 1px `--ink-2` border, 2px navy focus ring with 3px
-  offset; validate on blur; errors below the field in `--error` with text + `aria-live`; submit shows
-  a busy state; **never a false success** — if the endpoint is not configured, say so and show the
-  email address.
-- **Focus:** 2px solid ring on everything interactive (`--on-navy` on the dark band). Skip link
-  (already in `index.html`). Touch targets ≥ 44px with ≥ 8px between.
-- **Icons:** none needed beyond → and the menu glyph; if any are added, one SVG set, 1.5px stroke.
+- **Buttons:** primary: navy fill, paper text, Hanken 500, 2px radius, 48px min height. On hover and
+  focus a short line slides in under the label (200ms). Light variant on navy. One primary per section.
+- **Service cards:** `--paper-2` fill, 1px `--rule` border, 2px radius, no shadow.
+- **Carousel cards:** paper, 1px `--rule` border; the active card's border goes `--ink`.
+- **Browser window:** 1px `--rule` frame, 8px radius top bar with three `--rule` dots and the domain,
+  iframe or screenshot below; `title` on every iframe.
+- **Forms:** visible labels above 48px inputs; validate on blur; errors under the field in `--error`
+  with text + `aria-live`; checkboxes ≥ 44px rows.
+- **Focus:** 2px solid ring on everything interactive (`--on-navy` on dark bands). Skip link on every
+  page. Touch targets ≥ 44px.
 
 ## Motion
 
 - `--ease: cubic-bezier(0.22, 0.61, 0.36, 1)` · `--dur: 600ms` · micro `200ms` · line draw `900ms`.
-- **Scroll motion is limited to three things** (Noah, 2026-11-05 — "no other scroll tricks"):
-  the shot lines drawing once as a section arrives, one brief pinned moment per chapter (Ready, Aim,
-  Fire, Heard) where its headline fades in on the shot line, and one image cross-fade between Work
-  and Contact. Headings, plates and body text do not fade or slide in.
-- Lenis smooth scroll continues from the hero; anchor links scroll with it and move focus to the
-  target heading.
-- **`prefers-reduced-motion`:** no Lenis, lines already drawn, reveals resolve instantly, the process
-  dot sits at its final stop. QA motion in a real browser — the Claude browser pane forces reduced
+- Scroll motion outside the hero: the shot lines draw once as a section arrives. The carousel moves
+  only when you ask it to (no autoplay). Nothing else fades or slides in.
+- Lenis smooth scroll on every page; anchor links scroll with it and move focus.
+- **`prefers-reduced-motion`:** no Lenis, lines already drawn, the carousel jumps without sliding,
+  and the hero is a still. QA motion with `?motion`, because the Claude browser pane forces reduced
   motion.
 
-## Pages
+## Head on every page
 
-| Page | Purpose | Sections |
-|---|---|---|
-| `index.html` | Everything | Hero → Nav, Intro, Services, Process (Ready · Aim · Fire · Heard) + speed line, Work, Testimonials (hidden until real), Team, Contact, Footer |
-| `404.html` | Lost visitor | Shot line, one sentence, link home |
-| `privacy.html` | Form data notice | Plain text — only if the form goes live (`TODO(client)`) |
-
-Head boilerplate on every page: title, description, canonical, OG/Twitter image, favicon set,
-`theme-color #032249`, JSON-LD `ProfessionalService` with `areaServed` (no invented fields).
+Unique `<title>`, meta description, canonical (`https://minutemenmarketing.com/…`), one H1, OG/Twitter
+tags, favicon, `theme-color #032249`. `sitemap.xml` lists all four routes. `vercel.json` sets
+`cleanUrls` so `/about` etc. serve directly.
 
 ## Facts of record
 
 | Fact | Value | Source |
 |---|---|---|
 | Name | Minutemen Marketing | Noah's brief (2026-11-02) |
-| What we do | Premium websites for local businesses | Noah's brief |
-| Where | Long Island, New York — and remote | Sept 2026 site (`legacy/`), inferred there; confirm |
-| Services (8) | Web Design, Development, SEO, Local SEO, GEO, Branding, Conversion, Website Management — shown under plain-language names (see Sections) | Sept 2026 site brief; names per Noah 2026-11-05 |
-| Process | Four chapters: Ready, Aim, Fire, Heard | Noah 2026-11-05 (replaces the seven Sept stages) |
-| Turnaround | `TODO(client)` — Noah will supply | Noah 2026-11-05 |
-| Team | Noah (design), Ethan (strategy) | Sept 2026 site brief |
-| Email | hello@minutemenmarketing.com — placeholder | Sept 2026 site, still `TODO(client)` |
-| Portfolio | Smiles by Nilou, Beauty & Wellness addict NY, Muses Nails, Wealth Advisory Group, Gym Grindz, Ray Nail Spa | Builds in `C:\Claude Code` |
+| Where | Long Island, New York | Noah's brief |
+| Services (5) | SEO · GEO (AI search) · Website Design & Development · Domain Acquisition · Social Media Management | Noah 2026-11-05 (replaces the 8 plain-language services) |
+| Founders | Noah (design direction, interface, build) · Ethan (strategy, messaging, search) | Sept 2026 site (`legacy/about.html`) |
+| Why / how | Small businesses shouldn't settle for outdated sites or recycled templates; clients work directly with the people designing and building | Sept 2026 site |
+| Portfolio (live) | Beauty & Wellness *addict* NY (beautyandwellnessny.com) · Smiles by Nilou (www.smilesbynilou.com) | Vercel production domains, checked 2026-11-05 |
 
 **Never on this site:** stats, client counts, years in business, prices, awards, ratings, review
-counts, or any turnaround time or testimonial Noah hasn't supplied — none are verified. The speed
-line and testimonials stay hidden until he does.
+counts, turnaround times, or testimonials Noah hasn't supplied. None are verified.
 
-`TODO(client):` — needed from Noah before launch
-1. Real email address and a phone number (or confirm there is none).
-2. Instagram / LinkedIn URLs.
-3. Founder surnames (optional) — roles only until then.
-4. **Portfolio permissions and status:** which clients have OK'd being shown, and which sites are live.
-   **Ray Nail Spa was a spec/pitch site** — show it labelled as a concept or leave it out. Gym Grindz
-   and Wealth Advisory Group need their finished builds captured.
-5. Inquiry endpoint (Resend keys or a webhook) — until then the form explains and shows the email.
-6. Production domain confirmation (`minutemenmarketing.com`).
-7. Approve or rewrite the draft copy lines above.
-8. **Real turnaround time** for the speed line ("Most sites go live in …").
-9. **Testimonials:** up to three real quotes, each with the client's name, business, town and
-   permission. The section stays hidden until at least one exists.
+`TODO(client):` needed from Noah before launch
+1. **Web3Forms access key** (the form stays hidden on the live site until it exists).
+2. Work email, other email, phone, Instagram, LinkedIn, other links.
+3. Founder photos (real, supplied) and surnames, if wanted.
+4. Real testimonials with name, business, town and permission. Until then the carousel shows project
+   highlights only.
+5. Other finished client sites to show, each with its live production URL and the client's OK
+   (Muses Nails, Wealth Advisory Group, Gym Grindz and Bang Bang Barbershop have `.vercel.app` builds
+   only; Ray Nail Spa was a pitch).
+6. Promote the Smiles by Nilou `preview` deploy (frame-ancestors) and point minutemenmarketing.com at
+   this project.
