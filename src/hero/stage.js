@@ -340,8 +340,13 @@ export function createStage(canvas, onProgress) {
     } else if (p < S.toLogo[0]) {
       ops.push(globeFrame().concat(1), ['globe', 'duo', sine(local(S.toBrand, p)), 1]);
     } else if (p < S.toSite[0]) {
-      const t = sine(local(S.toLogo, p));
-      ops.push(['paper'], ['globe', 'duo', 1 - t, 1], ['logo', t, 1]);
+      // Two overlapping stages, never a full-frame mix of navy and paper: the navy sky clears to
+      // paper around the globe first, then the globe disc dissolves into the logo's ring.
+      const t = local(S.toLogo, p);
+      const sky = sine(clamp01(t / 0.55));
+      const disc = 1 - sine(clamp01((t - 0.35) / 0.65));
+      const logo = sine(clamp01((t - 0.3) / 0.7));
+      ops.push(['paper'], ['disc', disc], ['globe', 'duo', 1 - sky, 1], ['logo', logo, 1]);
     } else {
       const t = sine(local(S.toSite, p));
       ops.push(['paper'], ['logo', 1, lerp(1, 0.78, t)]);
@@ -378,6 +383,24 @@ export function createStage(canvas, onProgress) {
           ctx.fillRect(0, 0, w, h);
           globeScene(img, blurred, scale);
         });
+      } else if (kind === 'disc') {
+        // The brand globe alone, clipped to the shared circle (no sky), for the hand-off to the logo.
+        const [alpha] = rest;
+        const img = a.duo;
+        if (img && alpha > 0) {
+          const iw = img.naturalWidth || img.width;
+          const ih = img.naturalHeight || img.height;
+          const c = circleTarget(w, h);
+          const g = FOCUS.k4Globe;
+          const sc = c.d / (g.d * ih);
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(c.x, c.y, c.d / 2, 0, Math.PI * 2);
+          ctx.clip();
+          ctx.globalAlpha = alpha;
+          ctx.drawImage(img, c.x - g.x * iw * sc, c.y - g.y * ih * sc, iw * sc, ih * sc);
+          ctx.restore();
+        }
       } else if (kind === 'c3') {
         // `zoom` 1 = cover the frame around the globe, 0 = globe on the 50% circle (as C4 draws it).
         const [t, alpha, zoom] = rest;
@@ -480,6 +503,9 @@ export function createStage(canvas, onProgress) {
         best = i;
       }
     }
+    // Nothing left in the window: fetch any remaining still (globe, logo) so a reader who skips
+    // ahead or scrolls back up into the hero from below still finds them.
+    if (best < 0) best = jobs.findIndex((j) => !j.key.includes(':'));
     return best < 0 ? null : jobs.splice(best, 1)[0];
   }
 

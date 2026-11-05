@@ -149,6 +149,19 @@ function initMotion() {
   const cue = $('.hero__cue');
   const trail = $('.hero__trail span');
 
+  // Skip: jump straight past the hero to the first section, with the hero settled on its last
+  // frame (no fast-forward through the story), and move focus there.
+  const skip = $('[data-skip]');
+  skip.addEventListener('click', () => {
+    const intro = $('#main');
+    lenis.scrollTo(intro, { immediate: true, force: true, offset: -navH() });
+    ScrollTrigger.update();
+    ScrollTrigger.getById('hero')?.getTween()?.progress(1);
+    const h = $('h1, h2', intro);
+    h.setAttribute('tabindex', '-1');
+    h.focus({ preventScroll: true });
+  });
+
   // Beat 3 sits below the globe circle, never over it.
   const placeBeat3 = () => {
     const c = stage.circle();
@@ -188,6 +201,7 @@ function initMotion() {
           stage.set(state.p);
           gsap.set(trail, { scaleX: state.p / 100 });
           if (state.p > 0.4) cue.classList.add('is-gone');
+          skip.classList.toggle('is-gone', state.p > 95);
         },
       },
       0,
