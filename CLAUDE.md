@@ -56,10 +56,12 @@ One continuous story, inspired by pear.no: dark, restrained, premium.
    b) The brand-colored globe fades into our **logo circle**, with the **Minuteman and wordmark**
       appearing inside it.
    c) The page settles into the normal site.
-   **Shared circle target (set 2026-11-05):** in the 16:9 hero frame the painted globe (K4), the
-   brand-colored globe and the logo circle all sit **dead center, diameter = 50% of frame height**
-   (≈ 28% of frame width). The code positions the logo ring to that same box so the hand-off
-   doesn't jump; on portrait/mobile the canvas `cover`-crop keeps it centered.
+   **Shared circle target (Noah, 2026-11-05):** in the 16:9 hero frame the painted globe (K4), the
+   brand-colored globe and the logo circle all sit **centered, diameter ≈ 80% of frame height**
+   (≈ 45% of frame width) — matched to the approved K4, measured x 555–1445 / y 110–990 on a
+   2000×1116 view (center ≈ 50% / 49%). The code positions the logo ring to that same box so the
+   hand-off doesn't jump, then the logo settles to its normal site size in stage c. On
+   portrait/mobile the canvas `cover`-crop keeps it centered. Measure exactly from `k4.png` at build.
    Anything beyond these three stages is undocumented — ask Noah before inventing choreography.
 
 Scrolling down plays forward; scrolling up plays backward (canvas image-sequence scrubbed by scroll).
@@ -91,6 +93,11 @@ interface elements or borders.
   task `f31d4a21-699b-4688-8145-92edb0b9fcde`. Pan flash ~2.8s, muzzle ~3.1s, ball travels to the end.
   **Free fixes to apply when extracting frames:** trim the start to ~1s before the pan flash (begin at
   ~1.8s); tone the muzzle flash down to warm gold, never pure white; strip the audio.
+- **APPROVED K4 globe: `assets/keyframes/k4.png`** (Runway task
+  `89047228-3b71-4b66-b7e2-ff6b7ed00ec7`, 5504×3072) — end frame for C3. North America facing, gold
+  arc with the ball wrapping the globe, stars, painted clouds below, cool grade. Accepted as-is: globe
+  ≈ 80% of frame height (became the circle target), smoother/more realistic than K1's brushwork,
+  capsule-shaped ball trail, a small gold glint at the New York coast.
 - **C2 last frame: `assets/keyframes/c2-last.png`** (1280×716, exported from the clip) — the **start
   frame for the globe clip C3**, not K3, so C2 → C3 joins without a jump.
 - **K2 v1** (`assets/drafts/k2-v1.png`, Runway task `af215836-1672-4bee-99a5-9257ff86677d`) — medium
