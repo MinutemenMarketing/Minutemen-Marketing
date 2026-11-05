@@ -123,6 +123,25 @@ Note: the Claude desktop browser pane reports reduced motion — QA the motion p
 - The hero and the globe-to-logo transition stay governed by the hero spec in this file, not by the
   skills.
 
+**QUALITY BAR — it has to look like a million bucks, like the sites we've shipped.** The reference is
+the finished house work in `C:\Claude Code`: `wealth-advisory-group`, `smiles-by-nilou`,
+`beauty-wellness-addict`, `muses-nails`, `ray-nail-spa`. Follow the `client-site` skill's process:
+
+1. **Mine those sites for method** (token block, type scale, spacing rhythm, signature device, motion,
+   head/JSON-LD boilerplate). Never copy their palettes or fonts; this site is unmistakably itself.
+2. **Write `DESIGN.md` at the project root and get Noah's approval before any post-hero markup or
+   CSS** — anti-default stance, palette tokens with contrast, type scale numbers, one signature
+   element carried through every section, section rhythm, motion tokens, component rules.
+   (`legacy/DESIGN.md` is the archived Sept site's spec, superseded.)
+3. Build to the spec; if something needs to deviate, change `DESIGN.md` first and say so.
+4. Run the skill's QA checklist (contrast, keyboard, reduced motion, mobile, every fact) before calling
+   it done.
+
+**Facts:** never invent stats, client counts, years in business, prices, testimonials or awards. The
+Work section shows the real portfolio sites above, captured from the real builds. Missing facts get a
+`TODO(client):` marker and go in the handoff list. Project exceptions to the skill: this site keeps
+the Vite stack and pushes to `main`, both by Noah's explicit choice.
+
 ## Brand
 
 - **Navy `#032249`** — sampled from `brand/logo-square.png` (dominant mark color; the cluster is
