@@ -160,6 +160,7 @@ function initMotion() {
     if (haveFirst && shown >= 1) setTimeout(lift, Math.max(0, 900 - (performance.now() - shownAt)));
   });
   setTimeout(() => haveFirst && lift(), 4000); // slow connections: show the battlefield anyway
+  if (import.meta.env.DEV) window.__hero = stage;
 
   // Scroll cue fades after the first move; the trail line tracks progress through the hero.
   const cue = $('.hero__cue');

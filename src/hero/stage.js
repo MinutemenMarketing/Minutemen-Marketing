@@ -211,17 +211,20 @@ export function createStage(canvas, onProgress) {
     return out;
   }
 
-  // Nearest loaded frame of a sequence, so a fast scroll never paints a blank.
+  // Nearest loaded frame of a sequence, so a fast scroll never paints a blank. If a reader outruns
+  // the loader and none of the clip has arrived yet, show the still it starts or ends on.
+  const STAND_IN = { c1: 'k1', c2: 'k2', c2b: 'k2', c3: 'k4', c4: 'k4' };
   function frame(name, t) {
     const frames = a.seq[name];
     const n = ASSETS[name]?.count || 0;
-    if (!frames || !n) return null;
-    const i = Math.round(clamp01(t) * (n - 1));
-    for (let d = 0; d < n; d++) {
-      if (frames[i - d]) return frames[i - d];
-      if (frames[i + d]) return frames[i + d];
+    if (frames && n) {
+      const i = Math.round(clamp01(t) * (n - 1));
+      for (let d = 0; d < n; d++) {
+        if (frames[i - d]) return frames[i - d];
+        if (frames[i + d]) return frames[i + d];
+      }
     }
-    return null;
+    return a[STAND_IN[name]] || a.k1 || null;
   }
 
   // Cross-dissolve weight at the head of a clip: 0 on its first frame, 1 after `dissolveFrames`.
@@ -371,59 +374,97 @@ export function createStage(canvas, onProgress) {
     }
   }
 
-  async function load() {
-    const seqJobs = (name) => {
+  // Post-processing that depends on a still, run the moment it arrives.
+  function onStill(key, img) {
+    if (key === 'k4' && img) {
+      a.duo = duotone(img);
+      // The sky colour just inside the top edge fills around the zoomed-out globe.
+      const probe = document.createElement('canvas').getContext('2d');
+      probe.drawImage(img, img.naturalWidth * 0.1, img.naturalHeight * 0.04, 8, 8, 0, 0, 1, 1);
+      const [r, g, b] = probe.getImageData(0, 0, 1, 1).data;
+      skyFill = `rgb(${r},${g},${b})`;
+      a.k4Blur = blurredSky(img, skyFill);
+      a.duoBlur = blurredSky(a.duo, `rgb(${NAVY})`);
+    }
+    a[key] = key === 'logo' && img ? whiten(img) : img;
+  }
+
+  // Frames load just ahead of the scroll position, not all at once. Every job carries the scroll
+  // position where it is first needed; workers always take the pending job nearest ahead of the
+  // reader, within a window. Inside a clip every 4th frame comes first, so a fast scrub still has
+  // frames to show while the in-betweens arrive.
+  const phone = window.innerWidth < 768;
+  const saveData = navigator.connection?.saveData;
+  const AHEAD = saveData ? 10 : phone ? 18 : 30; // % of the hero to keep loaded ahead
+  const BEHIND = 6; // and a little behind, for scrolling back
+  const SEG = { c1: S.c1, c2: S.c2, c2b: S.c2b, c3: S.c3, c4: S.k4Hold };
+  const REMAP = { c3: CHOREO.c3Remap, c4: CHOREO.c4Remap };
+  const invert = (points, f) => remap(points.map(([x, y]) => [y, x]), f);
+  const jobs = [];
+  const waiting = []; // workers parked until the reader scrolls
+
+  function buildJobs() {
+    const add = (key, src, at, coarse = true) => jobs.push({ key, src, at: at + (coarse ? 0 : 1.2) });
+    add('k1', still(ASSETS.k1), 0);
+    add('k2', still(ASSETS.k2), S.k2Hold[0] - 4);
+    add('k4', still(ASSETS.k4), S.c3[0] + 2);
+    add('logo', `${ASSETS.base}/${ASSETS.logo}`, S.toLogo[0] - 6);
+    for (const name of Object.keys(SEG)) {
       const s = ASSETS[name];
-      if (!s) return [];
+      if (!s) continue;
       a.seq[name] = [];
-      return Array.from({ length: s.count }, (_, i) => [
-        `${name}:${i}`,
-        `${ASSETS.base}/${s.dir}/${s.pattern.replace('%04d', String(i + 1).padStart(4, '0'))}`,
-      ]);
-    };
-    // In story order, so the next scene is always the next thing to arrive.
-    const jobs = [
-      ['k1', still(ASSETS.k1)],
-      ...seqJobs('c1'),
-      ['k2', still(ASSETS.k2)],
-      ...seqJobs('c2'),
-      ...seqJobs('c2b'),
-      ...seqJobs('c3'),
-      ['k4', still(ASSETS.k4)],
-      ...seqJobs('c4'),
-      ['logo', `${ASSETS.base}/${ASSETS.logo}`],
-    ];
-    let done = 0;
-    a.k1 = await loadImage(jobs[0][1]); // the opening frame first, alone
-    onProgress(++done / jobs.length, true);
+      const [from, to] = SEG[name];
+      for (let i = 0; i < s.count; i++) {
+        const f = i / (s.count - 1);
+        const t = REMAP[name] ? invert(REMAP[name], f) : f;
+        const src = `${ASSETS.base}/${phone ? 'm/' : ''}${s.dir}/${s.pattern.replace('%04d', String(i + 1).padStart(4, '0'))}`;
+        add(`${name}:${i}`, src, from + t * (to - from), i % 4 === 0);
+      }
+    }
+  }
+
+  // Nearest pending job ahead of the reader (or just behind), within the window; null if none.
+  function nextJob() {
+    let best = -1;
+    let bestScore = Infinity;
+    for (let i = 0; i < jobs.length; i++) {
+      const d = jobs[i].at - p;
+      if (d > AHEAD || d < -BEHIND) continue;
+      const score = d >= 0 ? d : -d * 3;
+      if (score < bestScore) {
+        bestScore = score;
+        best = i;
+      }
+    }
+    return best < 0 ? null : jobs.splice(best, 1)[0];
+  }
+
+  async function load() {
+    buildJobs();
+    const initial = jobs.filter((j) => j.at <= AHEAD).length;
+    let initialDone = 0;
+    const k1Job = jobs.splice(0, 1)[0];
+    onStill('k1', await loadImage(k1Job.src)); // the opening frame first, alone
+    onProgress(++initialDone / initial, true);
     request();
-    const queue = jobs.slice(1);
     const worker = async () => {
-      while (queue.length) {
-        const [key, src] = queue.shift();
-        const img = await loadImage(src);
-        const [name, idx] = key.split(':');
+      for (;;) {
+        const job = nextJob();
+        if (!job) {
+          if (!jobs.length) return;
+          await new Promise((r) => waiting.push(r)); // nothing in the window yet; wait for scroll
+          continue;
+        }
+        const img = await loadImage(job.src);
+        const [name, idx] = job.key.split(':');
         if (idx !== undefined) a.seq[name][+idx] = img;
-        else a[key] = img;
-        onProgress(++done / jobs.length, false);
+        else onStill(job.key, img);
+        if (job.at <= AHEAD) onProgress(Math.min(1, ++initialDone / initial), false);
         lastKey = '';
         request();
       }
     };
     await Promise.all(Array.from({ length: 6 }, worker));
-    if (a.k4) {
-      a.duo = duotone(a.k4);
-      // The sky colour just inside the top edge fills around the zoomed-out globe.
-      const probe = document.createElement('canvas').getContext('2d');
-      probe.drawImage(a.k4, a.k4.naturalWidth * 0.1, a.k4.naturalHeight * 0.04, 8, 8, 0, 0, 1, 1);
-      const [r, g, b] = probe.getImageData(0, 0, 1, 1).data;
-      skyFill = `rgb(${r},${g},${b})`;
-      a.k4Blur = blurredSky(a.k4, skyFill);
-      a.duoBlur = blurredSky(a.duo, `rgb(${NAVY})`);
-    }
-    if (a.logo) a.logo = whiten(a.logo);
-    lastKey = '';
-    request();
   }
 
   window.addEventListener('resize', resize);
@@ -433,8 +474,11 @@ export function createStage(canvas, onProgress) {
   return {
     set(progress) {
       p = progress;
+      waiting.splice(0).forEach((resume) => resume()); // the window moved: look again
       request();
     },
     circle: () => circleTarget(w, h),
+    // Dev-only inspection of the loader (see main.js).
+    debug: () => ({ p, pending: jobs.length, parked: waiting.length, phone, AHEAD }),
   };
 }

@@ -246,7 +246,16 @@ the Vite stack and pushes to `main`, both by Noah's explicit choice.
 - **GSAP + ScrollTrigger** for scroll timelines; **Lenis** for smooth scroll (synced to ScrollTrigger).
 - **Canvas image-sequence scrubbing** — stills and frames in `public/hero/<version>/` (versioned so they
   can be cached forever; bump the version when any file changes), wired up in `src/hero/choreography.js`. The stage draws
-  `cover`-fit on a DPR-aware canvas, preloads progressively, and falls back to the nearest loaded frame.
+  `cover`-fit on a DPR-aware canvas and falls back to the nearest loaded frame (or the still a clip
+  starts/ends on).
+- **Hero payload (2026-11-05):** phones (< 768px wide) load a **960×537 frame set** from
+  `public/hero/v1/m/<clip>/` (≈ 9.2MB in all vs ≈ 19MB for the 1280 desktop set; made from the
+  approved 1280 frames, so C2b's matte ball and C2's gold flash are kept). Frames load **just ahead
+  of the scroll position**: each frame knows where in the hero it is needed, and six workers fetch the
+  nearest pending frames within a window (30% ahead on desktop, 18% on phones, 10% with Save-Data;
+  6% behind), every 4th frame of a clip first. At the top of the page a phone loads 38 files (K1 + the
+  first part of C1) instead of all 475. When adding or replacing a clip, regenerate both sets.
+  In dev, `window.__hero.debug()` shows the loader state.
 - **ffmpeg** extracts frames from approved finals (`npm run frames -- <video> <version>`).
   Not installed on this machine yet: `winget install Gyan.FFmpeg`.
 - **Vercel** for hosting (`vercel.json`). Frame folders are versioned (`v1`, `v2`…) so they can be

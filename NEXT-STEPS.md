@@ -39,8 +39,9 @@ contact form that never reports a false success, footer. A creative-director pas
 
 ## Open
 
-- Hero frames total **≈ 20MB**; phones load the same 1280px frames as desktop, and frames load in
-  story order, so a slow connection can briefly show an earlier frame in a later scene.
+- ~~Hero frames total ≈ 20MB for everyone~~ — **fixed 2026-11-05 (item 1):** phones get a 960px
+  set (≈ 9.2MB total) and everyone loads only just ahead of the scroll position (a phone loads 38
+  files at the top instead of 475). Desktop frames are unchanged.
 - The logo circle is still the placeholder PNG (`brand/logo-square.png`).
 - All five clips are **720p drafts** (Kling 4.0).
 - Work → Contact crossfade is a placeholder (battlefield → navy). Planned: Smiles by Nilou's real
@@ -52,8 +53,9 @@ contact form that never reports a false success, footer. A creative-director pas
 
 ## Tomorrow, in order
 
-1. **Cut the hero download size.** Smaller frames for phones (e.g. 720px wide), and load frames just
-   ahead of the scroll position instead of all 475 in story order. Desktop must look identical.
+1. ~~**Cut the hero download size.**~~ **Done 2026-11-05.** Phones use 960px frames (720px tested as
+   too soft once a phone scales the frame to its height); frames load just ahead of the scroll
+   position; desktop frames and drawing unchanged. Still to confirm on a real phone over cellular.
 2. **Million-dollar hero polish** — seamless joins with one shared grade and grain, Caslon text with
    italic key phrases and staggered word reveals, the logo-ring preloader, the bullet-trail progress
    line, slow globe-to-logo fades.
