@@ -48,6 +48,18 @@
 
     <section class="hero" id="top" aria-label="Introduction">
       <div class="hero__stage">
+        <!-- Reduced motion (and no JS): the opening painting as a still. Same file as the preload, so
+             the motion version pays nothing extra for it. -->
+        <img
+          class="hero__still"
+          src="/hero/v1/k1-1920.webp"
+          srcset="/hero/v1/k1-1280.webp 1280w, /hero/v1/k1-1920.webp 1920w"
+          sizes="100vw"
+          width="1920"
+          height="1072"
+          alt=""
+          fetchpriority="high"
+        />
         <canvas class="hero__canvas" aria-hidden="true"></canvas>
         <div class="hero__grain" aria-hidden="true"></div>
         <div class="hero__beats">

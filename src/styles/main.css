@@ -344,10 +344,40 @@ em {
 }
 
 /* ---------- Hero ---------- */
-/* Static by default (reduced motion / no JS); `.motion` turns on the pinned canvas. */
+/* Static by default (reduced motion / no JS): the opening painting with all three lines stacked
+   over a soft paper wash. `.motion` turns on the pinned canvas instead. */
 .hero {
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--paper);
+  color: var(--ink);
+}
+.hero__stage {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  overflow: hidden;
+}
+.hero__still {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 58% 50%;
+  filter: saturate(0.92) contrast(1.03);
+}
+html:not(.motion) .hero__stage::after {
+  /* the scrim: paper from the left, so the stacked lines read over any part of the painting */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(247, 244, 236, 0.9) 0%, rgba(247, 244, 236, 0.72) 45%, rgba(247, 244, 236, 0) 80%);
+}
+html:not(.motion) .hero__beats {
+  position: relative;
+  z-index: 1;
+}
+.motion .hero__still {
+  display: none;
 }
 .hero__canvas,
 .hero__grain,
