@@ -126,10 +126,15 @@ interface elements or borders.
   task `f31d4a21-699b-4688-8145-92edb0b9fcde`. Pan flash ~2.8s, muzzle ~3.1s, ball travels to the end.
   **Free fixes to apply when extracting frames:** trim the start to ~1s before the pan flash (begin at
   ~1.8s); tone the muzzle flash down to warm gold, never pure white; strip the audio.
-- **K4 v2 — the globe base:** `assets/drafts/k4-v2.png` (Runway task
-  `1021b28f-5f5a-456d-b871-bb0b1b205925`, 5504×3072). Noah chose to build C4 on it. More painterly
-  than v1, round ball, arc behind/in front, Long Island glint. Globe ≈ 67% of frame height (code
-  scales it to the 50% target); ball too large — to be shrunk with a cheap edit before C4.
+- **APPROVED K4 globe: `assets/keyframes/k4.png`** = K4 v2 with the ball shrunk (Nano Banana Pro
+  edit, Runway task `b34c727f-c7e1-4354-a613-c1df34b26eb3`, 5504×3072; source K4 v2 is
+  `assets/drafts/k4-v2.png`, task `1021b28f-5f5a-456d-b871-bb0b1b205925`). More painterly than v1,
+  small round ball, arc behind/in front, Long Island glint. Globe ≈ 67% of frame height (code scales
+  it to the 50% target). Start and end frame of C4. (Ideogram precise edit can't be used: it rejects
+  images over 16MP and can't read Runway uploads.)
+- **C2b v1 — rejected:** `assets/drafts/c2b-v1.mp4` (task `0784a479-d1b0-4ee6-94d9-fc5b2d23cb22`).
+  Good whip-pan into side-tracking and open-sky ending, but the ball rendered as shiny chrome. v2
+  regenerated with an explicit matte, painted cast-lead ball.
 - **K4 v1 — superseded, not approved:** `assets/keyframes/superseded/k4-v1.png` (Runway task
   `89047228-3b71-4b66-b7e2-ff6b7ed00ec7`). Kept what worked (centered, North America facing, deep
   blue-black sky, painted clouds below, gold arc passing behind, the glint at Long Island) but the
