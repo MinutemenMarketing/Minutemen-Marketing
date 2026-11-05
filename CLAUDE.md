@@ -111,6 +111,13 @@ With `prefers-reduced-motion: reduce`, there is no scrubbing and no Lenis smooth
 still (the final logo-circle frame or the painting) with all three copy beats as stacked static text.
 Note: the Claude desktop browser pane reports reduced motion — QA the motion path in a real browser.
 
+## The site after the hero
+
+Before designing or building any part of the normal site (everything after the hero hands off to the
+logo circle), **load both design skills first: `/anthropic-skills:ui-ux-pro-max` and
+`/frontend-design`**, and follow them alongside the brand rules below. This applies to every page,
+section and component of the post-hero site, not just the first pass.
+
 ## Brand
 
 - **Navy `#032249`** — sampled from `brand/logo-square.png` (dominant mark color; the cluster is
