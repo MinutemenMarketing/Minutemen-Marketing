@@ -15,7 +15,8 @@ Repo: https://github.com/MinutemenMarketing/Minutemen-Marketing (branch `main`).
    (`git push origin main`).
 3. **Mobile-first, fast, accessible.** Respect `prefers-reduced-motion` (see Hero → Reduced motion).
 4. **Copy is real HTML text.** Never bake headlines or words into images or video frames.
-5. **No media generated yet** — the pipeline below is planned, not run. Do not start it unprompted.
+5. **Media is generated one approved stage at a time** (see Production stages). Never start the next
+   stage, a variation or a retry unprompted.
 
 ## Concept — the scroll-driven hero
 
@@ -42,24 +43,34 @@ One continuous story, inspired by pear.no: dark, restrained, premium.
 5. **The ball:** extreme close side view of the muzzle as a single **round lead musket ball** (never a
    modern pointed bullet or cartridge) emerges in extreme slow motion. It travels screen-right along
    the barrel axis; the camera tracks alongside as the muzzle and soldier fall back into soft focus.
-   Same painted texture, warm light and palette even in close-up. Clear space ahead of the ball.
+   Same painted texture and cool steel-blue grade even in close-up (the muzzle flash is the one warm
+   accent). Clear space ahead of the ball.
 6. **Globe:** the camera follows the ball through the air and **around a painted globe**. Documented
    K4 frame: a painted Earth, North America facing the viewer, floating in a deep blue-black sky with
    soft clouds below; the small musket ball trails a glowing gold arc curving around the globe's edge;
    the globe is centered and fills the middle third of the frame.
-7. **Logo:** the globe **fades into our navy logo circle**, and the page becomes the normal site.
-   Nothing more specific is documented for this hand-off — ask Noah before inventing choreography.
+7. **Transition (Prompt 7)** — three slow stages, each tied to scroll:
+   a) The painted globe slowly fades from the oil-painting look into our **navy-and-white brand
+      colors** (like the column turning into a tree on pear.no) — same globe, same position, only the
+      rendering changes.
+   b) The brand-colored globe fades into our **logo circle**, with the **Minuteman and wordmark**
+      appearing inside it.
+   c) The page settles into the normal site.
+   Anything beyond these three stages is undocumented — ask Noah before inventing choreography.
 
 Scrolling down plays forward; scrolling up plays backward (canvas image-sequence scrubbed by scroll).
 
 ### Production stages (one candidate at a time, Noah approves each before the next)
 
-Opening still → closer character view → muzzle/projectile view → globe → logo circle. Each approved
+Opening still (K1) → full-body aim (K2) → firing frame (K3) → ball tracking → painted globe →
+brand-colored globe → logo circle with Minuteman and wordmark → site. Each approved
 frame is the reference for the next stage where the model supports it. Never put the whole sequence in
 one prompt. No automatic variations, upscales, retries or model switches. Approved assets are never
 overwritten; new versions are saved under new names. Artwork has no lettering, signatures, watermarks,
 interface elements or borders.
 
+- **`reference/start.png` rule:** if that file exists, use it as K1 (or as K1's style reference) instead
+  of generating a new battlefield. As of 2026-11-04 it does not exist; K1 below was generated.
 - **APPROVED opening still (current): `assets/keyframes/k1-cool.png`** — `k1.png` with a local
   cool color grade (0 credits; GDI+ color matrix: red cut, blue lifted, saturation ~0.75). Steel-blue
   sky, cooler smoke, gray-olive field, coats near the logo navy. **Noah wants the sequence cool, to
@@ -85,13 +96,14 @@ interface elements or borders.
   5504×3072, local copy `assets/drafts/k1-b.png`) — navy-coated figure, stone walls, meetinghouse.
   Always reference the original generated files, never photos of a monitor.
 
-### Hero copy (HTML, overlaid on the canvas — exact wording)
+### Hero copy (HTML, overlaid on the canvas — exact wording, each line fades in at its moment)
 
-1. **"Minutemen Marketing."** / "Ready at a minute's notice."
-2. **"Your site, live in days. Not months."**
-3. **"The shot heard round the world. Now make yours heard round town."**
+1. Over the battlefield (opening/push-in): **"Minutemen Marketing."** / "Ready at a minute's notice."
+2. As he fires and the bullet flies (fire + ball tracking): **"Response time as fast as a bullet."**
+3. As the bullet circles the globe: **"With the right website, you can reach an audience around the
+   world."**
 
-Beat 1 sits over the painting, beat 2 over the push-in/shot, beat 3 over the ball and globe.
+The copy says "bullet" by Noah's choice; the artwork still shows a round lead musket ball.
 
 ### Reduced motion
 
@@ -129,7 +141,7 @@ Note: the Claude desktop browser pane reports reduced motion — QA the motion p
 | Step | Model |
 | --- | --- |
 | Keyframes (painting, Minuteman profile, musket ball, painted globe, logo circle) | **Nano Banana Pro** |
-| Video drafts between keyframes | **Kling 3.0 Turbo** |
+| Video drafts between keyframes | **Kling 3.0 Turbo** (start frame only). Clips that must land on an end keyframe need start+end: Noah chose **Kling 4.0** (720p, charged 60 credits for 5s) for the K2→K3 firing draft |
 | Video finals | **Kling O3 Pro** (backup: **Veo 3.1**) |
 | Logo vector | **Recraft V4.1 Vector** |
 
