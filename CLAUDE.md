@@ -56,15 +56,47 @@ One continuous story, inspired by pear.no: dark, restrained, premium.
    b) The brand-colored globe fades into our **logo circle**, with the **Minuteman and wordmark**
       appearing inside it.
    c) The page settles into the normal site.
-   **Shared circle target (Noah, 2026-11-05):** in the 16:9 hero frame the painted globe (K4), the
-   brand-colored globe and the logo circle all sit **centered, diameter ≈ 80% of frame height**
-   (≈ 45% of frame width) — matched to the approved K4, measured x 555–1445 / y 110–990 on a
-   2000×1116 view (center ≈ 50% / 49%). The code positions the logo ring to that same box so the
-   hand-off doesn't jump, then the logo settles to its normal site size in stage c. On
-   portrait/mobile the canvas `cover`-crop keeps it centered. Measure exactly from `k4.png` at build.
+   **Shared circle target (Noah, 2026-11-05 — stays 50%):** in the 16:9 hero frame the painted
+   globe (K4), the brand-colored globe and the logo circle all sit **dead center, diameter = 50% of
+   frame height** (≈ 28% of frame width). The code positions the logo ring to that same box so the
+   hand-off doesn't jump. On portrait/mobile the canvas `cover`-crop keeps it centered.
    Anything beyond these three stages is undocumented — ask Noah before inventing choreography.
 
 Scrolling down plays forward; scrolling up plays backward (canvas image-sequence scrubbed by scroll).
+
+## HERO CHOREOGRAPHY (Noah, 2026-11-05)
+
+The feel is pear.no: smooth, scroll-driven, **holding on each scene while text fades in, then
+continuing.** Never lock or hijack the scroll. Every percentage lives in one config object,
+`src/hero/choreography.js`, so Noah can tweak timing without touching logic.
+
+**One pinned GSAP timeline (scrub)** with hold segments where the frame stays still while text plays:
+
+| Scroll | Picture | Text |
+|---|---|---|
+| 0–6% | HOLD on the battlefield (K1) | Beat 1 fades in: "Minutemen Marketing." / "Ready at a minute's notice." |
+| 6–10% | K1 | Beat 1 fades out |
+| 10–28% | C1 push-in to the soldier (placeholder: K1 zoom → K2) | — |
+| 28–32% | HOLD on the soldier (K2) | — |
+| 32–46% | C2, the shot and the ball leaving the muzzle | — |
+| 46–54% | HOLD mid-flight (C2 last frame) | Beat 2: "Response time as fast as a bullet." — in, hold, out |
+| 54–74% | C3, the ball climbs and wraps the globe (placeholder until generated) | — |
+| 74–82% | HOLD on the globe (K4) | Beat 3: "With the right website, you can reach an audience around the world." — placed above or below the globe, **never overlapping it** |
+| 82–100% | Three slow fades: painted globe → navy-and-white globe → logo circle with Minuteman and wordmark → site | — |
+
+- **Pinned length:** about **900vh desktop, 600vh mobile**.
+- **Smoothness:** Lenis `lerp ≈ 0.08`; ScrollTrigger `scrub: 1`; draw on `requestAnimationFrame`
+  **only when the frame or scene state changes**; preload frames with a minimal progress indicator.
+- **Text fades:** opacity + 16px rise + slight blur-to-sharp, about **3% of the scroll** each.
+
+**Below the hero:** each chapter (Ready, Aim, Fire, Heard) gets **one brief pinned moment** where its
+headline fades in on the shot line, then the content scrolls up. **One cross-fade** of one image into
+another between Work and Contact, like pear.no's column-to-tree. **No other scroll tricks.**
+
+**Placeholders until generated** (swap in by changing the config, not the logic): C1 = zoom on K1
+then crossfade to K2; C3 = pull back from the C2 last frame and crossfade into K4; brand globe =
+K4 duotoned navy/off-white in canvas; logo circle = `brand/logo-square.png` (until the Recraft
+vector exists).
 
 ### Production stages (one candidate at a time, Noah approves each before the next)
 
@@ -93,11 +125,12 @@ interface elements or borders.
   task `f31d4a21-699b-4688-8145-92edb0b9fcde`. Pan flash ~2.8s, muzzle ~3.1s, ball travels to the end.
   **Free fixes to apply when extracting frames:** trim the start to ~1s before the pan flash (begin at
   ~1.8s); tone the muzzle flash down to warm gold, never pure white; strip the audio.
-- **APPROVED K4 globe: `assets/keyframes/k4.png`** (Runway task
-  `89047228-3b71-4b66-b7e2-ff6b7ed00ec7`, 5504×3072) — end frame for C3. North America facing, gold
-  arc with the ball wrapping the globe, stars, painted clouds below, cool grade. Accepted as-is: globe
-  ≈ 80% of frame height (became the circle target), smoother/more realistic than K1's brushwork,
-  capsule-shaped ball trail, a small gold glint at the New York coast.
+- **K4 v1 — superseded, not approved:** `assets/keyframes/superseded/k4-v1.png` (Runway task
+  `89047228-3b71-4b66-b7e2-ff6b7ed00ec7`). Kept what worked (centered, North America facing, deep
+  blue-black sky, painted clouds below, gold arc passing behind, the glint at Long Island) but the
+  globe is ~80% of frame height and reads as a satellite render. Noah wants K4 v2: ~50% of frame
+  height, clearly visible oil brushwork on the globe matching K1, a small round ball with a thin
+  trail (no capsule). Generate C3 only after K4 v2 is approved. The site uses v1 as a placeholder.
 - **C2 last frame: `assets/keyframes/c2-last.png`** (1280×716, exported from the clip) — the **start
   frame for the globe clip C3**, not K3, so C2 → C3 joins without a jump.
 - **K2 v1** (`assets/drafts/k2-v1.png`, Runway task `af215836-1672-4bee-99a5-9257ff86677d`) — medium
