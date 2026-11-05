@@ -17,6 +17,20 @@ const PAGES = {
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 
+// tel: link with the country code (10-digit US numbers get +1), so phones dial it on tap.
+const telHref = (p) => {
+  const d = p.replace(/[^\d+]/g, '');
+  return `tel:${d.startsWith('+') ? d : d.length === 10 ? `+1${d}` : d}`;
+};
+
+// Footer contact lines: email and phone, once supplied.
+function footerContactHtml() {
+  const out = [];
+  if (SITE.workEmail) out.push(`<a href="mailto:${esc(SITE.workEmail)}">${esc(SITE.workEmail)}</a>`);
+  if (SITE.phone) out.push(`<a href="${telHref(SITE.phone)}">${esc(SITE.phone)}</a>`);
+  return out.join('\n      ');
+}
+
 // Contact details from src/site-config.js. Empty values are TODO(client) and are not rendered.
 function detailsHtml() {
   const rows = [];
@@ -26,7 +40,7 @@ function detailsHtml() {
     );
   if (SITE.workEmail) add('Email', SITE.workEmail, `mailto:${SITE.workEmail}`);
   if (SITE.otherEmail) add('Also', SITE.otherEmail, `mailto:${SITE.otherEmail}`);
-  if (SITE.phone) add('Phone', SITE.phone, `tel:${SITE.phone.replace(/[^\d+]/g, '')}`);
+  if (SITE.phone) add('Phone', SITE.phone, telHref(SITE.phone));
   if (SITE.instagram) add('Instagram', SITE.instagram.replace(/^https?:\/\/(www\.)?/, ''), SITE.instagram, true);
   if (SITE.linkedin) add('LinkedIn', 'LinkedIn', SITE.linkedin, true);
   for (const o of SITE.other || []) if (o?.url) add(o.label || 'Link', o.label || o.url, o.url, true);
@@ -80,12 +94,12 @@ function pages({ dev }) {
         let out = html
           .replace('<!-- @head -->', head)
           .replace('<!-- @nav -->', mark(read('nav')))
-          .replace('<!-- @footer -->', mark(read('footer')))
+          .replace('<!-- @footer -->', mark(read('footer')).replace('<!-- @footer-contact -->', footerContactHtml()))
           .replace('<dl class="details" data-details-list></dl>', `<dl class="details" data-details-list>${detailsHtml()}</dl>`);
         // The form shows only with a Web3Forms key (always in dev, so it can be tested).
         if (SITE.web3formsKey || dev) {
           out = out.replace('<form class="form" data-form novalidate hidden>', '<form class="form" data-form novalidate>');
-          out = out.replace(/<p class="form-off" data-form-off>[^<]*<\/p>/, '');
+          out = out.replace(/<p class="form-off" data-form-off>[\s\S]*?<\/p>/, '');
         }
         return out;
       },

@@ -3,9 +3,9 @@
 export const SITE = {
   // TODO(client): Web3Forms access key (web3forms.com). Without it the live contact form is hidden.
   web3formsKey: '',
-  workEmail: '', // TODO(client)
+  workEmail: 'minutemenmrktng@gmail.com',
   otherEmail: '', // TODO(client)
-  phone: '', // TODO(client), e.g. '(631) 555-0100'
+  phone: '(631) 882-8022', // shown as written; links as tel:+16318828022
   instagram: '', // TODO(client): full URL
   linkedin: '', // TODO(client): full URL
   other: [], // TODO(client): [{ label: 'Facebook', url: 'https://…' }]

@@ -195,6 +195,8 @@ tags, favicon, `theme-color #032249`. `sitemap.xml` lists all four routes. `verc
 | Services (5) | SEO · GEO (AI search) · Website Design & Development · Domain Acquisition · Social Media Management | Noah 2026-11-05 (replaces the 8 plain-language services) |
 | Founders | Noah (design direction, interface, build) · Ethan (strategy, messaging, search) | Sept 2026 site (`legacy/about.html`) |
 | Why / how | Small businesses shouldn't settle for outdated sites or recycled templates; clients work directly with the people designing and building | Sept 2026 site |
+| Work email | minutemenmrktng@gmail.com | Noah 2026-11-05 |
+| Phone | (631) 882-8022 (tel:+16318828022) | Noah 2026-11-05 |
 | Portfolio (live) | Beauty & Wellness *addict* NY (beautyandwellnessny.com) · Smiles by Nilou (www.smilesbynilou.com) | Vercel production domains, checked 2026-11-05 |
 
 **Never on this site:** stats, client counts, years in business, prices, awards, ratings, review
@@ -202,7 +204,7 @@ counts, turnaround times, or testimonials Noah hasn't supplied. None are verifie
 
 `TODO(client):` needed from Noah before launch
 1. **Web3Forms access key** (the form stays hidden on the live site until it exists).
-2. Work email, other email, phone, Instagram, LinkedIn, other links.
+2. Other email, Instagram, LinkedIn, other links (work email and phone supplied 2026-11-05).
 3. Founder photos (real, supplied) and surnames, if wanted.
 4. Real testimonials with name, business, town and permission. Until then the carousel shows project
    highlights only.
