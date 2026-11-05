@@ -2,22 +2,22 @@
 // Tweak freely: scenes and text read these numbers; nothing else hard-codes timing.
 
 export const CHOREO = {
-  pin: { desktop: 900, mobile: 600 }, // pinned length in vh
+  pin: { desktop: 1000, mobile: 650 }, // pinned length in vh
   scrub: 1,
   lenisLerp: 0.08,
   textFade: 3, // each text fade-in / fade-out takes this % of the scroll
   dissolveFrames: 5, // cross-dissolve at every clip join (frames of the incoming clip)
 
   scenes: {
-    k1Hold: [0, 10], // battlefield (beat 1 fades in on load, out 6–10)
-    c1: [10, 28], // C1: the push-in across the battlefield to the soldier
-    k2Hold: [28, 32], // hold on the soldier
-    c2: [32, 44], // the shot and the ball leaving the muzzle
-    c2b: [44, 58], // FOLLOW THE BULLET — side-tracking with the ball
-    c3: [58, 72], // C3: the ball climbs through the clouds to the globe (starts on C2b's last frame)
-    k4Hold: [72, 84], // the globe; C4: the ball makes one orbit
-    toBrand: [84, 90], // painted globe → navy-and-white globe
-    toLogo: [90, 96], // brand globe → logo circle with Minuteman and wordmark
+    k1Hold: [0, 11], // battlefield (beat 1 in on load, fully visible to 9%, out 9–12%)
+    c1: [11, 27], // C1: the push-in across the battlefield to the soldier
+    k2Hold: [27, 30], // hold on the soldier
+    c2: [30, 41], // the shot and the ball leaving the muzzle
+    c2b: [41, 56], // FOLLOW THE BULLET — side-tracking with the ball (beat 2 over it)
+    c3: [56, 68], // C3: the ball climbs through the clouds to the globe (starts on C2b's last frame)
+    k4Hold: [68, 85], // the globe; C4: the ball makes one orbit (beat 3 over it)
+    toBrand: [85, 91], // painted globe → navy-and-white globe (beat 3 fades out here)
+    toLogo: [91, 96], // brand globe → logo circle with Minuteman and wordmark
     toSite: [96, 100], // logo settles, page becomes the site
   },
 
@@ -41,10 +41,12 @@ export const CHOREO = {
   // When C3's globe settles onto the 50% circle (fraction of C3); C4 continues at that size.
   c3Settle: [0.62, 1],
 
+  // Each beat is fully visible from `in + textFade` to `out` (Noah: beats 1–2 at least 8%, beat 3 at
+  // least 12% and fading only as the globe turns navy).
   beats: {
-    1: { in: 'load', out: 6 }, // "Minutemen Marketing. Ready at a minute's notice."
-    2: { in: 47, out: 54 }, // "Response time as fast as a bullet." — over C2b
-    3: { in: 76.5, out: 81 }, // "With the right website…" — while the ball comes round the front
+    1: { in: 'load', out: 9 }, // "Minutemen Marketing. Ready at a minute's notice." — 0–9% (9%)
+    2: { in: 43, out: 55 }, // "Response time as fast as a bullet." — 46–55% (9%), over C2b
+    3: { in: 69, out: 85 }, // "With the right website…" — 72–85% (13%), out as toBrand begins
   },
 };
 

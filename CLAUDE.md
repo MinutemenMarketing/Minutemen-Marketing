@@ -74,18 +74,19 @@ continuing.** Never lock or hijack the scroll. Every percentage lives in one con
 
 | Scroll | Picture | Text |
 |---|---|---|
-| 0–6% | HOLD on the battlefield (K1) | Beat 1 fades in: "Minutemen Marketing." / "Ready at a minute's notice." |
-| 6–10% | K1 | Beat 1 fades out |
-| 10–28% | C1 push-in to the soldier (K1 → K2); the 28–32% hold stays on C1's own last frame | — |
-| 28–32% | HOLD on the soldier (K2) | — |
-| 32–44% | C2, the shot and the ball leaving the muzzle | — |
-| 44–58% | **C2b, FOLLOW THE BULLET** — side-tracking with the spinning ball through the smoke (start frame `c2-last.png`) | Beat 2 (in 47%, out 54%): "Response time as fast as a bullet." |
-| 58–72% | C3, the ball climbs to the globe (start frame = C2b's last frame, end = K4) | — |
-| 72–84% | The globe; **C4, BULLET AROUND THE GLOBE** — the tiny ball makes one orbit, behind the globe on the far side (start = end = K4 with the ball shrunk). Fallback if the video can't pass the ball cleanly behind: a scroll-driven glowing ball + trail drawn in code over the still globe | Beat 3 (in 74%, out 81%): "With the right website, you can reach an audience around the world." — below the globe, **never overlapping it** |
-| 84–100% | Three slow fades: painted globe → navy-and-white globe → logo circle with Minuteman and wordmark → site | — |
+| 0–9% | HOLD on the battlefield (K1) | **Beat 1** in on load, fully visible 0–9%: "Minutemen Marketing." / "Ready at a minute's notice." |
+| 9–12% | K1 (C1 starts at 11%) | Beat 1 fades out |
+| 11–27% | C1 push-in to the soldier (K1 → K2); the 27–30% hold stays on C1's own last frame | — |
+| 27–30% | HOLD on the soldier | — |
+| 30–41% | C2, the shot and the ball leaving the muzzle | — |
+| 41–56% | **C2b, FOLLOW THE BULLET** — side-tracking with the ball (start frame `c2-last.png`) | **Beat 2** in 43%, fully visible 46–55%, out 55–58%: "Response time as fast as a bullet." |
+| 56–68% | C3, the ball climbs to the globe (start = C2b's last frame, end = K4); its globe settles onto the 50% circle | — |
+| 68–85% | The globe; **C4, BULLET AROUND THE GLOBE** — one orbit, behind the globe on the far side | **Beat 3** in 69%, fully visible 72–85%, fades out 85–88% as the globe turns navy: "With the right website, you can reach an audience around the world." — below the globe, **never overlapping it** |
+| 85–100% | Three slow fades: painted globe → navy-and-white globe (85–91%) → logo circle (91–96%) → site (96–100%) | — |
 (Updated 2026-11-05 for C2b and C4; the numbers live in `src/hero/choreography.js`.)
 
-- **Pinned length:** about **900vh desktop, 600vh mobile**.
+- **Pinned length:** **1000vh desktop, 650vh mobile** (Noah, 2026-11-05).
+- **Text timing rule (Noah, 2026-11-05):** beats 1 and 2 fully visible for at least 8% of the scroll each, beat 3 at least 12% and fading only as the globe turns navy; fades about 3%.
 - **Smoothness:** Lenis `lerp ≈ 0.08`; ScrollTrigger `scrub: 1`; draw on `requestAnimationFrame`
   **only when the frame or scene state changes**; preload frames with a minimal progress indicator.
 - **Text fades:** opacity + 16px rise + slight blur-to-sharp, about **3% of the scroll** each.
