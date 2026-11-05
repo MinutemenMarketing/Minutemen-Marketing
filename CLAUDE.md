@@ -113,10 +113,15 @@ Note: the Claude desktop browser pane reports reduced motion — QA the motion p
 
 ## The site after the hero
 
-Before designing or building any part of the normal site (everything after the hero hands off to the
-logo circle), **load both design skills first: `/anthropic-skills:ui-ux-pro-max` and
-`/frontend-design`**, and follow them alongside the brand rules below. This applies to every page,
-section and component of the post-hero site, not just the first pass.
+**DESIGN SKILLS:** for everything after the hero (nav, services, process, work, contact, footer),
+**load and follow the `ui-ux-pro-max` and `frontend-design` skills** before designing or building it.
+
+- They work **inside our brand, not instead of it**: navy on warm off-white, the Libre Caslon Text +
+  Hanken Grotesk pairing already chosen, restrained and premium like pear.no.
+- **Don't apply their preset styles, palettes or fonts.**
+- Use them for **layout, hierarchy, spacing, components, accessibility and UX quality**.
+- The hero and the globe-to-logo transition stay governed by the hero spec in this file, not by the
+  skills.
 
 ## Brand
 
