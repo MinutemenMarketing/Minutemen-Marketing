@@ -239,6 +239,7 @@ export function createStage(canvas, onProgress) {
     const swing = (t) => ease(clamp01(t / 0.25));
     const c2bFx = (t) => lerp(c2Fx(1), FOCUS.c2bBall.x, swing(t));
     const c2bFy = (t) => lerp(FOCUS.k2Soldier.y, FOCUS.c2bBall.y, swing(t));
+    const c1Last = () => (ASSETS.c1 ? ['seq', 'c1', 1, 1, FOCUS.k2Soldier.x, FOCUS.k2Soldier.y] : k2());
     const globeFrame = () => (ASSETS.c4 ? ['globe', 'c4', 1, 1] : ['globe', 'k4', 1, 1]);
 
     if (p < S.c1[0]) {
@@ -246,7 +247,11 @@ export function createStage(canvas, onProgress) {
     } else if (p < S.k2Hold[0]) {
       const t = local(S.c1, p);
       if (ASSETS.c1) {
-        ops.push(['seq', 'c1', t, 1, FOCUS.k1Soldier.x, FOCUS.k1Soldier.y]);
+        // C1 opens on K1 and ends on K2, so its crop travels from K1's focus to K2's.
+        const d = dissolve('c1', t);
+        if (d < 1) ops.push(k1);
+        const f = ease(t);
+        ops.push(['seq', 'c1', t, d, lerp(FOCUS.k1Soldier.x, FOCUS.k2Soldier.x, f), lerp(FOCUS.k1Soldier.y, FOCUS.k2Soldier.y, f)]);
       } else {
         // Placeholder: push in on the soldier in K1, then dissolve to K2.
         ops.push(['img', 'k1', 1, FOCUS.k1Soldier.x, FOCUS.k1Soldier.y, lerp(1, 2.4, ease(clamp01(t / 0.85)))]);
@@ -254,11 +259,12 @@ export function createStage(canvas, onProgress) {
         if (x > 0) ops.push(k2(x, lerp(1.35, 1, x)));
       }
     } else if (p < S.c2[0]) {
-      ops.push(k2());
+      // Hold on C1's own last frame (≈ K2), so the hold and the clip before it never jump.
+      ops.push(c1Last());
     } else if (p < S.c2b[0]) {
       const t = local(S.c2, p);
       const d = dissolve('c2', t);
-      if (d < 1) ops.push(k2());
+      if (d < 1) ops.push(c1Last());
       ops.push(['seq', 'c2', t, d, c2Fx(t), FOCUS.k2Soldier.y]);
     } else if (p < S.c3[0]) {
       const t = local(S.c2b, p);
@@ -268,9 +274,13 @@ export function createStage(canvas, onProgress) {
     } else if (p < S.k4Hold[0]) {
       const t = local(S.c3, p);
       if (ASSETS.c3) {
-        const d = dissolve('c3', t);
-        if (d < 1) ops.push(['seq', 'c2b', 1, 1, FOCUS.c2bBall.x, FOCUS.c2bBall.y]);
-        ops.push(['seq', 'c3', t, d, 0.5, 0.5]);
+        // C3 is drawn on the globe's own placement: full-frame at first, then (c3Settle) its globe
+        // eases down onto the 50% circle, so it hands C4 a globe of exactly the same size.
+        const ct = remap(CHOREO.c3Remap, t);
+        const frameT = clamp01(ct);
+        const d = dissolve('c3', frameT);
+        if (d < 1) ops.push(['seq', 'c2b', 1, 1, c2bFx(1), c2bFy(1)]);
+        ops.push(['c3', frameT, d, lerp(1, 0, sine(local(CHOREO.c3Settle, t)))]);
       } else {
         // Placeholder: rise from the last C2b frame and dissolve into the globe.
         ops.push(['seq', 'c2b', 1, 1, FOCUS.c2bBall.x, FOCUS.c2bBall.y, lerp(1, 1.5, ease(t))]);
@@ -322,6 +332,23 @@ export function createStage(canvas, onProgress) {
           ctx.fillRect(0, 0, w, h);
           globeScene(img, blurred, scale);
         });
+      } else if (kind === 'c3') {
+        // `zoom` 1 = cover the frame around the globe, 0 = globe on the 50% circle (as C4 draws it).
+        const [t, alpha, zoom] = rest;
+        const img = frame('c3', t);
+        if (img) {
+          const iw = img.naturalWidth;
+          const ih = img.naturalHeight;
+          const g = FOCUS.k4Globe;
+          const coverSc = Math.max(w / (2 * Math.min(g.x, 1 - g.x) * iw), h / (2 * Math.min(g.y, 1 - g.y) * ih));
+          const coverScale = (coverSc * g.d * ih) / circleTarget(w, h).d;
+          const scale = lerp(1, Math.max(1, coverScale), zoom);
+          group(alpha, () => {
+            ctx.fillStyle = skyFill;
+            ctx.fillRect(0, 0, w, h);
+            globeScene(img, a.k4Blur, scale);
+          });
+        }
       } else if (kind === 'logo') {
         // The logo sits on white; multiply drops the white onto the paper.
         const [alpha, scale] = rest;

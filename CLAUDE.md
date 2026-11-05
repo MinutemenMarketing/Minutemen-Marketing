@@ -76,7 +76,7 @@ continuing.** Never lock or hijack the scroll. Every percentage lives in one con
 |---|---|---|
 | 0–6% | HOLD on the battlefield (K1) | Beat 1 fades in: "Minutemen Marketing." / "Ready at a minute's notice." |
 | 6–10% | K1 | Beat 1 fades out |
-| 10–28% | C1 push-in to the soldier (placeholder: K1 zoom → K2) | — |
+| 10–28% | C1 push-in to the soldier (K1 → K2); the 28–32% hold stays on C1's own last frame | — |
 | 28–32% | HOLD on the soldier (K2) | — |
 | 32–44% | C2, the shot and the ball leaving the muzzle | — |
 | 44–58% | **C2b, FOLLOW THE BULLET** — side-tracking with the spinning ball through the smoke (start frame `c2-last.png`) | Beat 2 (in 47%, out 54%): "Response time as fast as a bullet." |
@@ -154,7 +154,17 @@ interface elements or borders.
   blue-black sky, painted clouds below, gold arc passing behind, the glint at Long Island) but the
   globe is ~80% of frame height and reads as a satellite render. Noah wants K4 v2: ~50% of frame
   height, clearly visible oil brushwork on the globe matching K1, a small round ball with a thin
-  trail (no capsule). Generate C3 only after K4 v2 is approved. The site uses v1 as a placeholder.
+  trail (no capsule). (Superseded by the approved K4 below.)
+- **APPROVED C1 (push-in): `assets/clips/c1-pushin.mp4`** (task `70a8541a-58c3-4697-a2e2-aaa4bbc0dec0`),
+  start `k1-cool`, end `k2.png`, 6s. Frames `public/hero/v1/c1/` (15fps, 92); the crop travels from
+  K1's focus to K2's.
+- **APPROVED C3 (climb to the globe): `assets/clips/c3-climb.mp4`** (task
+  `eaba141e-9eda-4513-b416-97b59cd31732`), start `c2b-last.png`, end `k4.png`, 8s. Frames
+  `public/hero/v1/c3/` (15fps, 122). Its white-cloud middle is compressed (`CHOREO.c3Remap`), and over
+  `CHOREO.c3Settle` its globe eases from full-frame onto the 50% circle so it hands C4 the same size.
+  Measured: C3's last frame globe 0.675 of height vs K4 0.678, C4 0.658 — a seamless join.
+- **The hero now runs entirely on approved footage.** Only the logo circle is still a placeholder
+  (`brand/logo-square.png` until the Recraft vector exists). Hero frames total ≈ 20MB.
 - **C2 last frame: `assets/keyframes/c2-last.png`** (1280×716, exported from the clip) — the **start
   frame for the globe clip C3**, not K3, so C2 → C3 joins without a jump.
 - **K2 v1** (`assets/drafts/k2-v1.png`, Runway task `af215836-1672-4bee-99a5-9257ff86677d`) — medium

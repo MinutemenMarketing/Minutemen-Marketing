@@ -10,11 +10,11 @@ export const CHOREO = {
 
   scenes: {
     k1Hold: [0, 10], // battlefield (beat 1 fades in on load, out 6–10)
-    c1: [10, 28], // push-in to the soldier — PLACEHOLDER: zoom K1, crossfade to K2
+    c1: [10, 28], // C1: the push-in across the battlefield to the soldier
     k2Hold: [28, 32], // hold on the soldier
     c2: [32, 44], // the shot and the ball leaving the muzzle
     c2b: [44, 58], // FOLLOW THE BULLET — side-tracking with the ball
-    c3: [58, 72], // ball climbs to the globe — PLACEHOLDER until C3 exists (starts on C2b's last frame)
+    c3: [58, 72], // C3: the ball climbs through the clouds to the globe (starts on C2b's last frame)
     k4Hold: [72, 84], // the globe; C4: the ball makes one orbit
     toBrand: [84, 90], // painted globe → navy-and-white globe
     toLogo: [90, 96], // brand globe → logo circle with Minuteman and wordmark
@@ -30,6 +30,17 @@ export const CHOREO = {
     [1, 1],
   ],
 
+  // C3 remap: its middle (about 2.2–4.4s of 8s, 0.274–0.547) is almost all white cloud, so the
+  // scroll moves through it faster.
+  c3Remap: [
+    [0, 0],
+    [0.3, 0.274],
+    [0.45, 0.547],
+    [1, 1],
+  ],
+  // When C3's globe settles onto the 50% circle (fraction of C3); C4 continues at that size.
+  c3Settle: [0.62, 1],
+
   beats: {
     1: { in: 'load', out: 6 }, // "Minutemen Marketing. Ready at a minute's notice."
     2: { in: 47, out: 54 }, // "Response time as fast as a bullet." — over C2b
@@ -44,10 +55,10 @@ export const ASSETS = {
   k2: 'k2',
   k4: 'k4v2', // approved K4 (v2, ball shrunk)
   logo: 'logo.webp', // placeholder until the Recraft vector exists
-  c1: null, // TODO: generated push-in frames { dir, count, pattern }
+  c1: { dir: 'c1', count: 92, pattern: 'f_%04d.webp' },
   c2: { dir: 'c2', count: 78, pattern: 'f_%04d.webp' },
   c2b: { dir: 'c2b', count: 92, pattern: 'f_%04d.webp' },
-  c3: null, // TODO: generated globe clip frames
+  c3: { dir: 'c3', count: 122, pattern: 'f_%04d.webp' },
   c4: { dir: 'c4', count: 91, pattern: 'f_%04d.webp' },
 };
 
