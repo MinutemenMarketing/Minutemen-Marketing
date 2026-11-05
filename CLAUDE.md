@@ -210,8 +210,8 @@ the Vite stack and pushes to `main`, both by Noah's explicit choice.
 
 - **Vite**, vanilla JS (no framework — the hero is one canvas and a few DOM nodes).
 - **GSAP + ScrollTrigger** for scroll timelines; **Lenis** for smooth scroll (synced to ScrollTrigger).
-- **Canvas image-sequence scrubbing** — frames in `public/frames/<version>/`, listed by a
-  `manifest.json` (`{ "count": N, "pattern": "f_%04d.webp", "width", "height" }`). The scrubber draws
+- **Canvas image-sequence scrubbing** — stills and frames in `public/hero/<version>/` (versioned so they
+  can be cached forever; bump the version when any file changes), wired up in `src/hero/choreography.js`. The stage draws
   `cover`-fit on a DPR-aware canvas, preloads progressively, and falls back to the nearest loaded frame.
 - **ffmpeg** extracts frames from approved finals (`npm run frames -- <video> <version>`).
   Not installed on this machine yet: `winget install Gyan.FFmpeg`.
