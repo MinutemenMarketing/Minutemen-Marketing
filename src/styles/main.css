@@ -1652,3 +1652,8 @@ html:not(.motion) .beat--1::before {
 .nowrap {
   white-space: nowrap;
 }
+/* A window that holds keyboard focus (the scrollable screenshot) shows it on the frame. */
+.browser:focus-within {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}

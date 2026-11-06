@@ -34,6 +34,9 @@ function mount(win) {
   frame.src = win.dataset.src;
   frame.title = win.dataset.title;
   frame.loading = 'lazy';
+  // Out of the tab order: keyboard users take "Open Live Website" beside the window instead of
+  // tabbing through someone else's whole site. Mouse, trackpad and touch still use the embed.
+  frame.tabIndex = -1;
   frame.referrerPolicy = 'strict-origin-when-cross-origin';
   frame.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox');
   const timer = setTimeout(() => win.classList.add('is-shot'), FRAME_TIMEOUT);
