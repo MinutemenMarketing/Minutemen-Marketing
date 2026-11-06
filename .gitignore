@@ -11,3 +11,6 @@ Thumbs.db
 # Archived Sept 2026 site and the raw logo drop (copied into /brand)
 /legacy/
 /Images/
+
+# 4K upscales of the approved clips (Runway); frames are extracted from these
+assets/upscaled/

@@ -8,8 +8,9 @@
     <meta name="description" content="Minutemen Marketing helps local businesses on Long Island get found and booked, with SEO, AI search (GEO), website design and development, domains and social media management." />
     <link rel="canonical" href="https://minutemenmarketing.com/" />
     <!-- @head -->
-    <link rel="preload" as="image" href="/hero/v1/k1-1920.webp" media="(min-width: 1100px)" />
-    <link rel="preload" as="image" href="/hero/v1/k1-1280.webp" media="(max-width: 1099px)" />
+    <!-- Same tiers as the hero loader (src/hero/stage.js): 1920 for 1440px+ or 2x screens 1024px+. -->
+    <link rel="preload" as="image" href="/hero/v1/k1-1920.webp" media="(min-width: 1440px), (min-width: 1024px) and (min-resolution: 2dppx)" />
+    <link rel="preload" as="image" href="/hero/v1/k1-1280.webp" media="(max-width: 1439px) and (max-resolution: 1.99dppx), (max-width: 1023px)" />
   </head>
   <body>
     <!-- @nav -->

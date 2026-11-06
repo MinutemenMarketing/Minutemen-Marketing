@@ -97,7 +97,13 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     ctx.restore();
   }
 
-  const size = () => (window.innerWidth >= 1100 ? 1920 : 1280);
+  // Frame tiers (set once at load): phones < 768px get the 960px set; large screens (1440px+ wide, or
+  // 1024px+ at 2x density, with no Save-Data) get the 1920px set upscaled from the approved clips;
+  // everyone else the 1280px set. Stills follow the same tier so every join matches.
+  const phone = window.innerWidth < 768;
+  const saveData = navigator.connection?.saveData;
+  const hd = !phone && !saveData && (window.innerWidth >= 1440 || (window.innerWidth >= 1024 && window.devicePixelRatio >= 2));
+  const size = () => (hd ? 1920 : 1280);
   const still = (name) => `${ASSETS.base}/${name}-${size()}.webp`;
 
   function resize() {
@@ -462,8 +468,6 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
   // position where it is first needed; workers always take the pending job nearest ahead of the
   // reader, within a window. Inside a clip every 4th frame comes first, so a fast scrub still has
   // frames to show while the in-betweens arrive.
-  const phone = window.innerWidth < 768;
-  const saveData = navigator.connection?.saveData;
   const AHEAD = saveData ? 10 : phone ? 18 : 30; // % of the hero to keep loaded ahead
   const BEHIND = 6; // and a little behind, for scrolling back
   const SEG = { c1: S.c1, c2: S.c2, c2b: S.c2b, c3: S.c3, c4: S.k4Hold };
@@ -486,7 +490,7 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
       for (let i = 0; i < s.count; i++) {
         const f = i / (s.count - 1);
         const t = REMAP[name] ? invert(REMAP[name], f) : f;
-        const src = `${ASSETS.base}/${phone ? 'm/' : ''}${s.dir}/${s.pattern.replace('%04d', String(i + 1).padStart(4, '0'))}`;
+        const src = `${ASSETS.base}/${phone ? 'm/' : hd ? 'hd/' : ''}${s.dir}/${s.pattern.replace('%04d', String(i + 1).padStart(4, '0'))}`;
         add(`${name}:${i}`, src, from + t * (to - from), i % 4 === 0);
       }
     }
@@ -555,6 +559,6 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     },
     circle: () => circleTarget(w, h),
     // Dev-only inspection of the loader (see main.js).
-    debug: () => ({ p, pending: jobs.length, parked: waiting.length, phone, AHEAD }),
+    debug: () => ({ p, pending: jobs.length, parked: waiting.length, phone, hd, AHEAD }),
   };
 }

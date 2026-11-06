@@ -263,7 +263,15 @@ the Vite stack and pushes to `main`, both by Noah's explicit choice.
   of the scroll position**: each frame knows where in the hero it is needed, and six workers fetch the
   nearest pending frames within a window (30% ahead on desktop, 18% on phones, 10% with Save-Data;
   6% behind), every 4th frame of a clip first. At the top of the page a phone loads 38 files (K1 + the
-  first part of C1) instead of all 475. When adding or replacing a clip, regenerate both sets.
+  first part of C1) instead of all 475. When adding or replacing a clip, regenerate every set.
+- **1920 tier (2026-11-05, Noah approved, 62 credits):** the five approved clips were run through
+  Runway's video upscaler (4096×2292, same duration and motion; tasks C1 `a87b7c1d-…`, C2 `719f0ec9-…`,
+  C2b `e91d9c0a-…`, C3 `1d4e027f-…`, C4 `b187376d-…`; files in `assets/upscaled/`, git-ignored). A
+  **1920×1074 set** in `public/hero/v1/hd/<clip>/` was extracted with the exact same procedure as the
+  1280 set (C2 from 1.8s at 24fps with the warm-gold flash; C2b's flash toning and matte lead ball at
+  1.5× the 1280 track; 15fps elsewhere; same frame counts). It loads only on screens **1440px+ wide, or
+  1024px+ at 2× density** (not with Save-Data), together with the 1920 stills; everyone else is
+  unchanged (1280 set, 960 phone set). ≈ 35MB in all, fetched in the same scroll window.
   In dev, `window.__hero.debug()` shows the loader state.
 - **ffmpeg** extracts frames from approved finals (`npm run frames -- <video> <version>`).
   Not installed on this machine yet: `winget install Gyan.FFmpeg`.
