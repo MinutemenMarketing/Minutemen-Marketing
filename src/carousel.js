@@ -34,23 +34,58 @@ export function initCarousel(root, { reduceMotion }) {
     return b;
   });
 
-  function layout() {
-    const view = root.querySelector('.carousel__view').clientWidth;
-    const slideW = slides[0].getBoundingClientRect().width;
-    const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
-    const x = view / 2 - (index * (slideW + gap) + slideW / 2);
-    track.style.transform = `translate3d(${x}px, 0, 0)`;
-    slides.forEach((s, i) => {
-      const on = i === index;
-      s.classList.toggle('is-active', on);
-      s.setAttribute('aria-current', String(on));
-    });
-    dotBtns.forEach((b, i) => b.setAttribute('aria-current', String(i === index)));
+  // A copy of the last slide before the first and of the first after the last, so the active card
+  // always has a neighbour on both sides and wrapping keeps moving forward. Copies are decorative.
+  const n = slides.length;
+  const clone = (s, logical) => {
+    const c = s.cloneNode(true);
+    c.setAttribute('aria-hidden', 'true');
+    c.inert = true;
+    c.removeAttribute('aria-roledescription');
+    c.removeAttribute('aria-label');
+    c.dataset.logical = logical;
+    c.addEventListener('click', () => go(logical === 0 ? index + 1 : index - 1));
+    return c;
+  };
+  if (n > 1) {
+    track.prepend(clone(slides[n - 1], n - 1));
+    track.append(clone(slides[0], 0));
   }
+  const items = $$('.slide', track); // physical order: [last copy], s0 … s(n-1), [first copy]
+  const offset = n > 1 ? 1 : 0;
+  let phys = index + offset;
 
+  function place(animate = true) {
+    track.classList.toggle('is-snapping', !animate);
+    const view = root.querySelector('.carousel__view').clientWidth;
+    const slideW = items[0].getBoundingClientRect().width;
+    const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+    const x = view / 2 - (phys * (slideW + gap) + slideW / 2);
+    track.style.transform = `translate3d(${x}px, 0, 0)`;
+    items.forEach((s, i) => s.classList.toggle('is-active', i === phys));
+    slides.forEach((s, i) => s.setAttribute('aria-current', String(i === index)));
+    dotBtns.forEach((b, i) => b.setAttribute('aria-current', String(i === index)));
+    if (!animate) {
+      void track.offsetWidth; // apply the jump before transitions come back
+      track.classList.remove('is-snapping');
+    }
+  }
+  const layout = () => place(false);
+
+  let snapTimer;
   function go(i) {
-    index = (i + slides.length) % slides.length;
-    layout();
+    clearTimeout(snapTimer);
+    // Past either end: slide onto the copy, then jump to the real slide without animation.
+    const target = i + offset;
+    index = (i + n) % n;
+    phys = n > 1 ? Math.max(0, Math.min(n + 1, target)) : index;
+    place(!reduceMotion);
+    if (phys !== index + offset) {
+      snapTimer = setTimeout(() => {
+        phys = index + offset;
+        place(false);
+      }, reduceMotion ? 0 : 920);
+    }
   }
 
   $('[data-prev]', root).addEventListener('click', () => go(index - 1));

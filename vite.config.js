@@ -31,6 +31,26 @@ function footerContactHtml() {
   return out.join('\n      ');
 }
 
+// Closing bands: a direct line to email and phone under the consultation button.
+function directHtml() {
+  const links = [];
+  if (SITE.workEmail) links.push(`<a href="mailto:${esc(SITE.workEmail)}">${esc(SITE.workEmail)}</a>`);
+  if (SITE.phone) links.push(`<a href="${telHref(SITE.phone)}">${esc(SITE.phone)}</a>`);
+  return links.length ? `<p class="closing__direct"><span>Or reach us:</span> ${links.join(' ')}</p>` : '';
+}
+
+// Contact page while the form has no Web3Forms key: a panel with the two direct actions.
+function formOffHtml() {
+  const actions = [];
+  if (SITE.workEmail) actions.push(`<a class="btn btn--primary btn--big" href="mailto:${esc(SITE.workEmail)}">Email us</a>`);
+  if (SITE.phone) actions.push(`<a class="btn btn--ghost btn--big" href="${telHref(SITE.phone)}">Call ${esc(SITE.phone)}</a>`);
+  return `<div class="form-off" data-form-off>
+            <p class="form-off__h">Email or call us to book.</p>
+            <p>Our online form isn&rsquo;t connected yet. Send a few lines about your business, or give us a call, and we&rsquo;ll set up your free consultation.</p>
+            ${actions.length ? `<div class="form-off__actions">${actions.join('')}</div>` : ''}
+          </div>`;
+}
+
 // Contact details from src/site-config.js. Empty values are TODO(client) and are not rendered.
 function detailsHtml() {
   const rows = [];
@@ -97,9 +117,13 @@ function pages({ dev }) {
           .replace('<!-- @footer -->', mark(read('footer')).replace('<!-- @footer-contact -->', footerContactHtml()))
           .replace('<dl class="details" data-details-list></dl>', `<dl class="details" data-details-list>${detailsHtml()}</dl>`);
         // The form shows only with a Web3Forms key (always in dev, so it can be tested).
-        if (SITE.web3formsKey || dev) {
+        // (?formoff on the dev server previews the no-key state the live site shows.)
+        out = out.replace(/<!-- @direct -->/g, directHtml());
+        if (SITE.web3formsKey || (dev && !ctx.originalUrl?.includes('formoff'))) {
           out = out.replace('<form class="form" data-form novalidate hidden>', '<form class="form" data-form novalidate>');
-          out = out.replace(/<p class="form-off" data-form-off>[\s\S]*?<\/p>/, '');
+          out = out.replace('<!-- @form-off -->', '');
+        } else {
+          out = out.replace('<!-- @form-off -->', formOffHtml());
         }
         return out;
       },
