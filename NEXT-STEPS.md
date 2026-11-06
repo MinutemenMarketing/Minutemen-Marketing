@@ -56,6 +56,9 @@ every stop shows a focus ring.
 
 ## Waiting on Noah
 
+Step-by-step instructions for items 1, 2 and 5 (plus email forwarding for hello@ and the two
+testimonial texts) are in **`LAUNCH.md`**. The domain is registered at GoDaddy, with DNS at GoDaddy.
+
 1. **Web3Forms access key** → `src/site-config.js`. The form then appears on the live site; send one
    test submission and confirm it reaches minutemenmrktng@gmail.com.
 2. **Point minutemenmarketing.com at the Vercel project** (DNS). Turns on the Smiles live embed,
