@@ -1,81 +1,82 @@
 # Next steps — minutemenmarketing.com
 
-Written 2026-11-05 at the end of the session. `CLAUDE.md` is the contract (hero spec, rules, every
-approved asset with its Runway task ID); `DESIGN.md` is the approved post-hero design. Read both first.
+Updated 2026-11-05, end of session. `CLAUDE.md` is the contract (hero spec, rules, every approved
+asset with its Runway task ID); `DESIGN.md` is the approved four-page design. Read both first.
 
-**Runway credits: 1,627** (1,302 plan + 325 purchased), confirmed at the end of the session.
-Rule unchanged: quote the cost and wait for Noah's OK before every generation.
+**Runway credits: 1,627** (1,302 plan + 325 purchased, Pro plan), checked at the end of the session.
+Nothing was spent this session. Rule unchanged: quote the cost and wait for Noah's OK before every
+generation.
 
-Preview: `npm run dev`, then http://localhost:5173/?motion (`?motion` forces the motion version even
-where the system asks for reduced motion — the Claude browser pane always does).
+Live: https://minutemen-marketing.vercel.app (Vercel auto-deploys `main`). Local: `npm run dev`, then
+http://localhost:5173. QA switches on any build: `?motion` ignores reduced motion, `?reduced` forces
+it, `?herofail` / `?herofail=script` show the load-failure still version.
 
 ---
 
 ## Done
 
-**Hero — runs start to finish on approved footage**
+**Hero**
+- Runs start to finish on the approved footage (K1 → C1 → C2 → C2b → C3 → C4 → brand globe → stacked
+  logo). Timings in `src/hero/choreography.js`; pin 1000vh desktop / 650vh phone.
+- Plays for everyone, including visitors whose system asks for reduced motion: it only moves when
+  they scroll. Reduced motion drops the extras (Lenis, word staggers, blur, grain, scrub lag).
+- Discreet **Reduce motion** chip (bottom-left) switches to the still version and is remembered on the
+  device; **Play animation** switches back. The automatic still version appears only when the hero
+  script or its frames fail to load.
+- Still version: the K1 painting full-screen with only "Minutemen Marketing. *Ready at a minute's
+  notice.*", then the stacked logo, then the site. Never a stacked list of the hero lines.
+- Opens at the top every time, full-screen after the logo-ring preloader; nothing else in view until
+  the visitor scrolls. The nav is a thin overlay that fades out while scrolling down through the hero.
+- Phones fit the minuteman's whole body and musket during the push-in and shot (code only).
+- Skip intro chip, bullet-trail progress line, Scroll cue, globe → logo hand-off without a grey wash.
+- Phone frame set (960px) and a windowed loader: frames load just ahead of the scroll position.
 
-| Scroll | Asset | Notes |
-|---|---|---|
-| 0–10% | K1 `k1-cool.png` | Beat 1: "Minutemen Marketing. / *Ready at a minute's notice.*" |
-| 10–28% | C1 `c1-pushin.mp4` | Push-in K1 → K2; hold stays on C1's last frame |
-| 32–44% | C2 `c2-firing.mp4` | Trimmed start, warm-gold flash, no audio |
-| 44–58% | C2b `c2b-follow.mp4` | Follow the bullet; chrome ball repainted as matte lead (free). Beat 2 |
-| 58–72% | C3 `c3-climb.mp4` | Climb through clouds; white stretch compressed; globe settles onto the 50% circle |
-| 72–84% | C4 `c4-orbit.mp4` | One orbit; hidden stretch compressed. Beat 3 while the ball comes round the front |
-| 84–100% | K4 → brand globe → logo | Slow fades on one circle, no size jump, no visible edges |
-
-- One pinned, scrubbed timeline; every timing in `src/hero/choreography.js`.
-- 5-frame dissolve at every join; one shared canvas grade and one grain layer.
-- Large Caslon beats with italic key phrases, staggered word reveals, soft invisible scrim.
-- Logo-ring preloader, bullet-trail progress line, "Scroll" cue.
-- Reduced-motion fallback: no pinning, all three lines stacked.
-- Checked at 1440×900, 861×906 and 375×812; no horizontal scroll.
-
-**Post-hero site** (per `DESIGN.md`): nav, intro, plain-language services, Ready / Aim / Fire / Heard
-chapters (one brief pin each), work plates from the real builds, Work → Contact crossfade, two-column
-contact form that never reports a false success, footer. A creative-director pass fixed ten things
-(listed in `DESIGN.md`); before/after sheet: `assets/drafts/review/before-after.png`.
+**Site** (four pages, shared nav + footer, per `DESIGN.md`)
+- Home: hero, five service cards, client-work carousel (factual highlights; a labelled draft quote in
+  dev only), Meet the Founders, closing "A marketing plan built around your business."
+- About: why we started, the founders (`#founders`), how we work.
+- Portfolio: Beauty & Wellness *addict* NY (live iframe) and Smiles by Nilou in browser windows.
+  Smiles allows framing only from minutemenmarketing.com, so elsewhere its window shows a full-page
+  capture that scrolls inside the window (desktop and phone captures in `public/work/`); on our domain
+  it switches to the live embed by itself. Wheel and touch scroll the window, not the page.
+- Contact: work email minutemenmrktng@gmail.com and (631) 882-8022 (tap to call) on Contact and in
+  every footer. The form is built (Web3Forms, honeypot, real error state) but **hidden until the key
+  arrives**; until then the page says to email or call.
+- Logos: traced vectors in `public/brand/` (stacked, horizontal, horizontal-light, mark).
+- SEO: unique title, description, canonical and H1 per page; OG image; `sitemap.xml` with the four
+  routes; `robots.txt`; Vercel `cleanUrls` so each route loads directly.
+- Copy passed through stop-slop (protected: the three hero lines and the closing heading).
+- Smiles by Nilou: the frame-ancestors header change was promoted by Noah and verified (site unchanged
+  otherwise).
 
 ## Open
 
-- ~~Hero frames total ≈ 20MB for everyone~~ — **fixed 2026-11-05 (item 1):** phones get a 960px
-  set (≈ 9.2MB total) and everyone loads only just ahead of the scroll position (a phone loads 38
-  files at the top instead of 475). Desktop frames are unchanged.
-- The logo circle is still the placeholder PNG (`brand/logo-square.png`).
-- All five clips are **720p drafts** (Kling 4.0).
-- Work → Contact crossfade is a placeholder (battlefield → navy). Planned: Smiles by Nilou's real
-  old site → the site we built. Wayback has no usable capture (images and styles weren't archived),
-  so Noah will send a screenshot. Never use a fake "before".
-- Launch facts still missing (see item 6).
+1. **Web3Forms access key** (Noah, today). Put it in `src/site-config.js` → the form appears on the live
+   site. Then send one test submission and confirm it reaches the inbox.
+2. **Point minutemenmarketing.com at the Vercel project.** Needed for the Smiles live embed and so the
+   canonical/OG URLs match the site.
+3. **1080p clips — quote ready, not approved, nothing spent.** Runway's video upscaler on the approved
+   clips keeps motion and joins identical (no re-render):
 
----
+   | Clip | File | Length | Cost at 2 credits/s |
+   |---|---|---|---|
+   | C1 | `assets/clips/c1-pushin.mp4` | 6.04 s | ~12–14 |
+   | C2 | `assets/clips/c2-firing.mp4` | 5.04 s | ~10–12 |
+   | C2b | `assets/clips/c2b-follow.mp4` | 6.04 s | ~12–14 |
+   | C3 | `assets/clips/c3-climb.mp4` | 8.04 s | ~16–18 |
+   | C4 | `assets/clips/c4-orbit.mp4` | 6.04 s | ~12–14 |
+   | **Total** | | **31.2 s** | **~62–72 credits** (range covers per-second rounding) |
 
-## Tomorrow, in order
-
-1. ~~**Cut the hero download size.**~~ **Done 2026-11-05.** Phones use 960px frames (720px tested as
-   too soft once a phone scales the frame to its height); frames load just ahead of the scroll
-   position; desktop frames and drawing unchanged. Still to confirm on a real phone over cellular.
-2. **Million-dollar hero polish** — seamless joins with one shared grade and grain, Caslon text with
-   italic key phrases and staggered word reveals, the logo-ring preloader, the bullet-trail progress
-   line, slow globe-to-logo fades.
-   *Status: built on 2026-11-05 (see Done). Tomorrow: review it in a real browser and refine what
-   doesn't feel right — don't rebuild it.*
-3. **Logo SVG.** Recraft V4.1 Vector (quote first; listed at ~8 credits) or trace by hand from
-   `brand/logo-square.png`. Then swap it into the hero's logo stage and the site.
-4. **Creative-director pass on the whole site vs pear.no: top 10 fixes.**
-   *Status: the first pass was done on 2026-11-05 (ten fixes in `DESIGN.md`). Tomorrow: a second pass
-   on what's left, with fresh before/after screenshots.*
-5. **Quote 1080p finals for C1, C2, C2b, C3 and C4 as one batch.** Same start/end frames and prompts as
-   the approved drafts (all recorded in `CLAUDE.md`). Kling 4.0 has charged 12 credits/s at 720p; check
-   the 1080p rate before quoting. C2b's matte-ball repaint and C2's gold flash must be re-applied at
-   extraction.
-6. **Launch TODOs from Noah** (all marked `TODO(client)` in the code):
-   - real email address (currently `hello@minutemenmarketing.com`, unconfirmed)
-   - phone number (or confirm there is none)
-   - Instagram and LinkedIn URLs
-   - real turnaround time for the speed line ("Most sites go live in …")
-   - client permissions for each work plate, plus towns and live URLs; Ray Nail Spa (a pitch site)
-     stays out unless shown labelled as a concept; Nilou's permission for the before/after
-   - testimonials: up to three real, attributed quotes (the section stays hidden until then)
-   - also: the inquiry endpoint (Resend keys or a webhook) and the production domain
+   Notes: the upscaler outputs up to 4K; we'd scale frames down to 1920px. Noah's Pro plan lists
+   "unlimited 4K video upscaling" in the Runway web app, so running it there may cost 0 credits; the
+   API route bills per second. The approved clips must be uploaded first (free). C2b's matte-ball
+   repaint and C2's gold flash are applied at frame extraction, so they carry over. Desktop frames
+   would grow about 2.25× in pixels — decide whether 1920px goes to large screens only.
+4. **Still from Noah:** other email, Instagram, LinkedIn, other links (hidden until filled); founder
+   photos and surnames; real testimonials (name, business, town, permission); other finished client
+   sites with live production domains (Muses Nails, Wealth Advisory Group, Gym Grindz, Bang Bang
+   Barbershop exist only as `.vercel.app` builds; Ray Nail Spa was a pitch).
+5. **QA in a real, visible browser:** the Claude browser pane pauses animation frames while hidden, so
+   live fades were verified structurally (classes, pin lengths, scroll position, full-screen hero) and
+   on localhost with frames running. Look once in Chrome with Windows "Animation effects" on and off.
+6. Empty folder `C:\c` left over from a path mix-up; safe to delete.
