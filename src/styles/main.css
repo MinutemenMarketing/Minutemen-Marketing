@@ -1,6 +1,14 @@
 /* Minutemen Marketing — tokens from DESIGN.md. One ink (navy) on paper; the gold is the
    shot-line dot only. Caslon for display, Hanken Grotesk for everything else. */
+/* Mobile browser chrome: --bar is the height the address/tool bars take when shown (0 where the
+   browser has no large/small viewport units). The pinned hero is sized to the LARGE viewport, so it
+   never leaves a strip when the bars collapse; anything anchored to its bottom edge lifts by --bar so
+   the expanded bar can't cover it. --safe-* keep clear of the notch and the home indicator. */
 :root {
+  --bar: 0px;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
   --paper: #f7f4ec;
   --paper-2: #efeadf; /* mats behind work plates — never text */
   --ink: #032249;
@@ -500,14 +508,14 @@ html:not(.motion) .beat--1::before {
 }
 
 .motion .hero {
-  background: var(--paper);
+  background: var(--navy-deep);
 }
 .motion .hero__stage {
   position: relative;
-  height: 100vh;
-  height: 100svh;
+  height: 100vh; /* fallback */
+  height: 100lvh;
   overflow: hidden;
-  background: var(--paper);
+  background: var(--navy-deep);
 }
 .motion .hero__canvas {
   display: block;
@@ -564,7 +572,7 @@ html:not(.motion) .beat--1::before {
 /* Beat 2 plays over C2b, where the ball fills the centre: keep it low and clear of the ball. */
 .motion .beat--2 {
   top: auto;
-  bottom: clamp(64px, 12vh, 136px);
+  bottom: calc(clamp(64px, 12vh, 136px) + var(--bar) + var(--safe-b));
   color: var(--ink);
 }
 /* Beat 3 sits below the globe; main.js sets --below from the circle target. */
@@ -587,7 +595,7 @@ html:not(.motion) .beat--1::before {
     max-width: none;
   }
   .motion .beat--2 {
-    bottom: clamp(56px, 10vh, 120px);
+    bottom: calc(clamp(56px, 10vh, 120px) + var(--bar));
     width: min(34%, 520px);
   }
 }
@@ -596,9 +604,9 @@ html:not(.motion) .beat--1::before {
 .motion .hero__trail {
   display: block;
   position: absolute;
-  left: var(--gutter);
-  right: var(--gutter);
-  bottom: 24px;
+  left: calc(var(--gutter) + var(--safe-l));
+  right: calc(var(--gutter) + var(--safe-r));
+  bottom: calc(24px + var(--bar) + var(--safe-b));
   height: 1px;
   pointer-events: none;
 }
@@ -623,7 +631,7 @@ html:not(.motion) .beat--1::before {
   display: block;
   position: absolute;
   left: 50%;
-  bottom: 44px;
+  bottom: calc(44px + var(--bar) + var(--safe-b));
   transform: translateX(-50%);
   font: 600 0.6875rem/1 var(--sans);
   letter-spacing: 0.22em;
@@ -648,8 +656,8 @@ html:not(.motion) .beat--1::before {
   align-items: center;
   gap: 10px;
   position: absolute;
-  right: var(--gutter);
-  bottom: 34px;
+  right: calc(var(--gutter) + var(--safe-r));
+  bottom: calc(34px + var(--bar) + var(--safe-b));
   z-index: 3;
   min-height: 40px;
   padding: 0 16px;
@@ -1554,8 +1562,8 @@ html:not(.motion) .beat--1::before {
 /* Hero motion toggle: discreet, bottom-left, in both the story and the still version. */
 .hero__motion {
   position: absolute;
-  left: var(--gutter);
-  bottom: 34px;
+  left: calc(var(--gutter) + var(--safe-l));
+  bottom: calc(34px + var(--bar) + var(--safe-b));
   z-index: 3;
   min-height: 40px;
   padding: 0 14px;
@@ -1584,7 +1592,7 @@ html:not(.motion) .beat--1::before {
 }
 @media (max-width: 600px) {
   .motion .hero__cue {
-    bottom: 96px;
+    bottom: calc(96px + var(--bar) + var(--safe-b));
   }
 }
 
@@ -1656,4 +1664,10 @@ html:not(.motion) .beat--1::before {
 .browser:focus-within {
   outline: 2px solid var(--ink);
   outline-offset: 3px;
+}
+
+@supports (height: 100lvh) {
+  :root {
+    --bar: calc(100lvh - 100svh);
+  }
 }

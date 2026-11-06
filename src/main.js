@@ -12,6 +12,9 @@ import { initContact } from './contact.js';
 import { initFrames } from './portfolio.js';
 
 gsap.registerPlugin(ScrollTrigger);
+// Mobile address bars resize the viewport while scrolling; the hero is sized to the large viewport,
+// so ScrollTrigger doesn't need to re-measure (that would jump the scrubbed story).
+ScrollTrigger.config({ ignoreMobileResize: true });
 
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];

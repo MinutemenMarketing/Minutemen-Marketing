@@ -108,6 +108,9 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
 
   function resize() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    // Toolbar show/hide fires resize without changing the (large-viewport) stage: skip it, because
+    // resetting canvas.width would blank the frame for a moment.
+    if (canvas.clientWidth === w && canvas.clientHeight === h && canvas.width === Math.round(w * dpr)) return;
     w = canvas.clientWidth;
     h = canvas.clientHeight;
     canvas.width = Math.round(w * dpr);
@@ -548,6 +551,9 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
   }
 
   window.addEventListener('resize', resize);
+  // The mobile toolbar resizes the visual viewport; re-measure the canvas and redraw the current
+  // frame (no scroll or ScrollTrigger refresh is involved).
+  window.visualViewport?.addEventListener('resize', resize);
   resize();
   load();
 
