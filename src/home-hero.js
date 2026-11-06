@@ -8,13 +8,16 @@ import { createStage } from './hero/stage.js';
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 
-export function initHero({ lenis, nav, navH }) {
+// `reduced`: the visitor prefers reduced motion. The story still plays (it only moves when they
+// scroll), but without the extras: plain opacity fades, no word stagger, no grain, no scrub lag.
+export function initHero({ scroller, nav, navH, reduced }) {
   const hero = $('.hero');
-  hero.style.setProperty('--grain', `url(${grainTile()})`);
+  if (!reduced) hero.style.setProperty('--grain', `url(${grainTile()})`);
   $$('[data-words]').forEach(splitWords);
 
-  const HIDDEN = { autoAlpha: 0, y: 16, filter: 'blur(6px)' };
-  const SHOWN = { autoAlpha: 1, y: 0, filter: 'blur(0px)' };
+  const HIDDEN = reduced ? { autoAlpha: 0 } : { autoAlpha: 0, y: 16, filter: 'blur(6px)' };
+  const SHOWN = reduced ? { autoAlpha: 1 } : { autoAlpha: 1, y: 0, filter: 'blur(0px)' };
+  const stagger = (n) => (reduced ? 0 : n);
   const fade = CHOREO.textFade;
   const words = (beat) => $$(`[data-beat="${beat}"] .w`);
 
@@ -30,7 +33,7 @@ export function initHero({ lenis, nav, navH }) {
     gsap.to(ring, { strokeDashoffset: 0, duration: 0.4, ease: 'power2.out' });
     setTimeout(() => {
       preload.classList.add('is-done');
-      gsap.fromTo(words(1), HIDDEN, { ...SHOWN, duration: 1.1, ease: 'power2.out', stagger: 0.06, delay: 0.35 });
+      gsap.fromTo(words(1), HIDDEN, { ...SHOWN, duration: reduced ? 0.6 : 1.1, ease: 'power2.out', stagger: stagger(0.06), delay: 0.35 });
     }, 450);
   };
   // If the story can't play (frames fail, or nothing arrives in 10s), drop to the still version:
@@ -43,9 +46,10 @@ export function initHero({ lenis, nav, navH }) {
     gsap.killTweensOf([ring, ...words(1)]);
     gsap.set($$('.beat, .beat .w'), { clearProps: 'all' });
     document.documentElement.classList.remove('motion');
+    document.documentElement.classList.add('hero-failed');
     nav.classList.remove('is-hidden');
     ScrollTrigger.refresh();
-    lenis.resize();
+    scroller.resize();
   };
 
   let haveFirst = false;
@@ -75,9 +79,7 @@ export function initHero({ lenis, nav, navH }) {
   const skip = $('[data-skip]');
   skip.addEventListener('click', () => {
     const intro = $('#main');
-    lenis.resize(); // the pin may have grown the page since Lenis last measured
-    const y = intro.getBoundingClientRect().top + window.scrollY - navH();
-    lenis.scrollTo(y, { immediate: true, force: true });
+    scroller.to(intro.getBoundingClientRect().top + window.scrollY - navH());
     ScrollTrigger.update();
     ScrollTrigger.getById('hero')?.getTween()?.progress(1);
     const h = $('h1, h2', intro);
@@ -109,7 +111,7 @@ export function initHero({ lenis, nav, navH }) {
         end: `+=${length}%`,
         id: 'hero',
         pin: '.hero__stage',
-        scrub: CHOREO.scrub,
+        scrub: reduced ? true : CHOREO.scrub,
         invalidateOnRefresh: true,
       },
     });
@@ -136,8 +138,8 @@ export function initHero({ lenis, nav, navH }) {
     for (const n of [2, 3]) {
       const el = `[data-beat="${n}"]`;
       const ws = words(n);
-      tl.set(el, { autoAlpha: 1, y: 0, filter: 'blur(0px)' }, b[n].in);
-      tl.fromTo(ws, HIDDEN, { ...SHOWN, duration: fade, stagger: (fade * 0.5) / ws.length }, b[n].in);
+      tl.set(el, SHOWN, b[n].in);
+      tl.fromTo(ws, HIDDEN, { ...SHOWN, duration: fade, stagger: stagger((fade * 0.5) / ws.length) }, b[n].in);
       tl.to(el, { ...HIDDEN, duration: fade }, b[n].out);
     }
     gsap.set(['[data-beat="2"]', '[data-beat="3"]'], { autoAlpha: 0 });
@@ -146,7 +148,7 @@ export function initHero({ lenis, nav, navH }) {
   // Nav: on at load; fades out as the reader scrolls down into the hero, back on scroll-up and for
   // good once the hero ends. Keyboard focus always brings it back.
   let lastY = 0;
-  lenis.on('scroll', ({ scroll: y }) => {
+  scroller.on((y) => {
     const pin = ScrollTrigger.getById('hero');
     const inHero = pin && y > 24 && y < pin.end - 1;
     if (!inHero || y < lastY - 2) nav.classList.remove('is-hidden');
@@ -159,7 +161,7 @@ export function initHero({ lenis, nav, navH }) {
   // (it moves every section below it).
   ScrollTrigger.sort();
   ScrollTrigger.refresh();
-  lenis.resize();
+  scroller.resize();
 }
 
 // Wrap each word in a span (keeping <em> and other inline markup) so words can reveal in turn.

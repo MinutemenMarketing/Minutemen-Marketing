@@ -15,9 +15,10 @@ gsap.registerPlugin(ScrollTrigger);
 
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
-// `?motion` forces the motion path for QA (the Claude browser pane always reports reduced motion).
+// Reduced-motion preference. QA switches: `?motion` ignores it, `?reduced` forces it.
+const qs = new URLSearchParams(location.search);
 const reduceMotion =
-  window.matchMedia('(prefers-reduced-motion: reduce)').matches && !new URLSearchParams(location.search).has('motion');
+  (window.matchMedia('(prefers-reduced-motion: reduce)').matches && !qs.has('motion')) || qs.has('reduced');
 const nav = $('[data-nav]');
 const navH = () => nav.offsetHeight;
 
@@ -52,59 +53,120 @@ initFrames($$('[data-frame]'));
 const form = $('[data-form]');
 if (form) initContact(form);
 
-/* ---------- Motion (skipped entirely with reduced motion) ---------- */
-if (!reduceMotion) {
-  document.documentElement.classList.add('motion');
-  initMotion();
+/* ---------- Motion ----------
+   The hero story plays for everyone: it only moves when the visitor scrolls. Reduced motion drops
+   the extras (Lenis smoothing, word staggers, blur, grain, the section line draws). The still
+   version is the visitor's own choice (the hero's "Reduce motion" toggle, remembered) or the
+   automatic fallback when the story fails to load. */
+const html = document.documentElement;
+const wantsStill = readPref() === 'still';
+let lenis = null;
+if (reduceMotion) html.classList.add('reduced');
+else initSmooth();
+
+// One scroll interface for the page, with or without Lenis.
+const scroller = {
+  on: (cb) =>
+    lenis ? lenis.on('scroll', ({ scroll }) => cb(scroll)) : addEventListener('scroll', () => cb(scrollY), { passive: true }),
+  to: (y) => {
+    if (lenis) {
+      lenis.resize(); // the pin may have grown the page since Lenis last measured
+      lenis.scrollTo(y, { immediate: true, force: true });
+    } else window.scrollTo({ top: y, behavior: 'instant' });
+  },
+  resize: () => lenis?.resize(),
+};
+initPage();
+
+function readPref() {
+  try {
+    return localStorage.getItem('mm-hero');
+  } catch {
+    return null;
+  }
 }
 
-function initMotion() {
-  const lenis = new Lenis({ lerp: CHOREO.lenisLerp });
+function initSmooth() {
+  lenis = new Lenis({ lerp: CHOREO.lenisLerp });
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add((time) => lenis.raf(time * 1000));
   gsap.ticker.lagSmoothing(0);
   if (import.meta.env.DEV) window.__lenis = lenis;
+}
 
-  // In-page anchor links (#main, #founders) travel with Lenis and land focus on the target heading.
+function initPage() {
+  // In-page anchor links (#main, #founders) land under the nav and move focus to the heading.
   $$('a[href^="#"]').forEach((a) =>
     a.addEventListener('click', (e) => {
       const target = $(a.hash);
       if (!target) return;
       e.preventDefault();
-      lenis.scrollTo(target, { offset: -navH(), onComplete: () => focusHeading(target) });
+      const y = target.getBoundingClientRect().top + scrollY - navH();
+      if (lenis) lenis.scrollTo(y, { onComplete: () => focusHeading(target) });
+      else (window.scrollTo({ top: y, behavior: 'instant' }), focusHeading(target));
     }),
   );
   // Arriving with a hash (/about#founders): land under the nav.
   if (location.hash && $(location.hash)) {
-    requestAnimationFrame(() => lenis.scrollTo($(location.hash), { immediate: true, offset: -navH() }));
+    requestAnimationFrame(() => scroller.to($(location.hash).getBoundingClientRect().top + scrollY - navH()));
   }
 
-  // The hero (home only) loads its own module, so other pages never download it.
-  // If that script fails to load or throws, the hero stays the still version (no .motion class).
+  // Home: the hero opens at the top, full-screen, every time (no restored mid-story position).
   if ($('.hero')) {
-    const qa = new URLSearchParams(location.search).get('herofail'); // ?herofail=script simulates it
-    (qa === 'script' ? Promise.reject(new Error('QA: hero script failure')) : import('./home-hero.js'))
-      .then((m) => m.initHero({ lenis, nav, navH }))
-      .catch(() => {
-        document.documentElement.classList.remove('motion');
-        ScrollTrigger.refresh();
-        lenis.resize();
-      });
+    if (!location.hash) {
+      history.scrollRestoration = 'manual';
+      window.scrollTo(0, 0);
+    }
+    initMotionToggle();
+    if (!wantsStill) {
+      html.classList.add('motion');
+      // The hero loads its own module, so other pages never download it. If it fails to load or
+      // throws, the hero becomes the still version.
+      const qa = new URLSearchParams(location.search).get('herofail'); // ?herofail=script simulates it
+      (qa === 'script' ? Promise.reject(new Error('QA: hero script failure')) : import('./home-hero.js'))
+        .then((m) => m.initHero({ scroller, nav, navH, reduced: reduceMotion }))
+        .catch(() => {
+          html.classList.remove('motion');
+          html.classList.add('hero-failed');
+          ScrollTrigger.refresh();
+          scroller.resize();
+        });
+    }
   }
 
-  // Shot lines draw once as a section arrives.
-  $$('.opener').forEach((op) => {
-    gsap.from($('.shot', op), {
-      scaleX: 0,
-      duration: 0.9,
-      ease: 'power2.out',
-      scrollTrigger: { trigger: op, start: 'top 85%', once: true },
+  // Shot lines draw once as a section arrives (with reduced motion they are simply there).
+  if (!reduceMotion) {
+    $$('.opener').forEach((op) => {
+      gsap.from($('.shot', op), {
+        scaleX: 0,
+        duration: 0.9,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: op, start: 'top 85%', once: true },
+      });
     });
-  });
+  }
 
   // Fonts and lazy images change heights; re-measure once they settle.
   document.fonts?.ready.then(() => ScrollTrigger.refresh());
   window.addEventListener('load', () => ScrollTrigger.refresh());
+}
+
+// The hero's discreet "Reduce motion" / "Play animation" toggle, remembered on this device.
+function initMotionToggle() {
+  const btn = $('[data-motion-toggle]');
+  if (!btn) return;
+  btn.textContent = wantsStill ? 'Play animation' : 'Reduce motion';
+  btn.setAttribute('aria-pressed', String(wantsStill));
+  btn.addEventListener('click', () => {
+    try {
+      if (wantsStill) localStorage.removeItem('mm-hero');
+      else localStorage.setItem('mm-hero', 'still');
+    } catch {
+      // storage blocked: the choice lasts for this visit only
+    }
+    window.scrollTo(0, 0);
+    location.reload();
+  });
 }
 
 function focusHeading(target) {
