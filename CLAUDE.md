@@ -264,6 +264,11 @@ the Vite stack and pushes to `main`, both by Noah's explicit choice.
   nearest pending frames within a window (30% ahead on desktop, 18% on phones, 10% with Save-Data;
   6% behind), every 4th frame of a clip first. At the top of the page a phone loads 38 files (K1 + the
   first part of C1) instead of all 475. When adding or replacing a clip, regenerate every set.
+- **Mobile edge-to-edge (2026-11-05):** the pinned stage and canvas are `100lvh` (largest viewport,
+  `100vh` fallback) on a navy ground, so collapsing/expanding the browser bar never shows a strip.
+  Bottom-anchored controls lift by `--bar` (`100lvh - 100svh`) plus the safe-area inset;
+  `viewport-fit=cover` on every page; `ScrollTrigger.config({ ignoreMobileResize: true })`; the canvas
+  redraws on `visualViewport` resize. Never size the pinned hero with `svh`/`dvh`.
 - **1920 tier (2026-11-05, Noah approved, 62 credits):** the five approved clips were run through
   Runway's video upscaler (4096×2292, same duration and motion; tasks C1 `a87b7c1d-…`, C2 `719f0ec9-…`,
   C2b `e91d9c0a-…`, C3 `1d4e027f-…`, C4 `b187376d-…`; files in `assets/upscaled/`, git-ignored). A

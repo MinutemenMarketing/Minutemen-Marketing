@@ -146,6 +146,10 @@ Do these on your phone and your computer once Steps 1–2 are done.
 1. **Open https://minutemenmarketing.com** — the padlock shows (HTTPS), the painted hero plays as you
    scroll. Also open **https://www.minutemenmarketing.com** — it should jump to the address without
    www.
+   **On your phone (iPhone and, if you can, an Android):** scroll slowly down through the whole hero
+   and back up, so the browser's address bar hides and reappears. The picture should always reach
+   the very bottom of the screen, with no light strip, and the Skip intro / Reduce motion buttons
+   should stay visible above the home bar.
 2. **The four pages load directly:** /about, /portfolio, /contact (type them in the address bar).
 3. **Contact form test:** on /contact fill in the form with your own details and send. You should see
    "Thanks, … We got your message …" on the page, and the email should arrive in your inbox within a

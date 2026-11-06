@@ -54,6 +54,13 @@ will serve it. No horizontal scroll at 375px on any page; every link resolves (i
 `/about#founders`, mailto, tel, both client sites); keyboard tab order starts at Skip to content and
 every stop shows a focus ring.
 
+**Mobile edge-to-edge hero (fixed 2026-11-05):** the white strip at the bottom while the hero played
+came from sizing the pinned stage to the small viewport (`100svh`); when the address bar collapsed,
+the page background showed below it. Now `100lvh` on navy, with chips/cue/trail lifted clear of the
+bar and safe areas. Tested live at 375×667, 390×844 and 430×932 with the bar shown and hidden at the
+start, middle and end of the hero: 27/27 checks pass, no scroll jumps. Chrome emulation can't model a
+real collapsing bar, so give it one scroll on a real iPhone and Android phone (LAUNCH.md step 5).
+
 ## Waiting on Noah
 
 Step-by-step instructions for items 1, 2 and 5 (plus email forwarding for hello@ and the two
