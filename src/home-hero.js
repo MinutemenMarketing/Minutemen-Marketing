@@ -163,10 +163,13 @@ export function initHero({ scroller, nav, navH, reduced }) {
   nav.addEventListener('focusin', () => nav.classList.remove('is-hidden'));
 
   // This module loads after the page's first layout pass, so measure again now that the pin exists
-  // (it moves every section below it).
-  ScrollTrigger.sort();
-  ScrollTrigger.refresh();
-  scroller.resize();
+  // (it moves every section below it). On the next frame, so the setup above and this layout pass
+  // run as two short tasks instead of one long one (the page is at the top; nothing jumps).
+  requestAnimationFrame(() => {
+    ScrollTrigger.sort();
+    ScrollTrigger.refresh();
+    scroller.resize();
+  });
 }
 
 // Wrap each word in a span (keeping <em> and other inline markup) so words can reveal in turn.
