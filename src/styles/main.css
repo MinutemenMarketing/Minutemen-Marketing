@@ -1671,3 +1671,17 @@ html:not(.motion) .beat--1::before {
     --bar: calc(100lvh - 100svh);
   }
 }
+
+/* 404: the shot line, one sentence, the way home. Fills the screen above the footer. */
+.notfound__inner {
+  display: grid;
+  justify-items: start;
+  align-content: center;
+  gap: 28px;
+  min-height: 100svh;
+  padding-top: calc(var(--nav-h) + 48px);
+  padding-bottom: var(--band);
+}
+.notfound__inner .opener {
+  margin-bottom: 0;
+}

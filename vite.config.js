@@ -13,6 +13,7 @@ const PAGES = {
   about: { file: 'about/index.html', path: '/about' },
   portfolio: { file: 'portfolio/index.html', path: '/portfolio' },
   contact: { file: 'contact/index.html', path: '/contact' },
+  notFound: { file: '404.html', path: '/404' }, // Vercel serves it for unknown addresses
 };
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
@@ -100,16 +101,28 @@ function pages({ dev }) {
         const desc = html.match(/<meta name="description" content="([^"]*)"/)?.[1] || '';
         const url = `${ORIGIN}${current === '/' ? '/' : current}`;
         const head = [
-          '<link rel="icon" href="/brand/logo-mark.svg" type="image/svg+xml" />',
+          // Icons: .ico for old browsers and crawlers, SVG for modern tabs, PNG for iOS/Android.
+          '<link rel="icon" href="/favicon.ico" sizes="32x32 48x48" />',
+          '<link rel="icon" href="/favicon.svg" type="image/svg+xml" />',
+          '<link rel="apple-touch-icon" href="/apple-touch-icon.png" />',
+          '<link rel="manifest" href="/site.webmanifest" />',
+          // Share cards (iMessage, Instagram/Facebook, LinkedIn read og:*; X reads twitter:*).
           '<meta property="og:type" content="website" />',
           '<meta property="og:site_name" content="Minutemen Marketing" />',
+          '<meta property="og:locale" content="en_US" />',
           `<meta property="og:title" content="${title}" />`,
           `<meta property="og:description" content="${desc}" />`,
           `<meta property="og:url" content="${url}" />`,
           `<meta property="og:image" content="${ORIGIN}/og.jpg" />`,
+          `<meta property="og:image:secure_url" content="${ORIGIN}/og.jpg" />`,
+          '<meta property="og:image:type" content="image/jpeg" />',
           '<meta property="og:image:width" content="1200" />',
           '<meta property="og:image:height" content="630" />',
+          '<meta property="og:image:alt" content="The Minutemen Marketing logo: a minuteman with a musket inside an open ring" />',
           '<meta name="twitter:card" content="summary_large_image" />',
+          `<meta name="twitter:title" content="${title}" />`,
+          `<meta name="twitter:description" content="${desc}" />`,
+          `<meta name="twitter:image" content="${ORIGIN}/og.jpg" />`,
         ].join('\n    ');
         let out = html
           .replace('<!-- @head -->', head)
