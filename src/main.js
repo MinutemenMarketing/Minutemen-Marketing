@@ -10,6 +10,23 @@ import { CHOREO } from './hero/choreography.js';
 import { initCarousel } from './carousel.js';
 import { initContact } from './contact.js';
 import { initFrames } from './portfolio.js';
+import { inject as injectAnalytics } from '@vercel/analytics';
+import { injectSpeedInsights } from '@vercel/speed-insights';
+
+// Vercel Web Analytics + Speed Insights (free tier), production builds only, after the page has
+// loaded so they never compete with the hero. Web Analytics must be switched on once in the Vercel
+// dashboard (Project → Analytics → Enable); until then its script 404s, so it loads only when present.
+if (import.meta.env.PROD) {
+  addEventListener('load', () => {
+    const idle = window.requestIdleCallback || ((f) => setTimeout(f, 1500));
+    idle(() => {
+      injectSpeedInsights();
+      fetch('/_vercel/insights/script.js', { method: 'HEAD' })
+        .then((r) => r.ok && injectAnalytics())
+        .catch(() => {});
+    });
+  });
+}
 
 gsap.registerPlugin(ScrollTrigger);
 // Mobile address bars resize the viewport while scrolling; the hero is sized to the large viewport,
