@@ -58,7 +58,9 @@ export function initCarousel(root, { reduceMotion }) {
   function place(animate = true) {
     track.classList.toggle('is-snapping', !animate);
     const view = root.querySelector('.carousel__view').clientWidth;
-    const slideW = items[0].getBoundingClientRect().width;
+    // Layout width, not the on-screen box: side cards are scaled to 0.92, which would shift the
+    // active card off centre by 4% of a card per slide.
+    const slideW = items[0].offsetWidth;
     const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
     const x = view / 2 - (phys * (slideW + gap) + slideW / 2);
     track.style.transform = `translate3d(${x}px, 0, 0)`;

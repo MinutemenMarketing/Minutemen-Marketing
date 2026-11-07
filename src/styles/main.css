@@ -1706,3 +1706,172 @@ html:not(.motion) .beat--1::before {
 .notfound__inner .opener {
   margin-bottom: 0;
 }
+
+/* ---------- Phones and small tablets (≤ 767px): one centred column ----------
+   Headings, eyebrows, names, roles, buttons, photos and windows sit on the centre line. Paragraphs
+   longer than about three lines stay left-aligned inside the centred column, for reading. Every tap
+   target is at least 44px. (The hero is governed by its own spec and is not changed here.) */
+.projects {
+  padding-inline: 0; /* the list's default indent pushed each project 40px right */
+}
+.nav__mark {
+  padding-block: 5px; /* 34px logo, 44px target */
+}
+.founder-link {
+  width: 44px;
+  height: 44px;
+  margin: -10px -4px;
+}
+.carousel__dot {
+  width: 44px;
+}
+.carousel__dot::before {
+  margin-inline: 8px;
+}
+.closing__direct a,
+.details dd a,
+.footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+.footer a {
+  padding-block: 0;
+}
+.footer {
+  padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+}
+@media (max-width: 767px) {
+  .opener {
+    justify-content: center;
+  }
+  .h2,
+  .page__h,
+  .closing__h {
+    margin-inline: auto;
+    text-align: center;
+  }
+  /* short ledes (one to three lines) centre; the founders lede is longer and stays left */
+  .page__head .lede,
+  .notfound__inner .lede,
+  .closing__text {
+    margin-inline: auto;
+    text-align: center;
+  }
+  .page__head,
+  .notfound__inner,
+  .closing__inner,
+  .founders__body,
+  .project__text {
+    justify-items: center;
+  }
+  .prose,
+  .lede,
+  .project__text > p:not([class]) {
+    margin-inline: auto;
+  }
+
+  /* Service cards: number, name and the two-to-three-line copy on the centre line. */
+  .card {
+    justify-items: center;
+    text-align: center;
+  }
+  .card::before {
+    transform-origin: center;
+  }
+  .card p {
+    margin-inline: auto;
+  }
+
+  /* Carousel cards: name and meta centred; the longer description stays left. */
+  .slide__name,
+  .slide__meta {
+    text-align: center;
+  }
+
+  /* Home founders: the matched pair centred under the rule, names and roles centred. */
+  .founders__names {
+    justify-content: center;
+  }
+  .founder {
+    justify-items: center;
+    text-align: center;
+  }
+  .founders__names dt {
+    justify-content: center;
+  }
+  .founders__body > .btn,
+  .work__cta .btn,
+  .form .btn,
+  .notfound__inner .btn,
+  .closing__inner .btn {
+    justify-self: stretch;
+    width: 100%;
+  }
+  .work__cta {
+    justify-content: center;
+  }
+
+  /* About: each founder stacked, photo above name, all centred. */
+  .person {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+    gap: 18px;
+    padding-block: 36px;
+  }
+  .person .portrait {
+    width: clamp(160px, 46vw, 200px);
+  }
+  .person__name {
+    justify-content: center;
+  }
+
+  /* Portfolio: number, name, meta and link centred; the two paragraphs stay left. */
+  .project__num,
+  .project__name,
+  .project__meta {
+    text-align: center;
+  }
+  .project__text {
+    max-width: none;
+  }
+  .project__text > p:not([class]) {
+    max-width: 40ch;
+  }
+
+  /* Contact: the details panel centred under the form. */
+  .contact-page__details {
+    justify-items: center;
+    text-align: center;
+  }
+  .checks legend {
+    text-align: left;
+  }
+
+  /* Closing band: the email and phone centred as a stack. */
+  .closing__direct {
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    text-align: center;
+  }
+  .contact__ring {
+    right: 50%;
+    transform: translateX(50%);
+  }
+
+  /* Footer: logo, tagline, links and details on the centre line. */
+  .footer__inner {
+    justify-items: center;
+    text-align: center;
+  }
+  .footer__nav,
+  .footer__meta {
+    justify-items: center;
+  }
+}
+.footer__nav a {
+  justify-content: center;
+  min-width: 44px;
+}
