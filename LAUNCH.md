@@ -163,6 +163,13 @@ Do these on your phone and your computer once Steps 1–2 are done.
 7. **Google:** go to **https://search.google.com/search-console**, add the property
    **minutemenmarketing.com** (choose "Domain", verify with the TXT record it gives you at GoDaddy, the
    same way as Step 3), then **Sitemaps → enter `sitemap.xml` → Submit**.
-8. **Share preview:** paste the link in a text to yourself — it should show the Minutemen logo card.
+8. **Share preview:** paste the link in a text to yourself (iMessage) and in an Instagram DM — it
+   should show the Minutemen logo card. For LinkedIn, paste the link into
+   **https://www.linkedin.com/post-inspector/** and click **Inspect** (this also refreshes LinkedIn's
+   cached copy). The card image only works once Step 2 is done, because it's served from
+   minutemenmarketing.com.
+9. **Analytics:** in Vercel → minutemen-marketing → **Analytics** → **Enable** (free). Then tell Claude
+   "turn on analytics" (it flips `vercelAnalytics` to `true` in `src/site-config.js`). Speed Insights is
+   already on.
 
 When everything above works: tell Claude "Launched" and it will update NEXT-STEPS.md.

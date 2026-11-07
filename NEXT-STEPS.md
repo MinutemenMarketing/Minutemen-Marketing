@@ -61,6 +61,30 @@ bar and safe areas. Tested live at 375×667, 390×844 and 430×932 with the bar 
 start, middle and end of the hero: 27/27 checks pass, no scroll jumps. Chrome emulation can't model a
 real collapsing bar, so give it one scroll on a real iPhone and Android phone (LAUNCH.md step 5).
 
+## Done 2026-11-06
+
+- **Mobile edge-to-edge hero:** confirmed live again (27/27 checks at 375, 390 and 430 px, bar shown
+  and hidden, start/middle/end; no scroll jumps).
+- **Vercel Speed Insights** on (loads after the page, production only). **Web Analytics** is built in
+  but off until it's enabled in Vercel (see Waiting on Noah); the flag is `vercelAnalytics` in
+  `src/site-config.js`.
+- **Branded 404** (`404.html`: shot line, one sentence, Back to the home page; real 404 status).
+- **Favicon set** from the logo mark: `favicon.ico`, `favicon.svg`, `apple-touch-icon.png`, 192/512 and
+  maskable icons, `site.webmanifest`.
+- **Share cards:** full `og:*` and `twitter:*` tags with a 1200×630 JPEG and alt text. Previews will
+  show the image once minutemenmarketing.com points at Vercel (the image URL lives on that domain).
+- **Home performance:** live Lighthouse mobile **94–96** (was 78–94 and swinging), accessibility and
+  best practices 100; other pages 99–100. Changes kept the hero looking the same: the preloader lifts
+  as soon as the opening painting is in, hero words are split at build time, clip frames wait for the
+  preloader to lift, CSS is inlined, Caslon is preloaded, the hero module is preloaded, and the globe
+  prep waits until the reader scrolls.
+- **Why not 98:** the first headline word can't appear before the ring's 0.9s minimum plus the 0.8s
+  word reveal. A test build with a 0.5s ring and words starting as the preloader lifts scored 95–96, so
+  98 would need the headline visible from the very first paint (no fade-in). That's a design change:
+  Noah's call.
+- **Notes from the live site (step 2 of today's brief):** none were pasted. `TODO(Noah)`: send them and
+  they'll be fixed and verified.
+
 ## Waiting on Noah
 
 Step-by-step instructions for items 1, 2 and 5 (plus email forwarding for hello@ and the two
@@ -80,3 +104,7 @@ testimonial texts) are in **`LAUNCH.md`**. The domain is registered at GoDaddy, 
 7. One look in a real Chrome window with Windows "Animation effects" on and off (the session verified
    both paths in headless Chrome; a real-device pass on a phone over cellular is still worth doing).
 8. Empty folder `C:\c` left over from a path mix-up; safe to delete.
+9. **Turn on Vercel Web Analytics:** Vercel → minutemen-marketing → **Analytics** → **Enable** (free),
+   then tell Claude (or set `vercelAnalytics: true` in `src/site-config.js`).
+10. **Your notes from the live site** (today's step 2 was left blank).
+11. Decide whether to trade the slow headline fade for a 98+ mobile score (see Done 2026-11-06).
