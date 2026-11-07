@@ -1,16 +1,16 @@
 # Next steps — minutemenmarketing.com
 
-Updated 2026-11-05 (late), end of session. `CLAUDE.md` is the contract (hero spec, rules, every
+Updated 2026-11-07, end of session. `CLAUDE.md` is the contract (hero spec, rules, every
 approved asset with its Runway task ID); `DESIGN.md` is the approved four-page design. Read both first.
 
 **Runway credits: 1,565** (was 1,627; **62 spent** this session on the approved 1080p upscale:
 C1 12, C2 10, C2b 12, C3 16, C4 12). Rule unchanged: quote the cost and wait for Noah's OK before
 every generation.
 
-Live: https://minutemen-marketing.vercel.app (Vercel auto-deploys `main`). Local: `npm run dev`, then
+Live: **https://minutemenmarketing.com** (Vercel auto-deploys `main`; the old `*.vercel.app` address now returns 404). Local: `npm run dev`, then
 http://localhost:5173. QA switches on any build: `?motion` ignores reduced motion, `?reduced` forces
-it, `?herofail` / `?herofail=script` show the load-failure still version, `?formoff` (dev only) shows
-the Contact page as it looks without a Web3Forms key.
+it, `?herofail` / `?herofail=script` show the load-failure still version.
+Playwright QA scripts (cross-browser run, mobile alignment audit) are in `qa/`.
 
 ---
 
@@ -100,30 +100,40 @@ real collapsing bar, so give it one scroll on a real iPhone and Android phone (L
 - **LinkedIn:** company page in the footer and on Contact; a small LinkedIn icon on Ethan's founder
   cards. Noah's icon appears once his URL is set in `src/site-config.js` (`founders.noah.linkedin`).
 
-## Waiting on Noah
+## Done 2026-11-07 (launch polish)
 
-Step-by-step instructions for items 1, 2 and 5 (plus email forwarding for hello@ and the two
-testimonial texts) are in **`LAUNCH.md`**. The domain is registered at GoDaddy, with DNS at GoDaddy.
+- **Contact form live.** Web3Forms key in `src/site-config.js`; the form shows on /contact and the
+  "online form isn't connected yet" panel is gone (code and styles removed). Honeypot, field
+  validation, the thank-you message and the real error message all kept. One real test sent from
+  minutemenmarketing.com at 13:59 ET: Web3Forms returned success and the page showed the thank-you
+  message (subject "Consultation request from Site test (Minutemen Marketing (test))").
+- **Founders check:** close-ups of Home and About sent to Noah to confirm each photo sits on the right
+  name.
+- **Phones (≤ 767px):** one centred column on every page: headings, eyebrows with their shot line,
+  names, roles, buttons, founder portraits (About stacks photo over name), service cards, carousel
+  cards, portfolio windows, the contact panel, closing band and footer. Paragraphs over about three
+  lines stay left-aligned in the centred column. Tap targets reach 44px (logo, founder LinkedIn,
+  carousel dots, footer and contact links). Audit at 375/390/430: no horizontal scroll, no content
+  within 12px of an edge, no tap target under 44px. Before/after screenshots were sent.
+- **Two layout bugs fixed at every width:** the carousel measured a scaled side card, so the active
+  card sat off centre (33px at 375px); the portfolio list kept the browser's 40px list indent, pushing
+  each project right.
+- **Cross-browser QA on the live domain** (Chromium, Edge, WebKit desktop, iPhone 14 and Galaxy S9+
+  emulation): hero plays and reaches all three lines, nav fades, carousel moves and swipes and stays
+  centred, fonts load, no layout shift (CLS 0), both portfolio windows load **live** and scroll
+  (Smiles included), contact form states work, menu and links work, no console errors. No
+  browser-specific fixes were needed. Notes: Playwright's Firefox build is blocked from running on
+  this Windows machine, so Firefox wasn't tested; WebKit on Windows renders the hero's CSS colour grade
+  in software and can't show real Safari smoothness, so the real-iPhone scroll in LAUNCH.md step 5
+  is the check (if it stutters: drop or bake in the grade for Safari).
+- **LAUNCH.md step 5:** everything checkable from here passed on the live domain (HTTPS/HSTS and
+  redirects, direct page loads and 404, the phone edge test 27/27, tel/mailto, Reduce motion toggle,
+  share tags and og.jpg to LinkedIn's crawler, Analytics beacons, sitemap/robots). The phone,
+  inbox, Search Console and LinkedIn Post Inspector checks are written up click by click there.
 
-1. **Web3Forms access key: waiting on Ethan.** → `src/site-config.js`. The form then appears on the
-   live site; send one test submission and confirm it reaches minutemenmrktng@gmail.com.
-2. ~~GoDaddy domain access.~~ **Domain connected (seen 2026-11-07):** minutemenmarketing.com resolves
-   to Vercel (216.198.79.1), serves the latest build, `www` redirects to it, and pages are indexable;
-   og.jpg is served there, so share cards now have their image. The old minutemen-marketing.vercel.app
-   address now returns 404. Still to do from LAUNCH.md step 5 on the real domain: the real-phone
-   scroll, the Smiles live embed check, Search Console + sitemap, and share previews (LinkedIn Post
-   Inspector).
-3. Other email, Instagram, **Noah's LinkedIn URL**, other links (hidden until filled).
-4. Surnames on the founder cards, if wanted.
-5. Real testimonials (name, business, town, permission). The carousel shows project highlights until
-   then.
-6. Other finished client sites with live production domains and the client's OK (Muses Nails, Wealth
-   Advisory Group, Gym Grindz and Bang Bang Barbershop are `.vercel.app` builds only; Ray Nail Spa was
-   a pitch).
-7. One look in a real Chrome window with Windows "Animation effects" on and off (the session verified
-   both paths in headless Chrome; a real-device pass on a phone over cellular is still worth doing).
-8. Empty folder `C:\c` left over from a path mix-up; safe to delete.
-9. ~~Turn on Vercel Web Analytics.~~ **Done 2026-11-06** (enabled in Vercel, flag on, verified live).
-10. **Your notes from the live site** (today's step 2 was left blank).
-11. ~~Decide whether to trade the headline fade for a 98+ mobile score.~~ **Closed 2026-11-06:**
-    keep the fade; 94–96 is the target.
+## Open items
+
+1. **Noah's LinkedIn URL** → `src/site-config.js` (`founders.noah.linkedin`). His icon appears on
+   the founder cards once it's set.
+2. **Real client testimonials** (name, business, town, and permission to publish). LAUNCH.md step 4
+   has the two request texts. The carousel shows project highlights until then.
