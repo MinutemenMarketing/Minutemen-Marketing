@@ -513,8 +513,9 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
       }
     }
     // Nothing left in the window: fetch any remaining still (globe, logo) so a reader who skips
-    // ahead or scrolls back up into the hero from below still finds them.
-    if (best < 0) best = jobs.findIndex((j) => !j.key.includes(':'));
+    // ahead or scrolls back up into the hero from below still finds them. Only once they've started
+    // scrolling: the globe's duotone pass is heavy, and it shouldn't run while the page is opening.
+    if (best < 0 && p > 0) best = jobs.findIndex((j) => !j.key.includes(':'));
     return best < 0 ? null : jobs.splice(best, 1)[0];
   }
 

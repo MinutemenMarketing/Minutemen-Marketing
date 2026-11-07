@@ -12,18 +12,18 @@ import { initContact } from './contact.js';
 import { initFrames } from './portfolio.js';
 import { inject as injectAnalytics } from '@vercel/analytics';
 import { injectSpeedInsights } from '@vercel/speed-insights';
+import { SITE } from './site-config.js';
 
 // Vercel Web Analytics + Speed Insights (free tier), production builds only, after the page has
 // loaded so they never compete with the hero. Web Analytics must be switched on once in the Vercel
-// dashboard (Project → Analytics → Enable); until then its script 404s, so it loads only when present.
+// dashboard (Project → Analytics → Enable), then `vercelAnalytics: true` in src/site-config.js;
+// until then its script would 404 and log a console error, so it stays off.
 if (import.meta.env.PROD) {
   addEventListener('load', () => {
     const idle = window.requestIdleCallback || ((f) => setTimeout(f, 1500));
     idle(() => {
       injectSpeedInsights();
-      fetch('/_vercel/insights/script.js', { method: 'HEAD' })
-        .then((r) => r.ok && injectAnalytics())
-        .catch(() => {});
+      if (SITE.vercelAnalytics) injectAnalytics();
     });
   });
 }

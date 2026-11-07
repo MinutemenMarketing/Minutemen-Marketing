@@ -9,4 +9,6 @@ export const SITE = {
   instagram: '', // TODO(client): full URL
   linkedin: '', // TODO(client): full URL
   other: [], // TODO(client): [{ label: 'Facebook', url: 'https://…' }]
+  // TODO(client): turn on Web Analytics in Vercel (Project → Analytics → Enable), then set true.
+  vercelAnalytics: false,
 };
