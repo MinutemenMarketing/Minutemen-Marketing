@@ -1,8 +1,8 @@
 // Contact details and keys. Every empty value is TODO(client): whatever is empty stays hidden on
 // the site (the item is not rendered). Fill these in and redeploy; nothing else needs editing.
 export const SITE = {
-  // TODO(client): Web3Forms access key (web3forms.com). Without it the live contact form is hidden.
-  web3formsKey: '',
+  // Web3Forms access key (public by design; it only lets the form send to minutemenmrktng@gmail.com).
+  web3formsKey: '604c47c1-7174-4a58-9f16-208aae0efd14',
   workEmail: 'minutemenmrktng@gmail.com',
   otherEmail: '', // TODO(client)
   phone: '(631) 882-8022', // shown as written; links as tel:+16318828022

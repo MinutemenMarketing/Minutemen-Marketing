@@ -79,18 +79,6 @@ function directHtml() {
   return links.length ? `<p class="closing__direct"><span>Or reach us:</span> ${links.join(' ')}</p>` : '';
 }
 
-// Contact page while the form has no Web3Forms key: a panel with the two direct actions.
-function formOffHtml() {
-  const actions = [];
-  if (SITE.workEmail) actions.push(`<a class="btn btn--primary btn--big" href="mailto:${esc(SITE.workEmail)}">Email us</a>`);
-  if (SITE.phone) actions.push(`<a class="btn btn--ghost btn--big" href="${telHref(SITE.phone)}">Call ${esc(SITE.phone)}</a>`);
-  return `<div class="form-off" data-form-off>
-            <p class="form-off__h">Email or call us to book.</p>
-            <p>Our online form isn&rsquo;t connected yet. Send a few lines about your business, or give us a call, and we&rsquo;ll set up your free consultation.</p>
-            ${actions.length ? `<div class="form-off__actions">${actions.join('')}</div>` : ''}
-          </div>`;
-}
-
 // Contact details from src/site-config.js. Empty values are TODO(client) and are not rendered.
 function detailsHtml() {
   const rows = [];
@@ -111,7 +99,7 @@ function detailsHtml() {
 // - `<!-- @nav -->` / `<!-- @footer -->` → partials from src/partials, current tab aria-current="page"
 // - `<!-- @head -->` → icon + Open Graph / Twitter tags from the page's own title, description, canonical
 // - contact details and the contact form's on/off state from src/site-config.js
-function pages({ dev }) {
+function pages() {
   const read = (name) => readFileSync(resolve(__dirname, 'src/partials', `${name}.html`), 'utf8');
   const pathOf = (file) => {
     const rel = relative(__dirname, file).replace(/\\/g, '/');
@@ -168,18 +156,10 @@ function pages({ dev }) {
           .replace('<!-- @nav -->', mark(read('nav')))
           .replace('<!-- @footer -->', mark(read('footer')).replace('<!-- @footer-contact -->', footerContactHtml()))
           .replace('<dl class="details" data-details-list></dl>', `<dl class="details" data-details-list>${detailsHtml()}</dl>`);
-        // The form shows only with a Web3Forms key (always in dev, so it can be tested).
-        // (?formoff on the dev server previews the no-key state the live site shows.)
         out = out.replace(/<!-- @direct -->/g, directHtml());
         out = splitWordsHtml(out)
           .replace(/<!-- @photo:(\w+):([^>]*?) -->/g, (m, name, sizes) => founderPhotoHtml(name, sizes))
           .replace(/<!-- @founder-link:(\w+):([^>]*?) -->/g, (m, name, label) => founderLinkHtml(name, label));
-        if (SITE.web3formsKey || (dev && !ctx.originalUrl?.includes('formoff'))) {
-          out = out.replace('<form class="form" data-form novalidate hidden>', '<form class="form" data-form novalidate>');
-          out = out.replace('<!-- @form-off -->', '');
-        } else {
-          out = out.replace('<!-- @form-off -->', formOffHtml());
-        }
         return out;
       },
     },
@@ -213,8 +193,8 @@ function criticalPath() {
   };
 }
 
-export default defineConfig(({ command }) => ({
-  plugins: [pages({ dev: command === 'serve' }), criticalPath()],
+export default defineConfig(() => ({
+  plugins: [pages(), criticalPath()],
   build: {
     rollupOptions: {
       input: Object.fromEntries(

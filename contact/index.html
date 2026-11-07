@@ -21,8 +21,8 @@
 
       <section class="section shell contact-page" aria-label="Contact form and details">
         <div class="contact-page__form">
-          <!-- Shown when src/site-config.js has a Web3Forms key (always in dev, for testing). -->
-          <form class="form" data-form novalidate hidden>
+          <!-- Sends through Web3Forms (key in src/site-config.js) to minutemenmrktng@gmail.com. -->
+          <form class="form" data-form novalidate>
             <div class="field"><label for="f-name">Your name</label><input id="f-name" name="name" autocomplete="name" required /></div>
             <div class="field"><label for="f-biz">Business name</label><input id="f-biz" name="business" autocomplete="organization" required /></div>
             <div class="field field--wide"><label for="f-email">Email</label><input id="f-email" name="email" type="email" autocomplete="email" required /></div>
@@ -40,7 +40,6 @@
             <button class="btn btn--primary btn--big" type="submit" data-submit>Send message</button>
             <p class="form__status" role="status" aria-live="polite" data-status></p>
           </form>
-          <!-- @form-off -->
         </div>
 
         <aside class="contact-page__details" aria-label="Contact details" data-details>
