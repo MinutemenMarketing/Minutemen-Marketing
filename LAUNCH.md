@@ -168,7 +168,7 @@ Do these on your phone and your computer once Steps 1–2 are done.
    **https://www.linkedin.com/post-inspector/** and click **Inspect** (this also refreshes LinkedIn's
    cached copy). The card image only works once Step 2 is done, because it's served from
    minutemenmarketing.com.
-9. **Analytics:** in Vercel → minutemen-marketing → **Analytics** → **Enable** (free). Then tell Claude
+9. **Analytics:** done (enabled 2026-11-06). Check Vercel → minutemen-marketing → **Analytics** shows visits after launch. (Was: enable it, then tell Claude
    "turn on analytics" (it flips `vercelAnalytics` to `true` in `src/site-config.js`). Speed Insights is
    already on.
 

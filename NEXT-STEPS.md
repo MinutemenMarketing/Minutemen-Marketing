@@ -65,9 +65,13 @@ real collapsing bar, so give it one scroll on a real iPhone and Android phone (L
 
 - **Mobile edge-to-edge hero:** confirmed live again (27/27 checks at 375, 390 and 430 px, bar shown
   and hidden, start/middle/end; no scroll jumps).
-- **Vercel Speed Insights** on (loads after the page, production only). **Web Analytics** is built in
-  but off until it's enabled in Vercel (see Waiting on Noah); the flag is `vercelAnalytics` in
-  `src/site-config.js`.
+- **Vercel Speed Insights and Web Analytics: done.** Both load after the page, production only.
+  Analytics was enabled in Vercel on 2026-11-06 and `vercelAnalytics` is `true` in
+  `src/site-config.js`. Verified live on all four pages: both scripts return 200, each page sends a
+  page view that Vercel accepts (`POST /_vercel/insights/view` → 200), and there are no console
+  errors or failed requests. (Vercel ignores headless/automated browsers, so the check used a normal
+  Chrome user agent.) Vercel's analytics query API still answered "Web Analytics not found", so the
+  dashboard count itself wasn't read from here: look at Vercel → minutemen-marketing → Analytics.
 - **Branded 404** (`404.html`: shot line, one sentence, Back to the home page; real 404 status).
 - **Favicon set** from the logo mark: `favicon.ico`, `favicon.svg`, `apple-touch-icon.png`, 192/512 and
   maskable icons, `site.webmanifest`.
@@ -91,10 +95,11 @@ real collapsing bar, so give it one scroll on a real iPhone and Android phone (L
 Step-by-step instructions for items 1, 2 and 5 (plus email forwarding for hello@ and the two
 testimonial texts) are in **`LAUNCH.md`**. The domain is registered at GoDaddy, with DNS at GoDaddy.
 
-1. **Web3Forms access key** → `src/site-config.js`. The form then appears on the live site; send one
-   test submission and confirm it reaches minutemenmrktng@gmail.com.
-2. **Point minutemenmarketing.com at the Vercel project** (DNS). Turns on the Smiles live embed,
-   lifts the preview-domain noindex, and matches canonical/OG URLs.
+1. **Web3Forms access key: waiting on Ethan.** → `src/site-config.js`. The form then appears on the
+   live site; send one test submission and confirm it reaches minutemenmrktng@gmail.com.
+2. **GoDaddy domain access: waiting on Ethan.** Then point minutemenmarketing.com at the Vercel
+   project (DNS, LAUNCH.md step 2). Turns on the Smiles live embed, the share-card image, lifts the
+   preview-domain noindex, and matches canonical/OG URLs.
 3. Other email, Instagram, LinkedIn, other links (hidden until filled).
 4. Founder photos (real, supplied) and surnames, if wanted.
 5. Real testimonials (name, business, town, permission). The carousel shows project highlights until
@@ -105,8 +110,7 @@ testimonial texts) are in **`LAUNCH.md`**. The domain is registered at GoDaddy, 
 7. One look in a real Chrome window with Windows "Animation effects" on and off (the session verified
    both paths in headless Chrome; a real-device pass on a phone over cellular is still worth doing).
 8. Empty folder `C:\c` left over from a path mix-up; safe to delete.
-9. **Turn on Vercel Web Analytics:** Vercel → minutemen-marketing → **Analytics** → **Enable** (free),
-   then tell Claude (or set `vercelAnalytics: true` in `src/site-config.js`).
+9. ~~Turn on Vercel Web Analytics.~~ **Done 2026-11-06** (enabled in Vercel, flag on, verified live).
 10. **Your notes from the live site** (today's step 2 was left blank).
 11. ~~Decide whether to trade the headline fade for a 98+ mobile score.~~ **Closed 2026-11-06:**
     keep the fade; 94–96 is the target.
