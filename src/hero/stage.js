@@ -518,6 +518,8 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     return best < 0 ? null : jobs.splice(best, 1)[0];
   }
 
+  let go;
+  const started = new Promise((r) => (go = r));
   async function load() {
     buildJobs();
     const initial = jobs.filter((j) => j.at <= AHEAD).length;
@@ -529,6 +531,9 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     let initialFailed = 0;
     onProgress(++initialDone / initial, true);
     request();
+    // Clip frames wait until the opening is on screen (the preloader lifts: go()), so the painting,
+    // fonts and script get the bandwidth first. A scroll before then shows the opening still.
+    await started;
     const worker = async () => {
       for (;;) {
         const job = nextJob();
@@ -558,6 +563,7 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
   load();
 
   return {
+    go: () => go(),
     set(progress) {
       p = progress;
       waiting.splice(0).forEach((resume) => resume()); // the window moved: look again

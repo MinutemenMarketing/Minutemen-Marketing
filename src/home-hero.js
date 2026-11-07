@@ -13,7 +13,8 @@ const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 export function initHero({ scroller, nav, navH, reduced }) {
   const hero = $('.hero');
   if (!reduced) hero.style.setProperty('--grain', `url(${grainTile()})`);
-  $$('[data-words]').forEach(splitWords);
+  // Words are split at build time (vite.config.js); split here only if a page wasn't.
+  $$('[data-words]:not([data-words="split"])').forEach(splitWords);
 
   const HIDDEN = reduced ? { autoAlpha: 0 } : { autoAlpha: 0, y: 16, filter: 'blur(6px)' };
   const SHOWN = reduced ? { autoAlpha: 1 } : { autoAlpha: 1, y: 0, filter: 'blur(0px)' };
@@ -25,11 +26,14 @@ export function initHero({ scroller, nav, navH, reduced }) {
   // loading behind the scenes in story order, so nobody waits for the globe to see the battlefield.
   const preload = $('.preload');
   const ring = $('.preload__ring');
-  const shownAt = performance.now();
+  // The ring shows for at least 0.9s from when the page started loading (not from when this script
+  // ran), so a slow phone that already waited does not wait again.
+  const shownAt = 0;
   let lifted = false;
   const lift = () => {
     if (lifted) return;
     lifted = true;
+    stage.go(); // now fetch the clip frames
     gsap.to(ring, { strokeDashoffset: 0, duration: 0.4, ease: 'power2.out' });
     setTimeout(() => {
       preload.classList.add('is-done');
@@ -59,8 +63,9 @@ export function initHero({ scroller, nav, navH, reduced }) {
       if (first) haveFirst = true;
       const shown = Math.min(1, f / 0.3);
       if (!lifted) gsap.to(ring, { strokeDashoffset: 1 - shown, duration: 0.5, ease: 'power1.out', overwrite: true });
-      // Lift once the battlefield is in and enough of the opening has arrived (never sooner than 0.9s).
-      if (haveFirst && shown >= 1) setTimeout(lift, Math.max(0, 900 - (performance.now() - shownAt)));
+      // Lift as soon as the opening painting is in (never sooner than 0.9s). The clip frames keep
+      // loading just ahead of the scroll; until a frame arrives the opening still stands in for it.
+      if (haveFirst) setTimeout(lift, Math.max(0, 900 - (performance.now() - shownAt)));
     },
     fallBack,
   );

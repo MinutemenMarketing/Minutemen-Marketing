@@ -140,8 +140,8 @@ function initPage() {
     initMotionToggle();
     if (!wantsStill) {
       html.classList.add('motion');
-      // The hero loads its own module, so other pages never download it. If it fails to load or
-      // throws, the hero becomes the still version.
+      // The hero loads its own module (Home preloads it in the head, so it downloads alongside the
+      // main script). If it fails to load or throws, the hero becomes the still version.
       const qa = new URLSearchParams(location.search).get('herofail'); // ?herofail=script simulates it
       (qa === 'script' ? Promise.reject(new Error('QA: hero script failure')) : import('./home-hero.js'))
         .then((m) => m.initHero({ scroller, nav, navH, reduced: reduceMotion }))

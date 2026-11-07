@@ -32,6 +32,20 @@ function footerContactHtml() {
   return out.join('\n      ');
 }
 
+// Hero lines: wrap each word in <span class="w"> at build time (keeping <em> and other inline tags),
+// so the staggered reveal animates the same elements the browser painted first. Splitting at runtime
+// created new elements, and the browser then counted the reveal (seconds later) as the page's
+// largest paint.
+function splitWordsHtml(html) {
+  return html.replace(/(<(\w+)([^>]*)\sdata-words>)([\s\S]*?)(<\/\2>)/g, (m, open, tag, attrs, inner, close) => {
+    const body = inner
+      .split(/(<[^>]+>)/)
+      .map((part) => (part.startsWith('<') ? part : part.replace(/\S+/g, '<span class="w">$&</span>')))
+      .join('');
+    return `<${tag}${attrs} data-words="split">${body}${close}`;
+  });
+}
+
 // Closing bands: a direct line to email and phone under the consultation button.
 function directHtml() {
   const links = [];
@@ -132,6 +146,7 @@ function pages({ dev }) {
         // The form shows only with a Web3Forms key (always in dev, so it can be tested).
         // (?formoff on the dev server previews the no-key state the live site shows.)
         out = out.replace(/<!-- @direct -->/g, directHtml());
+        out = splitWordsHtml(out);
         if (SITE.web3formsKey || (dev && !ctx.originalUrl?.includes('formoff'))) {
           out = out.replace('<form class="form" data-form novalidate hidden>', '<form class="form" data-form novalidate>');
           out = out.replace('<!-- @form-off -->', '');
@@ -144,8 +159,35 @@ function pages({ dev }) {
   };
 }
 
+// Production only: inline the stylesheet (about 9KB compressed) so the first paint doesn't wait for a
+// separate request, and preload the two Caslon weights the hero headline uses.
+function criticalPath() {
+  return {
+    name: 'mm-critical-path',
+    apply: 'build',
+    enforce: 'post',
+    transformIndexHtml: {
+      order: 'post',
+      handler(html, ctx) {
+        const bundle = ctx.bundle || {};
+        let out = html.replace(/<link rel="stylesheet"[^>]*href="\/(assets\/[^"]+\.css)"[^>]*>/g, (m, file) => {
+          const asset = bundle[file];
+          return asset && asset.type === 'asset' ? `<style>${asset.source}</style>` : m;
+        });
+        const fonts = Object.keys(bundle).filter((f) => /libre-caslon-text-latin-400-(normal|italic)-.*\.woff2$/.test(f));
+        const preload = fonts.map((f) => `<link rel="preload" as="font" type="font/woff2" href="/${f}" crossorigin />`).join('\n    ');
+        // Home: fetch the hero module alongside the main script instead of after it runs.
+        const hero = Object.keys(bundle).find((f) => /^assets\/home-hero-.*\.js$/.test(f));
+        const heroPreload = hero && html.includes('class="hero"') ? `\n    <link rel="modulepreload" href="/${hero}" crossorigin />` : '';
+        out = out.replace('</title>', `</title>\n    ${preload}${heroPreload}`);
+        return out;
+      },
+    },
+  };
+}
+
 export default defineConfig(({ command }) => ({
-  plugins: [pages({ dev: command === 'serve' })],
+  plugins: [pages({ dev: command === 'serve' }), criticalPath()],
   build: {
     rollupOptions: {
       input: Object.fromEntries(
