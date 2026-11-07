@@ -107,9 +107,12 @@ testimonial texts) are in **`LAUNCH.md`**. The domain is registered at GoDaddy, 
 
 1. **Web3Forms access key: waiting on Ethan.** → `src/site-config.js`. The form then appears on the
    live site; send one test submission and confirm it reaches minutemenmrktng@gmail.com.
-2. **GoDaddy domain access: waiting on Ethan.** Then point minutemenmarketing.com at the Vercel
-   project (DNS, LAUNCH.md step 2). Turns on the Smiles live embed, the share-card image, lifts the
-   preview-domain noindex, and matches canonical/OG URLs.
+2. ~~GoDaddy domain access.~~ **Domain connected (seen 2026-11-07):** minutemenmarketing.com resolves
+   to Vercel (216.198.79.1), serves the latest build, `www` redirects to it, and pages are indexable;
+   og.jpg is served there, so share cards now have their image. The old minutemen-marketing.vercel.app
+   address now returns 404. Still to do from LAUNCH.md step 5 on the real domain: the real-phone
+   scroll, the Smiles live embed check, Search Console + sitemap, and share previews (LinkedIn Post
+   Inspector).
 3. Other email, Instagram, **Noah's LinkedIn URL**, other links (hidden until filled).
 4. Surnames on the founder cards, if wanted.
 5. Real testimonials (name, business, town, permission). The carousel shows project highlights until
