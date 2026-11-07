@@ -7,7 +7,12 @@ export const SITE = {
   otherEmail: '', // TODO(client)
   phone: '(631) 882-8022', // shown as written; links as tel:+16318828022
   instagram: '', // TODO(client): full URL
-  linkedin: '', // TODO(client): full URL
+  linkedin: 'https://www.linkedin.com/company/minutemen-marketing', // company page (footer, Contact)
+  // Founder LinkedIn profiles: a small icon link on each founder card; empty = hidden.
+  founders: {
+    noah: { linkedin: '' }, // TODO(client): Noah's LinkedIn URL
+    ethan: { linkedin: 'https://www.linkedin.com/in/ethan-eghbali/' },
+  },
   other: [], // TODO(client): [{ label: 'Facebook', url: 'https://…' }]
   // Web Analytics is enabled in Vercel (2026-11-06).
   vercelAnalytics: true,

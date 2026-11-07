@@ -90,6 +90,16 @@ real collapsing bar, so give it one scroll on a real iPhone and Android phone (L
 - **Notes from the live site (step 2 of today's brief):** none were pasted. `TODO(Noah)`: send them and
   they'll be fixed and verified.
 
+## Done 2026-11-07
+
+- **Founder photos:** Noah and Ethan's headshots saved in `assets/founders/` (noah.jpg, ethan.jpg) and
+  used in Meet the Founders on Home and on About: a matched square set (same eye height and spacing,
+  same gray backdrop tone), AVIF + WebP at 240/400px in `public/founders/` with width/height set, alt
+  text "Noah, co-founder of Minutemen Marketing" / "Ethan Eghbali, co-founder of Minutemen Marketing".
+  Ethan's source is 400×400, so both export at 400px max.
+- **LinkedIn:** company page in the footer and on Contact; a small LinkedIn icon on Ethan's founder
+  cards. Noah's icon appears once his URL is set in `src/site-config.js` (`founders.noah.linkedin`).
+
 ## Waiting on Noah
 
 Step-by-step instructions for items 1, 2 and 5 (plus email forwarding for hello@ and the two
@@ -100,8 +110,8 @@ testimonial texts) are in **`LAUNCH.md`**. The domain is registered at GoDaddy, 
 2. **GoDaddy domain access: waiting on Ethan.** Then point minutemenmarketing.com at the Vercel
    project (DNS, LAUNCH.md step 2). Turns on the Smiles live embed, the share-card image, lifts the
    preview-domain noindex, and matches canonical/OG URLs.
-3. Other email, Instagram, LinkedIn, other links (hidden until filled).
-4. Founder photos (real, supplied) and surnames, if wanted.
+3. Other email, Instagram, **Noah's LinkedIn URL**, other links (hidden until filled).
+4. Surnames on the founder cards, if wanted.
 5. Real testimonials (name, business, town, permission). The carousel shows project highlights until
    then.
 6. Other finished client sites with live production domains and the client's OK (Muses Nails, Wealth

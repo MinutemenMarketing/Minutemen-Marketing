@@ -123,15 +123,18 @@ behind the closing heading, so the page ends where the hero did.
    button sits beside the carousel on desktop and below it on mobile.
 4. **Meet the Founders**, compact and typographic like the B&W founders section: heading left; a
    short paragraph and the two names on a hairline rule on the right. **Noah**: design direction,
-   interface and build. **Ethan**: strategy, messaging and search. Photos `TODO(client)` (none exist;
-   hidden until supplied, never generated). **Meet the Founders** button → `/about#founders`.
+   interface and build. **Ethan**: strategy, messaging and search. Each name sits under its square
+   portrait (real headshots supplied 2026-11-07, a matched set: same framing and gray tone, B&W-style
+   unframed on paper-2; never generated or altered beyond crop and tone). Ethan's card has a small
+   LinkedIn icon (Noah's appears once his URL is in `src/site-config.js`). **Meet the Founders** button
+   → `/about#founders`.
 5. **Closing**: *"A marketing plan built around your business."* (protected), one line on tailored
    services, and **Book a Free Consultation** → `/contact`. Navy band with the open-ring motif.
 
 ### About `/about`
 
 H1 + lede, then three parts: **Why we started** (Noah's stated belief from the Sept 2026 site),
-**The founders** (`#founders`: Noah and Ethan with roles; photos and surnames `TODO(client)`),
+**The founders** (`#founders`: Noah and Ethan with roles and portraits; surnames on cards `TODO(client)`),
 **How we work** (you deal with the people who design and build your site; strategy first). Ends with
 **Book a Free Consultation**. Only details already published by Noah; anything else `TODO(client)`.
 
@@ -204,8 +207,9 @@ counts, turnaround times, or testimonials Noah hasn't supplied. None are verifie
 
 `TODO(client):` needed from Noah before launch
 1. **Web3Forms access key** (the form stays hidden on the live site until it exists).
-2. Other email, Instagram, LinkedIn, other links (work email and phone supplied 2026-11-05).
-3. Founder photos (real, supplied) and surnames, if wanted.
+2. Other email, Instagram, Noah's LinkedIn, other links (work email, phone, company LinkedIn and
+   Ethan's LinkedIn supplied).
+3. Surnames on the founder cards, if wanted (founder photos supplied 2026-11-07).
 4. Real testimonials with name, business, town and permission. Until then the carousel shows project
    highlights only.
 5. Other finished client sites to show, each with its live production URL and the client's OK

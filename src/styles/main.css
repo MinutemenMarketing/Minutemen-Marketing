@@ -1049,16 +1049,60 @@ html:not(.motion) .beat--1::before {
   justify-items: start;
 }
 .founders__names {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 18px clamp(32px, 5vw, 72px);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 220px));
+  gap: 24px clamp(20px, 4vw, 56px);
   width: 100%;
-  padding-top: 22px;
+  padding-top: 24px;
   border-top: 1px solid var(--rule);
 }
+.founder {
+  display: grid;
+  align-content: start;
+}
+.founder .portrait {
+  margin-bottom: 16px;
+}
 .founders__names dt {
-  font: 400 clamp(2rem, 3vw, 2.75rem) / 1.05 var(--serif);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font: 400 clamp(1.75rem, 3vw, 2.75rem) / 1.05 var(--serif);
   letter-spacing: -0.015em;
+}
+
+/* Founder portraits, set as Beauty & Wellness sets theirs: unframed, square corners, no shadow, on a
+   soft ground, with the smallest zoom on hover. The two photos are a matched set (same framing and
+   gray backdrop tone). */
+.portrait {
+  display: block;
+  overflow: hidden;
+  background: var(--paper-2);
+  line-height: 0;
+}
+.portrait img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: cover;
+  transition: transform 700ms var(--ease);
+}
+.portrait:hover img {
+  transform: scale(1.02);
+}
+/* LinkedIn icon on a founder card: small, ink, with a 36px tap target. */
+.founder-link {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin: -6px 0;
+  color: var(--ink-2);
+  transition: color var(--micro) var(--ease);
+}
+.founder-link:hover,
+.founder-link:focus-visible {
+  color: var(--ink);
 }
 .founders__names dd {
   margin-top: 8px;
@@ -1161,9 +1205,20 @@ html:not(.motion) .beat--1::before {
 }
 .person {
   display: grid;
-  gap: 6px;
+  grid-template-columns: clamp(112px, 30vw, 180px) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(18px, 3vw, 32px);
   padding-block: 28px;
   border-bottom: 1px solid var(--rule);
+}
+.person__text {
+  display: grid;
+  gap: 6px;
+}
+.person__name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 .person:first-child {
   border-top: 1px solid var(--rule);

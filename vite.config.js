@@ -29,6 +29,8 @@ function footerContactHtml() {
   const out = [];
   if (SITE.workEmail) out.push(`<a href="mailto:${esc(SITE.workEmail)}">${esc(SITE.workEmail)}</a>`);
   if (SITE.phone) out.push(`<a href="${telHref(SITE.phone)}">${esc(SITE.phone)}</a>`);
+  if (SITE.instagram) out.push(`<a href="${esc(SITE.instagram)}" target="_blank" rel="noopener">Instagram</a>`);
+  if (SITE.linkedin) out.push(`<a href="${esc(SITE.linkedin)}" target="_blank" rel="noopener">LinkedIn</a>`);
   return out.join('\n      ');
 }
 
@@ -44,6 +46,29 @@ function splitWordsHtml(html) {
       .join('');
     return `<${tag}${attrs} data-words="split">${body}${close}`;
   });
+}
+
+// Founder portraits (matched set in public/founders/, 240 and 400 px, AVIF + WebP).
+const FOUNDER_ALT = {
+  noah: 'Noah, co-founder of Minutemen Marketing',
+  ethan: 'Ethan Eghbali, co-founder of Minutemen Marketing',
+};
+function founderPhotoHtml(name, sizes) {
+  const set = (ext) => `/founders/${name}-240.${ext} 240w, /founders/${name}-400.${ext} 400w`;
+  return `<picture class="portrait">
+                <source type="image/avif" srcset="${set('avif')}" sizes="${sizes}" />
+                <source type="image/webp" srcset="${set('webp')}" sizes="${sizes}" />
+                <img src="/founders/${name}-400.webp" width="400" height="400" alt="${FOUNDER_ALT[name]}" loading="lazy" decoding="async" />
+              </picture>`;
+}
+// Small LinkedIn icon link for a founder card (only when the URL is set in site-config).
+const LINKEDIN_ICON =
+  '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0Z"/></svg>';
+function founderLinkHtml(name, label) {
+  const url = SITE.founders?.[name]?.linkedin;
+  return url
+    ? `<a class="founder-link" href="${esc(url)}" target="_blank" rel="noopener">${LINKEDIN_ICON}<span class="visually-hidden">${esc(label)} on LinkedIn (opens in a new tab)</span></a>`
+    : '';
 }
 
 // Closing bands: a direct line to email and phone under the consultation button.
@@ -146,7 +171,9 @@ function pages({ dev }) {
         // The form shows only with a Web3Forms key (always in dev, so it can be tested).
         // (?formoff on the dev server previews the no-key state the live site shows.)
         out = out.replace(/<!-- @direct -->/g, directHtml());
-        out = splitWordsHtml(out);
+        out = splitWordsHtml(out)
+          .replace(/<!-- @photo:(\w+):([^>]*?) -->/g, (m, name, sizes) => founderPhotoHtml(name, sizes))
+          .replace(/<!-- @founder-link:(\w+):([^>]*?) -->/g, (m, name, label) => founderLinkHtml(name, label));
         if (SITE.web3formsKey || (dev && !ctx.originalUrl?.includes('formoff'))) {
           out = out.replace('<form class="form" data-form novalidate hidden>', '<form class="form" data-form novalidate>');
           out = out.replace('<!-- @form-off -->', '');
