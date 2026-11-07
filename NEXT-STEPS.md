@@ -80,8 +80,9 @@ real collapsing bar, so give it one scroll on a real iPhone and Android phone (L
   prep waits until the reader scrolls.
 - **Why not 98:** the first headline word can't appear before the ring's 0.9s minimum plus the 0.8s
   word reveal. A test build with a 0.5s ring and words starting as the preloader lifts scored 95–96, so
-  98 would need the headline visible from the very first paint (no fade-in). That's a design change:
-  Noah's call.
+  98 would need the headline visible from the very first paint (no fade-in). **Decided 2026-11-06
+  (Noah): keep the headline fade.** 94–96 with a 2.1s LCP is the accepted target; don't remove the
+  preloader ring or the word reveal to chase 98.
 - **Notes from the live site (step 2 of today's brief):** none were pasted. `TODO(Noah)`: send them and
   they'll be fixed and verified.
 
@@ -107,4 +108,5 @@ testimonial texts) are in **`LAUNCH.md`**. The domain is registered at GoDaddy, 
 9. **Turn on Vercel Web Analytics:** Vercel → minutemen-marketing → **Analytics** → **Enable** (free),
    then tell Claude (or set `vercelAnalytics: true` in `src/site-config.js`).
 10. **Your notes from the live site** (today's step 2 was left blank).
-11. Decide whether to trade the slow headline fade for a 98+ mobile score (see Done 2026-11-06).
+11. ~~Decide whether to trade the headline fade for a 98+ mobile score.~~ **Closed 2026-11-06:**
+    keep the fade; 94–96 is the target.
