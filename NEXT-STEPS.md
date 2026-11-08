@@ -1,16 +1,16 @@
 # Next steps — minutemenmarketing.com
 
-Updated 2026-11-07, end of session. `CLAUDE.md` is the contract (hero spec, rules, every
+Updated 2026-11-08, end of session. `CLAUDE.md` is the contract (hero spec, rules, every
 approved asset with its Runway task ID); `DESIGN.md` is the approved four-page design. Read both first.
 
-**Runway credits: 1,565** (was 1,627; **62 spent** this session on the approved 1080p upscale:
-C1 12, C2 10, C2b 12, C3 16, C4 12). Rule unchanged: quote the cost and wait for Noah's OK before
-every generation.
+**Runway credits: 1,492** (95 spent on 2026-11-08 within Noah's 200-credit approval: C1 regeneration
+94, Noah's background removal 1). Rule unchanged: quote the cost and wait for Noah's OK before every
+generation.
 
 Live: **https://minutemenmarketing.com** (Vercel auto-deploys `main`; the old `*.vercel.app` address now returns 404). Local: `npm run dev`, then
 http://localhost:5173. QA switches on any build: `?motion` ignores reduced motion, `?reduced` forces
 it, `?herofail` / `?herofail=script` show the load-failure still version.
-Playwright QA scripts (cross-browser run, mobile alignment audit) are in `qa/`.
+Playwright QA scripts (cross-browser run, mobile alignment audit, full hero pass) are in `qa/`.
 
 ---
 
@@ -131,9 +131,90 @@ real collapsing bar, so give it one scroll on a real iPhone and Android phone (L
   share tags and og.jpg to LinkedIn's crawler, Analytics beacons, sitemap/robots). The phone,
   inbox, Search Console and LinkedIn Post Inspector checks are written up click by click there.
 
-## Open items
+## Done 2026-11-08
 
-1. **Noah's LinkedIn URL** → `src/site-config.js` (`founders.noah.linkedin`). His icon appears on
-   the founder cards once it's set.
-2. **Real client testimonials** (name, business, town, and permission to publish). LAUNCH.md step 4
-   has the two request texts. The carousel shows project highlights until then.
+**Hero glitches (first pass):** first wheel click moves the push-in (0.8% hold, C1 remap, scrub
+0.35); the one-frame giant ball in C2b repaired in all three sets (`f_0017-fix1.webp`); slow-4G
+loading keeps frames within a few of the scroll; beat text fades in once (no on/off/on). See
+CLAUDE.md for causes and measurements.
+
+**A. Hero**
+- **C1 regenerated, failed, current C1 kept.** Kling 4.0, 6s, 720p, cool K1 → K2, with Noah's added
+  line (task `af00ab27-83cc-476f-8f03-cc1f014e2ac8`, 94 credits, saved as `assets/drafts/c1-v2.mp4`).
+  Frame by frame it repeats v1's faults: from frame ~10 a second soldier fades in out of the smoke
+  behind K1's man, the camera pushes past the original man to him, and new puffs appear on background
+  muskets. The cause is structural: K1's man stands **in** the rank, K2's man stands alone **in front
+  of** the line, so a start+end interpolation has to invent a figure. The second try was not run: no
+  free end frame can fix it, because C2 starts on K2 (a K1 crop would need a K1→K2 crossfade at the
+  hold; a K2 with the line painted out leaves a ghost and the line would fade back in). Fix that would
+  work: a new K2 made from K1's own man (Nano Banana Pro edit of a K1 crop), then C1 to it and C2 from
+  it, about 20 + 94 + 60-94 credits plus upscales. **Needs Noah's OK.**
+- **Globe → logo aligned.** The logo ring's centre and size were measured from the old square PNG,
+  not the vector the hero draws: it sat ~1.5% left, ~0.8% low and 2.7% too big. Refitted to
+  `logo-stacked.svg`; on screen the ring edge is within 0–2.5px of the globe edge at 1440×900 and
+  390×844 (was 2–13px off).
+- **Returning visitors:** once someone has watched the hero (95% or Skip intro), Home lands just past
+  it for the rest of the browser session, nav showing; a small **Replay intro** link (`/?intro`)
+  restarts it. A new session gets the full hero.
+
+**B. Fonts:** headings and labels in **Outfit** (closest free match to the MINUTEMEN / MARKETING
+wordmark; emphasis in light weight instead of italic; labels letter-spaced like MARKETING); body in
+**Public Sans**. Neither is used on any client site. DESIGN.md and CLAUDE.md updated.
+
+**C. Home:** two big cards for Website Design & Development and Social Media Management, small cards
+for Search Engine Optimization (SEO), GEO and Domain Acquisition; portfolio heading "Client sites we
+built, live today.", no View Our Portfolio button, carousel centred, the active card links to
+`/portfolio#beauty` / `#smiles`; founders without role lines, Ethan Eghbali in full; the closing
+ring removed and the band centred; section rhythm tightened and headings widened to cut dead space.
+
+**D. Founder photos:** Noah on a soft blue studio backdrop (Runway cutout, 1 credit; clean edges),
+Ethan stays gray; same crop and sizes. Scripts in `scripts/noah-*.cjs`.
+
+**E. About:** heading "We use AI to work faster and charge less." (after stop-slop) with Ethan's
+paragraph exactly as supplied; founders full width with large portraits, bios and the "Noah and
+Ethan" title removed; How We Work removed; the closing-band sentence removed.
+
+**F. Portfolio:** each window renders the site in a real 1440×900 viewport scaled to fit (about
+1240×775 on desktop), so it looks exactly like a laptop, on every screen; the drip addict sentence
+removed; "doctor and nurse-led"; nothing on the page is sticky any more (the text column used to
+stick under the nav); closing-band sentence removed.
+
+**G. Footer and Contact:** "Serving Long Island, New York" removed; email and phone shown without
+"Or reach us:"; the footer's services sentence removed; **Terms of Service** link wired to
+`SITE.terms` (hidden until the text exists); **Instagram** shows in the footer and on Contact as soon
+as `SITE.instagram` is set.
+
+**H. Checks:** see the quality table below.
+
+Live minutemenmarketing.com, 2026-11-08, Lighthouse mobile (two runs each):
+
+| Page | Performance | Accessibility | Best practices | SEO |
+|---|---|---|---|---|
+| Home | 94–99 (LCP 1.4–1.9s) | 100 | 100 | 100 |
+| About | 100 | 100 | 100 | 100 |
+| Portfolio | 98–100 | 100 | 100 | 100 |
+| Contact | 100 | 100 | 100 | 100 |
+
+The font change first dropped Home to ~75: the opening words repainted later and larger (pre-hidden
+before Outfit drew them, a blur on their entrance, a smaller fallback face). Fixed without changing
+the look (details in the commit "Home performance and founder lists"). Founder lists became plain
+lists (accessibility was 91–96 with photos inside `<dl>`s).
+
+Also on live: cross-browser run (Chromium, Edge, WebKit, iPhone 14, Galaxy S9+) passes everything
+except WebKit frame pacing (Windows software rendering, same as before; check on a real iPhone);
+mobile audit at 375/390/430: no horizontal scroll, no tap target under 44px, centred columns; every
+link resolves (LinkedIn answers scripts with 403/999); contact form validation, success, error and
+honeypot checked with the request intercepted (no email sent); hero pass with wheel, trackpad and
+touch on fast and slow 4G clean. Firefox still can't run on this machine.
+
+## Open items (waiting on Noah)
+
+1. **Noah's last name** for the founder cards (Home and About). It isn't anywhere in the project;
+   the git author email hints at "Medina", which was **not** used without confirmation.
+2. **Terms of Service text** → create `terms/index.html`, add it to `PAGES` in `vite.config.js`, set
+   `terms: true` in `src/site-config.js`.
+3. **Instagram URL** → `instagram` in `src/site-config.js` (footer and Contact pick it up).
+4. **Real client testimonials** (name, business, town, and permission to publish). LAUNCH.md step 4
+   has the two request texts.
+5. **Noah's LinkedIn URL** → `founders.noah.linkedin` in `src/site-config.js`.
+6. **C1 decision:** keep the current push-in, or approve the K2-from-K1 rebuild described above.

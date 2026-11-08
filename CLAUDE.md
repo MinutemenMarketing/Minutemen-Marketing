@@ -169,7 +169,11 @@ interface elements or borders.
   K1's featured man: Kling fades a new figure in out of the smoke behind the line (frames 8–16) and
   pushes past K1's man to him, which reads as the soldier popping in; and it adds muzzle flashes
   and smoke puffs on the background soldiers' muskets (frames 16–32). Both are in the footage,
-  not the code; only a regenerated C1 fixes them (quoted to Noah, awaiting his OK).
+  not the code. **C1 v2 (2026-11-08, Noah approved, Kling 4.0 6s, 94 credits, task
+  `af00ab27-83cc-476f-8f03-cc1f014e2ac8`, `assets/drafts/c1-v2.mp4`) failed the same way**, so v1 stays:
+  K1's man stands in the rank and K2's man stands alone in front of the line, so any K1→K2
+  interpolation invents a second figure. The real fix is a new K2 built from K1's own man, then C1
+  and C2 regenerated from it (NEXT-STEPS, needs Noah's OK).
 - **APPROVED C3 (climb to the globe): `assets/clips/c3-climb.mp4`** (task
   `eaba141e-9eda-4513-b416-97b59cd31732`), start `c2b-last.png`, end `k4.png`, 8s. Frames
   `public/hero/v1/c3/` (15fps, 122). Its white-cloud middle is compressed (`CHOREO.c3Remap`), and over
