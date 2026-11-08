@@ -28,6 +28,7 @@ if (import.meta.env.PROD) {
   });
 }
 
+window.__mmBooted = true; // the inline head script's still-version fallback checks this
 gsap.registerPlugin(ScrollTrigger);
 // Mobile address bars resize the viewport while scrolling; the hero is sized to the large viewport,
 // so ScrollTrigger doesn't need to re-measure (that would jump the scrubbed story).

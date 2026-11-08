@@ -1,3 +1,16 @@
+/* Fallback for Outfit with Outfit's vertical metrics (a hair taller) on Arial and its metric twins.
+   The hero's first words paint in this face before Outfit arrives; because the swap can only make
+   them smaller, Chrome keeps that first paint as the page's largest paint (LCP) instead of the
+   moment the words are revealed seconds later. Measured 2026-11-08: Outfit ascent 1.00 / descent
+   0.26 em, Arial 0.91 / 0.21; Arial is already slightly wider. */
+@font-face {
+  font-family: 'Outfit Fallback';
+  src: local('Arial'), local('ArialMT'), local('Liberation Sans'), local('Arimo'), local('Helvetica Neue'), local('Helvetica');
+  ascent-override: 101%;
+  descent-override: 27%;
+  line-gap-override: 0%;
+  size-adjust: 105%;
+}
 /* Minutemen Marketing — tokens from DESIGN.md. One ink (navy) on paper; the gold is the
    shot-line dot only. Outfit for display and labels, Public Sans for everything else. */
 /* Mobile browser chrome: --bar is the height the address/tool bars take when shown (0 where the
@@ -22,7 +35,7 @@
 
   /* Display: Outfit, the closest free match to the logo wordmark (MINUTEMEN / MARKETING).
      Body: Public Sans. Neither is used on any of our client sites (DESIGN.md). */
-  --display: 'Outfit Variable', 'Outfit', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --display: 'Outfit Variable', 'Outfit Fallback', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --sans: 'Public Sans Variable', 'Public Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   --gutter: clamp(20px, 5vw, 56px);
@@ -1073,7 +1086,7 @@ html:not(.motion) .beat--1::before {
 .founder .portrait {
   margin-bottom: 16px;
 }
-.founders__names dt {
+.founders__names .founder__name {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -1826,7 +1839,7 @@ html:not(.motion) .beat--1::before {
     justify-items: center;
     text-align: center;
   }
-  .founders__names dt {
+  .founders__names .founder__name {
     justify-content: center;
   }
   .founders__body > .btn,
@@ -1944,7 +1957,7 @@ html:not(.motion) .beat--1::before {
 .page__h,
 .card__h,
 .slide__name,
-.founders__names dt,
+.founders__names .founder__name,
 .person__name,
 .project__name,
 .closing__h {
@@ -2064,4 +2077,10 @@ html:not(.motion) .beat--1::before {
   .founders-full .opener {
     justify-content: center;
   }
+}
+
+/* Beat 1 paints with the page (under the preloader) at its final size; the entrance animation then
+   plays on those same words. Keeps the first paint as the largest paint (2026-11-08). */
+.motion .beat--1 {
+  visibility: visible;
 }

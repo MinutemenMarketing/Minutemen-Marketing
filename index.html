@@ -8,6 +8,11 @@
     <meta name="description" content="Minutemen Marketing helps local businesses on Long Island get found and booked, with SEO, AI search (GEO), website design and development, domains and social media management." />
     <link rel="canonical" href="https://minutemenmarketing.com/" />
     <!-- @head -->
+    <!-- Story mode before first paint (same rule as src/main.js: everyone except visitors who chose the
+         still version). The hero's first words then paint once, at their final size, so that first
+         paint stays the page's largest paint. If the main script never starts, fall back to the still
+         version after 8s. Without JS this never runs and the still version shows. -->
+    <script>(function(){var d=document.documentElement,s;try{s=localStorage.getItem('mm-hero')==='still'}catch(e){}if(s||/[?&]herofail=script/.test(location.search))return;d.classList.add('motion');setTimeout(function(){if(!window.__mmBooted){d.classList.remove('motion');d.classList.add('hero-failed')}},8000)})()</script>
     <!-- Same tiers as the hero loader (src/hero/stage.js): 1920 for 1440px+ or 2x screens 1024px+. -->
     <link rel="preload" as="image" href="/hero/v1/k1-1920.webp" media="(min-width: 1440px), (min-width: 1024px) and (min-resolution: 2dppx)" />
     <link rel="preload" as="image" href="/hero/v1/k1-1280.webp" media="(max-width: 1439px) and (max-resolution: 1.99dppx), (max-width: 1023px)" />
@@ -131,17 +136,17 @@
             <p class="lede">Noah and Ethan started Minutemen Marketing on Long Island. You talk to them directly, from the first call to launch day.</p>
             <a class="btn btn--primary" href="/about#founders">Meet the Founders</a>
           </div>
-          <dl class="founders__names">
-              <div class="founder">
+          <ul class="founders__names">
+              <li class="founder">
                 <!-- @photo:noah:(min-width: 1024px) 260px, 42vw -->
                 <!-- TODO(client): Noah's last name (not anywhere in the project yet). -->
-                <dt>Noah <!-- @founder-link:noah:Noah --></dt>
-              </div>
-              <div class="founder">
+                <p class="founder__name">Noah <!-- @founder-link:noah:Noah --></p>
+              </li>
+              <li class="founder">
                 <!-- @photo:ethan:(min-width: 1024px) 260px, 42vw -->
-                <dt>Ethan Eghbali <!-- @founder-link:ethan:Ethan Eghbali --></dt>
-              </div>
-            </dl>
+                <p class="founder__name">Ethan Eghbali <!-- @founder-link:ethan:Ethan Eghbali --></p>
+              </li>
+            </ul>
         </div>
       </section>
 

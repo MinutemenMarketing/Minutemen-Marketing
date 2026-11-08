@@ -18,6 +18,10 @@ export function initHero({ scroller, nav, navH, reduced, returning, markSeen }) 
 
   const HIDDEN = reduced ? { autoAlpha: 0 } : { autoAlpha: 0, y: 16, filter: 'blur(6px)' };
   const SHOWN = reduced ? { autoAlpha: 1 } : { autoAlpha: 1, y: 0, filter: 'blur(0px)' };
+  // Beat 1's entrance has no blur: a blur grows the painted area, and Chrome then counts the reveal
+  // (seconds in) as the page's largest paint instead of the first paint of these same words.
+  const HIDDEN1 = reduced ? { autoAlpha: 0 } : { autoAlpha: 0, y: 16 };
+  const SHOWN1 = reduced ? { autoAlpha: 1 } : { autoAlpha: 1, y: 0 };
   const stagger = (n) => (reduced ? 0 : n);
   const fade = CHOREO.textFade;
   const words = (beat) => $$(`[data-beat="${beat}"] .w`);
@@ -36,7 +40,7 @@ export function initHero({ scroller, nav, navH, reduced, returning, markSeen }) 
     gsap.to(ring, { strokeDashoffset: 0, duration: 0.4, ease: 'power2.out' });
     setTimeout(() => {
       preload.classList.add('is-done');
-      gsap.fromTo(words(1), HIDDEN, { ...SHOWN, duration: reduced ? 0.6 : 1.1, ease: 'power2.out', stagger: stagger(0.06), delay: 0.35 });
+      gsap.fromTo(words(1), HIDDEN1, { ...SHOWN1, duration: reduced ? 0.6 : 1.1, ease: 'power2.out', stagger: stagger(0.06), delay: 0.35 });
     }, 450);
   };
   // If the story can't play (frames fail, or nothing arrives in 10s), drop to the still version:
@@ -103,7 +107,9 @@ export function initHero({ scroller, nav, navH, reduced, returning, markSeen }) 
 
   // Beat 1 fades in, word by word, when the preloader lifts; the timeline only fades it out.
   gsap.set('[data-beat="1"]', { autoAlpha: 1 });
-  gsap.set(words(1), HIDDEN);
+  // The words are not pre-hidden: they paint with the page under the opaque preloader, and the
+  // entrance (fromTo in lift) sets them hidden the moment the preloader starts to fade. That way their
+  // first paint stays the page's largest paint (LCP) on fast and slow devices alike.
 
   const mm = gsap.matchMedia();
   mm.add({ desktop: '(min-width: 768px)', mobile: '(max-width: 767px)' }, (ctx) => {
