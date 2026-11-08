@@ -69,10 +69,15 @@ export const ASSETS = {
   k2: 'k2',
   k4: 'k4v2', // approved K4 (v2, ball shrunk)
   logo: '/brand/logo-stacked.svg', // stacked logo (mark over MINUTEMEN MARKETING), traced vector
-  c1: { dir: 'c1', count: 92, pattern: 'f_%04d.webp' },
+  // `fix`: frame files replaced after a repair, saved under a new name because /hero/v1 is cached
+  // as immutable. `dupes`: files that repeat the previous frame in the 1280 and 960 sets (a 24→15fps
+  // extraction artefact; the 1920 set has none), skipped so the scrub never stalls on them.
+  c1: { dir: 'c1', count: 92, pattern: 'f_%04d.webp', dupes: [46, 61, 76] },
   c2: { dir: 'c2', count: 78, pattern: 'f_%04d.webp' },
-  c2b: { dir: 'c2b', count: 92, pattern: 'f_%04d.webp' },
-  c3: { dir: 'c3', count: 122, pattern: 'f_%04d.webp' },
+  // f_0017: the matte-ball repaint drew the ball ~6× too big on this one frame (2026-11-08). Rebuilt
+  // from f_0016 + f_0018 with one ball at the midpoint size and position, in all three sets.
+  c2b: { dir: 'c2b', count: 92, pattern: 'f_%04d.webp', fix: { 17: 'f_0017-fix1.webp' }, dupes: [46, 61, 76] },
+  c3: { dir: 'c3', count: 122, pattern: 'f_%04d.webp', dupes: [46, 61, 76] },
   c4: { dir: 'c4', count: 91, pattern: 'f_%04d.webp' },
 };
 

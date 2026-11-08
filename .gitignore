@@ -14,3 +14,6 @@ Thumbs.db
 
 # 4K upscales of the approved clips (Runway); frames are extracted from these
 assets/upscaled/
+
+# QA screenshots (sent to Noah, not deployed)
+qa/shots/

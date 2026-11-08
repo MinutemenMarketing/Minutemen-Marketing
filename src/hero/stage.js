@@ -264,11 +264,16 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
   // Nearest loaded frame of a sequence, so a fast scroll never paints a blank. If a reader outruns
   // the loader and none of the clip has arrived yet, show the still it starts or ends on.
   const STAND_IN = { c1: 'k1', c2: 'k2', c2b: 'k2', c3: 'k4', c4: 'k4' };
+  // Frame indices actually played: every file, minus repeated ones in this tier.
+  const order = {};
+  const played = (name) =>
+    (order[name] ||= [...Array(ASSETS[name].count).keys()].filter((i) => hd || !ASSETS[name].dupes?.includes(i + 1)));
   function frame(name, t) {
     const frames = a.seq[name];
     const n = ASSETS[name]?.count || 0;
     if (frames && n) {
-      const i = Math.round(clamp01(t) * (n - 1));
+      const list = played(name);
+      const i = list[Math.round(clamp01(t) * (list.length - 1))];
       for (let d = 0; d < n; d++) {
         if (frames[i - d]) return frames[i - d];
         if (frames[i + d]) return frames[i + d];
@@ -491,10 +496,11 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
       if (!s) continue;
       a.seq[name] = [];
       const [from, to] = SEG[name];
-      for (let i = 0; i < s.count; i++) {
-        const f = i / (s.count - 1);
+      const list = played(name);
+      for (const i of list) {
+        const f = list.indexOf(i) / (list.length - 1);
         const t = REMAP[name] ? invert(REMAP[name], f) : f;
-        const src = `${ASSETS.base}/${phone ? 'm/' : hd ? 'hd/' : ''}${s.dir}/${s.pattern.replace('%04d', String(i + 1).padStart(4, '0'))}`;
+        const src = `${ASSETS.base}/${phone ? 'm/' : hd ? 'hd/' : ''}${s.dir}/${(s.fix?.[i + 1] || s.pattern.replace('%04d', String(i + 1).padStart(4, '0')))}`;
         add(`${name}:${i}`, src, from + t * (to - from), i % 4 === 0);
       }
     }
