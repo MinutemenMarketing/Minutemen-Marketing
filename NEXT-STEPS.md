@@ -3,8 +3,8 @@
 Updated 2026-11-08, end of session. `CLAUDE.md` is the contract (hero spec, rules, every
 approved asset with its Runway task ID); `DESIGN.md` is the approved four-page design. Read both first.
 
-**Runway credits: 1,492** (95 spent on 2026-11-08 within Noah's 200-credit approval: C1 regeneration
-94, Noah's background removal 1). Rule unchanged: quote the cost and wait for Noah's OK before every
+**Runway credits: 1,420** (2026-11-08: 95 within Noah's 200-credit approval — C1 regeneration 94,
+background removal 1; then 72 within the 250-credit C1 rebuild approval — C2 v3, failed). Rule unchanged: quote the cost and wait for Noah's OK before every
 generation.
 
 Live: **https://minutemenmarketing.com** (Vercel auto-deploys `main`; the old `*.vercel.app` address now returns 404). Local: `npm run dev`, then
@@ -207,14 +207,33 @@ link resolves (LinkedIn answers scripts with 403/999); contact form validation, 
 honeypot checked with the request intercepted (no email sent); hero pass with wheel, trackpad and
 touch on fast and slow 4G clean. Firefox still can't run on this machine.
 
+## Done 2026-11-08 (evening)
+
+- **Hero controls:** Reduce motion + Skip intro are one small group top-right: under the nav while it
+  shows, up in its space (safe-area aware) once it fades; half-transparent while scrolling, full on
+  hover/focus/tap. Every beat is centred; beat 1 starts below the group, beat 2 ends above the Scroll
+  cue and progress line (`--hud-t` / `--hud-b`). The Scroll cue no longer moves up on phones.
+- **Collision check** in `qa/hero-pass.mjs` (`--collide-only`, `--shots <dir>`, `--selftest`): every beat at
+  375×812, 375×667, 390, 430, 768, 1280 and 1920, controls both low and up, asserts no control box
+  (motion toggle, Skip, Scroll cue, progress line) overlaps any word, and that the text is centred.
+  All pass on live; `--selftest` (controls pinned onto beat 1) fails as it must. Not modelled:
+  real iPhone safe-area/home-bar insets and a collapsing address bar (emulators report 0).
+- **Names:** "Noah Medina" and "Ethan Eghbali" on Home and About, photo alt text, About title and
+  description, Home lede, and new Organization JSON-LD on Home and About (there was no schema
+  before). About's "Founder · Design/Strategy" lines removed.
+- **C1 rebuild: failed, current C1 and C2 kept** (72 of 250 credits spent). New K2 = crop of K1's own
+  man (0 credits). C2 (new K2 → `c2-last.png`) generated first: background soldiers fire, men climb the
+  wall, and the field morphs into K2's layout around 4s. C1 was then not generated. Details and task
+  ID in CLAUDE.md; contact sheets in `qa/shots/c2v3-*.jpg` (git-ignored).
+
 ## Open items (waiting on Noah)
 
-1. **Noah's last name** for the founder cards (Home and About). It isn't anywhere in the project;
-   the git author email hints at "Medina", which was **not** used without confirmation.
 2. **Terms of Service text** → create `terms/index.html`, add it to `PAGES` in `vite.config.js`, set
    `terms: true` in `src/site-config.js`.
 3. **Instagram URL** → `instagram` in `src/site-config.js` (footer and Contact pick it up).
 4. **Real client testimonials** (name, business, town, and permission to publish). LAUNCH.md step 4
    has the two request texts.
 5. **Noah's LinkedIn URL** → `founders.noah.linkedin` in `src/site-config.js`.
-6. **C1 decision:** keep the current push-in, or approve the K2-from-K1 rebuild described above.
+6. **C1:** the K2-from-K1 rebuild failed in C2 (see above). Options: keep the current push-in
+   (it has the known pop-in and background smoke), or a bigger rebuild where C2/C2b/C3 also change so
+   no clip has to pull the man out of the rank.

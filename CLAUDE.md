@@ -172,8 +172,16 @@ interface elements or borders.
   not the code. **C1 v2 (2026-11-08, Noah approved, Kling 4.0 6s, 94 credits, task
   `af00ab27-83cc-476f-8f03-cc1f014e2ac8`, `assets/drafts/c1-v2.mp4`) failed the same way**, so v1 stays:
   K1's man stands in the rank and K2's man stands alone in front of the line, so any K1→K2
-  interpolation invents a second figure. The real fix is a new K2 built from K1's own man, then C1
-  and C2 regenerated from it (NEXT-STEPS, needs Noah's OK).
+  interpolation invents a second figure. **Rebuild attempt (2026-11-08, Noah approved, cap 250):**
+  new K2 = a 2656×1494 crop of `k1-cool.png` around his own man (`assets/drafts/k2-v3.png`, 0 credits),
+  so C1 would be a pure push-in. C2 was generated first because it carries the hard part (him leaving
+  the rank to stand alone as in `c2-last.png`): Kling 4.0 6s 720p, task
+  `60e215a6-b209-4234-8306-ec8626bb5cd7`, **72 credits**, `assets/drafts/c2-v3.mp4`. **Failed:** background
+  soldiers fire (muzzle flash ~1.7s), men climb the wall and walk out of the smoke, and around 3.7–4.2s
+  the field morphs into K2's wall-and-line layout; the shot itself is squeezed into the last 2 frames.
+  C1 was not generated (useless without a matching C2). **Current C1 and C2 stay.** Lesson: Kling
+  cannot move a man out of a rank between two fixed frames; any future try needs an end frame that
+  keeps K1's surroundings (and a new C2b/C3 chain) rather than `c2-last.png`.
 - **APPROVED C3 (climb to the globe): `assets/clips/c3-climb.mp4`** (task
   `eaba141e-9eda-4513-b416-97b59cd31732`), start `c2b-last.png`, end `k4.png`, 8s. Frames
   `public/hero/v1/c3/` (15fps, 122). Its white-cloud middle is compressed (`CHOREO.c3Remap`), and over

@@ -14,3 +14,8 @@ Not part of the site build. Run them from any folder that has Playwright install
 
 Firefox: Playwright's Firefox build is blocked from running on Noah's Windows machine (unsigned
 executable), so Firefox wasn't covered in the 2026-11-07 run.
+- `node qa/hero-pass.mjs [baseUrl] [--collide-only] [--shots <dir>] [--selftest]`: the full hero
+  scroll pass (wheel, trackpad, touch, slow 4G) and then the collision check: every beat at
+  375×812, 375×667, 390, 430, 768, 1280 and 1920px, with the controls under the nav and up in its
+  space, asserts that no control (Reduce motion, Skip intro, Scroll cue, progress line) overlaps any
+  word and that the text is centred. `--selftest` pins the controls onto beat 1 and must fail.
