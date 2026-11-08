@@ -1758,7 +1758,9 @@ html:not(.motion) .beat--1::before {
   padding-block: 5px; /* 34px logo, 44px target */
 }
 .founder-link {
+  flex-shrink: 0;
   width: 44px;
+  min-width: 44px;
   height: 44px;
   margin: -10px -4px;
 }

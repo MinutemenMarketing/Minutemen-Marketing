@@ -112,8 +112,8 @@ for (const [name, engine, ctxOpts, launchOpts = {}] of RUNS) {
     ok(mobile ? 'Carousel swipes' : 'Carousel moves (next button)', c1 !== c0, `slide ${c0 + 1} → ${c1 + 1}; active card ${centred}px from centre`);
 
     // fonts
-    const fonts = await page.evaluate(async () => { await document.fonts.ready; return { caslon: document.fonts.check('400 20px "Libre Caslon Text"'), caslonI: document.fonts.check('italic 400 20px "Libre Caslon Text"'), hanken: document.fonts.check('400 16px "Hanken Grotesk Variable"'), loaded: [...document.fonts].filter((f) => f.status === 'loaded').map((f) => f.family + ' ' + f.style).join(', ') }; });
-    ok('Fonts load (Caslon, Caslon italic, Hanken)', fonts.caslon && fonts.caslonI && fonts.hanken, fonts.loaded);
+    const fonts = await page.evaluate(async () => { await document.fonts.ready; const has = (fam, style = 'normal') => [...document.fonts].some((f) => f.family.replace(/"/g, '') === fam && f.style === style && f.status === 'loaded'); return { outfit: has('Outfit Variable'), sans: has('Public Sans Variable'), sansI: has('Public Sans Variable', 'italic'), loaded: [...document.fonts].filter((f) => f.status === 'loaded').map((f) => f.family + ' ' + f.style).join(', ') }; });
+    ok('Fonts load (Outfit, Public Sans, Public Sans italic)', fonts.outfit && fonts.sans, fonts.loaded);
 
     // layout shift on a fresh load of each page (below-hero content)
     const shifts = [];
@@ -126,7 +126,7 @@ for (const [name, engine, ctxOpts, launchOpts = {}] of RUNS) {
       const move = Math.max(0, ...a.map((v, i) => Math.abs(v - (b[i] ?? v))));
       shifts.push(`${path}: ${cls === null ? 'CLS n/a' : 'CLS ' + cls.toFixed(3)}, max move ${move}px`);
     }
-    const homeLate = await (async () => { await page.goto(BASE + '/', { waitUntil: 'load' }); const onScreen = () => [...document.querySelectorAll('.hero h1, .hero__skip, .hero__motion, .nav')].map((e) => Math.round(e.getBoundingClientRect().top)); const a = await page.evaluate(onScreen); await sleep(2500); const b = await page.evaluate(onScreen); return Math.max(0, ...a.map((v, i) => Math.abs(v - (b[i] ?? v)))); })();
+    const homeLate = await (async () => { await page.goto(BASE + '/?intro', { waitUntil: 'load' }); const onScreen = () => [...document.querySelectorAll('.hero h1, .hero__skip, .hero__motion, .nav')].map((e) => Math.round(e.getBoundingClientRect().top)); const a = await page.evaluate(onScreen); await sleep(2500); const b = await page.evaluate(onScreen); return Math.max(0, ...a.map((v, i) => Math.abs(v - (b[i] ?? v)))); })();
     shifts.unshift(`/: max move ${homeLate}px`);
     ok('Nothing shifts while loading', shifts.every((s) => /max move [0-2]px/.test(s) && !/CLS 0\.[1-9]/.test(s)), shifts.join('; '));
 
