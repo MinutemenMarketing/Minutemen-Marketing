@@ -167,7 +167,7 @@ function pages() {
 }
 
 // Production only: inline the stylesheet (about 9KB compressed) so the first paint doesn't wait for a
-// separate request, and preload the two Caslon weights the hero headline uses.
+// separate request, and preload the Outfit file the hero headline uses (latin, variable).
 function criticalPath() {
   return {
     name: 'mm-critical-path',
@@ -181,7 +181,7 @@ function criticalPath() {
           const asset = bundle[file];
           return asset && asset.type === 'asset' ? `<style>${asset.source}</style>` : m;
         });
-        const fonts = Object.keys(bundle).filter((f) => /libre-caslon-text-latin-400-(normal|italic)-.*\.woff2$/.test(f));
+        const fonts = Object.keys(bundle).filter((f) => /outfit-latin-wght-normal-.*.woff2$/.test(f));
         const preload = fonts.map((f) => `<link rel="preload" as="font" type="font/woff2" href="/${f}" crossorigin />`).join('\n    ');
         // Home: fetch the hero module alongside the main script instead of after it runs.
         const hero = Object.keys(bundle).find((f) => /^assets\/home-hero-.*\.js$/.test(f));

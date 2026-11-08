@@ -1,5 +1,5 @@
 /* Minutemen Marketing — tokens from DESIGN.md. One ink (navy) on paper; the gold is the
-   shot-line dot only. Caslon for display, Hanken Grotesk for everything else. */
+   shot-line dot only. Outfit for display and labels, Public Sans for everything else. */
 /* Mobile browser chrome: --bar is the height the address/tool bars take when shown (0 where the
    browser has no large/small viewport units). The pinned hero is sized to the LARGE viewport, so it
    never leaves a strip when the bars collapse; anything anchored to its bottom edge lifts by --bar so
@@ -20,8 +20,10 @@
   --flash: #a67c2e;
   --error: #9b1c1c;
 
-  --serif: 'Libre Caslon Text', Georgia, 'Times New Roman', serif;
-  --sans: 'Hanken Grotesk Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* Display: Outfit, the closest free match to the logo wordmark (MINUTEMEN / MARKETING).
+     Body: Public Sans. Neither is used on any of our client sites (DESIGN.md). */
+  --display: 'Outfit Variable', 'Outfit', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --sans: 'Public Sans Variable', 'Public Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   --gutter: clamp(20px, 5vw, 56px);
   --band: clamp(80px, 8.5vw, 136px);
@@ -131,7 +133,7 @@ em {
 .chapter__h,
 .beat__title,
 .beat__sub {
-  font-family: var(--serif);
+  font-family: var(--display);
   font-weight: 400;
   letter-spacing: -0.015em;
   text-wrap: balance;
@@ -149,8 +151,8 @@ em {
   text-wrap: pretty;
 }
 .eyebrow {
-  font: 600 0.75rem/1 var(--sans);
-  letter-spacing: 0.16em;
+  font: 500 0.75rem/1 var(--display);
+  letter-spacing: 0.28em;
   text-transform: uppercase;
   color: var(--ink-2);
 }
@@ -360,7 +362,7 @@ html.is-locked {
 }
 .sheet__links a {
   justify-self: start;
-  font: 400 clamp(2.25rem, 10vw, 3rem) / 1.25 var(--serif);
+  font: 400 clamp(2.25rem, 10vw, 3rem) / 1.25 var(--display);
   letter-spacing: -0.015em;
   text-decoration: none;
   padding: 6px 0;
@@ -803,7 +805,7 @@ html:not(.motion) .beat--1::before {
   }
 }
 /* Cards set like index cards on the page: paper, a hairline, a heavy ink rule on top that draws
-   across on hover. Large Caslon names; the copy at body size, not caption size. */
+   across on hover. Large Outfit names; the copy at body size, not caption size. */
 .card {
   position: relative;
   display: grid;
@@ -839,7 +841,7 @@ html:not(.motion) .beat--1::before {
   color: var(--ink);
 }
 .card__h {
-  font: 400 clamp(1.75rem, 2.4vw, 2.25rem) / 1.1 var(--serif);
+  font: 400 clamp(1.75rem, 2.4vw, 2.25rem) / 1.1 var(--display);
   letter-spacing: -0.015em;
   text-wrap: balance;
 }
@@ -950,7 +952,7 @@ html:not(.motion) .beat--1::before {
   padding: clamp(20px, 2.4vw, 32px);
 }
 .slide__name {
-  font: 400 clamp(1.5rem, 2.2vw, 1.875rem) / 1.15 var(--serif);
+  font: 400 clamp(1.5rem, 2.2vw, 1.875rem) / 1.15 var(--display);
   letter-spacing: -0.01em;
 }
 .slide__meta {
@@ -971,7 +973,7 @@ html:not(.motion) .beat--1::before {
   margin: 8px 0 0;
   padding: 12px 14px;
   border: 1px dashed var(--error);
-  font: italic 400 1.0625rem/1.45 var(--serif);
+  font: 400 1.0625rem/1.45 var(--display);
 }
 .slide__draft-label {
   display: block;
@@ -1068,7 +1070,7 @@ html:not(.motion) .beat--1::before {
   display: flex;
   align-items: center;
   gap: 6px;
-  font: 400 clamp(1.75rem, 3vw, 2.75rem) / 1.05 var(--serif);
+  font: 400 clamp(1.75rem, 3vw, 2.75rem) / 1.05 var(--display);
   letter-spacing: -0.015em;
 }
 
@@ -1146,7 +1148,7 @@ html:not(.motion) .beat--1::before {
 }
 .closing__direct a {
   color: var(--on-navy);
-  font: 400 1.25rem/1.4 var(--serif);
+  font: 400 1.25rem/1.4 var(--display);
   text-decoration: underline;
   text-decoration-color: rgba(247, 244, 236, 0.35);
   text-underline-offset: 0.25em;
@@ -1181,7 +1183,7 @@ html:not(.motion) .beat--1::before {
   margin-bottom: 0;
 }
 .page__h {
-  font: 400 clamp(2.75rem, 6.4vw, 5.75rem) / 1.02 var(--serif);
+  font: 400 clamp(2.75rem, 6.4vw, 5.75rem) / 1.02 var(--display);
   letter-spacing: -0.015em;
   max-width: 16ch;
   text-wrap: balance;
@@ -1190,7 +1192,7 @@ html:not(.motion) .beat--1::before {
   display: grid;
   gap: 1em;
   max-width: 30rem;
-  font: 400 clamp(1.25rem, 1.8vw, 1.625rem) / 1.45 var(--serif);
+  font: 400 clamp(1.25rem, 1.8vw, 1.625rem) / 1.45 var(--display);
   color: var(--ink);
   text-wrap: pretty;
 }
@@ -1225,7 +1227,7 @@ html:not(.motion) .beat--1::before {
   border-top: 1px solid var(--rule);
 }
 .person__name {
-  font: 400 clamp(2rem, 3.4vw, 2.75rem) / 1.1 var(--serif);
+  font: 400 clamp(2rem, 3.4vw, 2.75rem) / 1.1 var(--display);
 }
 .person__role {
   font: 600 0.75rem/1.4 var(--sans);
@@ -1279,7 +1281,7 @@ html:not(.motion) .beat--1::before {
   color: var(--ink-2);
 }
 .project__name {
-  font: 400 clamp(1.875rem, 2.7vw, 2.5rem) / 1.1 var(--serif);
+  font: 400 clamp(1.875rem, 2.7vw, 2.5rem) / 1.1 var(--display);
   letter-spacing: -0.015em;
 }
 .project__meta {
@@ -1408,7 +1410,7 @@ html:not(.motion) .beat--1::before {
   color: var(--ink-2);
 }
 .details dd a {
-  font: 400 1.25rem/1.4 var(--serif);
+  font: 400 1.25rem/1.4 var(--display);
 }
 .details__area {
   color: var(--ink-2);
@@ -1520,7 +1522,7 @@ html:not(.motion) .beat--1::before {
   padding: 16px 18px;
   border-left: 3px solid var(--ink);
   background: var(--paper-2);
-  font: 400 1.25rem/1.5 var(--serif);
+  font: 400 1.25rem/1.5 var(--display);
 }
 .form__status[data-kind='error'] {
   color: var(--error);
@@ -1568,7 +1570,7 @@ html:not(.motion) .beat--1::before {
 }
 .footer__tag {
   margin-top: 8px;
-  font: 400 1.125rem/1.3 var(--serif);
+  font: 400 1.125rem/1.3 var(--display);
 }
 .footer__nav {
   display: grid;
@@ -1908,4 +1910,57 @@ html:not(.motion) .beat--1::before {
   .hero-returning .replay {
     justify-content: center;
   }
+}
+
+/* ---------- Type (2026-11-08): Outfit display, Public Sans body ----------
+   Headings are semibold Outfit; the emphasised phrase drops to light weight instead of italic
+   (Outfit has no italic), echoing the logo's bold MINUTEMEN over light, spaced MARKETING. */
+.h2,
+.intro__h,
+.chapter__h,
+.beat__title,
+.page__h,
+.card__h,
+.slide__name,
+.founders__names dt,
+.person__name,
+.project__name,
+.closing__h {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.h2 em,
+.intro__h em,
+.chapter__h em,
+.beat__title em,
+.beat__sub em,
+.page__h em,
+.card__h em,
+.card__sub,
+.slide__name em,
+.project__name em,
+.closing__h em,
+.person__name em {
+  font-style: normal;
+  font-weight: 300;
+}
+.beat__sub {
+  font-weight: 400;
+}
+.prose em,
+.footer__tag em,
+.closing__direct em {
+  font-style: normal;
+  font-weight: 500;
+}
+/* Small labels take the logo's letter-spaced MARKETING style. */
+.card__num,
+.slide__meta,
+.hero__skip,
+.hero__motion,
+.hero__cue,
+.replay a,
+.nav__links a,
+.btn {
+  font-family: var(--display);
 }

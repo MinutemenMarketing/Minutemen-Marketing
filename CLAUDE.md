@@ -152,7 +152,7 @@ interface elements or borders.
   beat 3 shows while the ball comes round the front.
 - **Hero finish (2026-11-05):** every clip opens on the previous clip's last frame with a 5-frame
   cross-dissolve; one CSS grade on the canvas plus one grain tile over the whole hero; beats in large
-  Caslon with the key phrase italic, words staggered, a soft blurred scrim (no box); preloader = the
+  Outfit (key phrase in light weight since 2026-11-08; was Caslon italic), words staggered, a soft blurred scrim (no box); preloader = the
   logo's open ring drawing itself; scroll progress = the bullet's trail with a gold dot; a "Scroll"
   cue that fades on the first move. The globe scene is zoomed to the 50% circle over a blurred,
   globe-free copy of itself with softly erased edges, so no edge shows; globe → brand globe → logo
@@ -206,7 +206,7 @@ The copy says "bullet" by Noah's choice; the artwork still shows a round lead mu
 
 With `prefers-reduced-motion: reduce`, there is no scrubbing and no Lenis smooth scroll: show the **still
 version**: the K1 painting full-screen with only "Minutemen Marketing. Ready at a minute's notice." in the
-Caslon opening style, then the stacked logo, then the site. Never a stacked list of the hero lines
+Outfit opening style, then the stacked logo, then the site. Never a stacked list of the hero lines
 (Noah, 2026-11-05). The same still version appears automatically if the hero script fails to load or
 throws, the opening frame fails, over 30% of the opening frames fail, or nothing arrives in 10s.
 QA on any build: `?motion` forces the story, `?herofail` / `?herofail=script` show the failure path.
@@ -219,8 +219,8 @@ Note: the Claude desktop browser pane reports reduced motion — QA the motion p
 **DESIGN SKILLS:** for everything after the hero (nav, services, process, work, contact, footer),
 **load and follow the `ui-ux-pro-max` and `frontend-design` skills** before designing or building it.
 
-- They work **inside our brand, not instead of it**: navy on warm off-white, the Libre Caslon Text +
-  Hanken Grotesk pairing already chosen, restrained and premium like pear.no.
+- They work **inside our brand, not instead of it**: navy on warm off-white, the Outfit + Public Sans
+  pairing (DESIGN.md, 2026-11-08), restrained and premium like pear.no.
 - **Don't apply their preset styles, palettes or fonts.**
 - Use them for **layout, hierarchy, spacing, components, accessibility and UX quality**.
 - The hero and the globe-to-logo transition stay governed by the hero spec in this file, not by the
@@ -251,9 +251,10 @@ the Vite stack and pushes to `main`, both by Noah's explicit choice.
   `#022148`–`#02224A`). Use it for the logo, headlines on light, and the dark hero ground.
 - **Warm off-white `#F7F4EC`** for page paper (the logo files sit on `#FEFDF9`).
 - Navy on the off-white is ~14:1 contrast — fine for any text size.
-- **Headlines: Libre Caslon Text** (Google Fonts, self-hosted via `@fontsource`). Caslon is the face
-  the Declaration of Independence was printed in — period-correct without being costume.
-- **Body: Hanken Grotesk** (variable, self-hosted via `@fontsource-variable`).
+- **Headlines and labels: Outfit** (variable), the closest free match to the logo wordmark; labels
+  use the logo's letter-spaced MARKETING style. **Body: Public Sans** (variable, real italic).
+  Self-hosted via `@fontsource-variable`. Replaced Libre Caslon Text + Hanken Grotesk on 2026-11-08
+  (too close to Beauty & Wellness / Smiles by Nilou). Never use a client site's fonts here.
 - Logo files live in `/brand` (`logo-full.png`, `logo-square.png`, LinkedIn banners). `Images/` holds
   the originals Noah dropped in and is not committed. Clean vectors traced from them (navy `#032249`,
   2026-11-05) live in `public/brand/`: `logo-stacked.svg` (mark over MINUTEMEN MARKETING; the hero

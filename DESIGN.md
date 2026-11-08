@@ -23,11 +23,14 @@ off-white, a serif + sans) sits right next to it. We deliberately deviate:
   a single ink. The single exception is the shot-line dot, in a muted musket-flash gold — the spark
   of the shot, never text, never buttons, never fills. No terracotta, no gradients. Hierarchy comes
   from size, weight, italic and space — not from a second color.
-- **Caslon at regular weight, set large, with real italics** for the turn of a sentence — never a
-  bold display serif. Caslon is the face the Declaration was printed in; it carries the period so
-  the layout doesn't need costume (no parchment, no ornaments, no faux-aged textures).
+- **The logo's own letters, not a borrowed serif.** (Changed 2026-11-08: Caslon + Hanken read too
+  close to Beauty & Wellness and Smiles by Nilou and to the usual AI-site serif-plus-grotesk look.)
+  Headings are set in Outfit, the closest free match to the MINUTEMEN wordmark; small labels copy
+  the logo's letter-spaced MARKETING line. The turn of a sentence drops to a light weight instead
+  of italic, the way the logo pairs bold MINUTEMEN with light MARKETING. The period lives in the
+  hero painting, so the type doesn't need costume (no parchment, no ornaments, no aged textures).
 - **Flat cards, not app tiles.** Noah asked for five service cards: flat paper panels with a hairline,
-  a Caslon name and one sentence. No icons, no shadows, no hover lift.
+  an Outfit name and one sentence. No icons, no shadows, no hover lift.
 - **One navy band** (the closing consultation band) so "restrained" doesn't mean flat, and the page ends in the same navy
   the hero lives in.
 - **Structural move:** the musket ball's path from the hero continues down the page as the
@@ -52,16 +55,25 @@ Tokens only in components, never raw hex. Body text ≥ 7:1 (it is 14.4:1). No d
 
 ## Typography
 
-- **Display:** Libre Caslon Text 400 + 400 italic (700 unused). Italic marks the turn in a
-  headline ("Ready *at a minute's notice.*"), never whole paragraphs. Optical feel at size comes from
-  tight tracking (−0.015em ≥ 40px), not weight.
-- **Body/UI:** Hanken Grotesk variable, 400 body / 500 labels / 600 eyebrows. Not Inter.
-- **Eyebrow:** Hanken 600, 12–13px, 0.16em tracking, uppercase, `--ink-2`.
+- **Display: Outfit (variable)** — the closest free match to the wordmark in the logo (same set
+  width; straight-sided M with a low vertex, round U, geometric E). The wordmark is a lightly
+  customised geometric sans, not an exact retail face; Outfit was picked over Red Hat Display,
+  Montserrat, Gantari, Onest, Albert Sans and Urbanist in a side-by-side render (2026-11-08).
+  Headings 600 with −0.02em tracking; the emphasised phrase (`<em>`) drops to 300, upright — Outfit
+  has no italic, and the bold/light contrast is the logo's. Never a synthesised oblique.
+- **Body: Public Sans (variable, with its real italic)** — 400 body, 500 for emphasis in large
+  prose. Chosen because it is plain, very readable at body size, and not used on any of our client
+  sites (they use Manrope, Figtree, Libre Franklin, Inter, Cormorant, Playfair, Newsreader,
+  Fraunces). Its origin as the US government's typeface is a quiet fit for a Minutemen brand.
+- **Labels (eyebrows, numerals, buttons, nav, hero controls):** Outfit 500, 12px, **0.28em**
+  tracking, uppercase, `--ink-2` — the logo's spaced-out MARKETING line.
 - **Scale desktop → mobile:** display 88 → 44 · h2 56 → 34 · h3 30 → 24 · lede 22 → 19 ·
   body 18 → 17 · small 14 · eyebrow 12. Line-height: display 1.04, h2 1.1, body 1.6.
   Measure ≤ 34rem for running text.
 - **Figures:** tabular-nums for process stage numbers, the phone number and the year.
-- Self-hosted via `@fontsource` (already in `package.json`); `font-display: swap`, latin subset only.
+- Self-hosted via `@fontsource-variable/outfit` and `@fontsource-variable/public-sans`;
+  `font-display: swap`; only the latin file downloads (unicode-range). The Outfit latin file is
+  preloaded on every page (it sets the first headline).
 
 ## Signature element — the shot line
 
@@ -96,7 +108,7 @@ behind the closing heading, so the page ends where the hero did.
 
 | Part | Spec |
 |---|---|
-| **Nav** | `src/partials/nav.html`, injected at build. Horizontal logo (`/brand/logo-horizontal.svg`) left; **Home · About · Portfolio · Contact**; current page underlined (`aria-current="page"`). Visible on load. On Home it fades out while you scroll down through the hero and comes back when you scroll up or the hero ends. ≥ 720px: the four tabs. Below: a 44px *Menu* button → full-height sheet (logo, Close, the four pages in large Caslon, *Book a Free Consultation*), focus-trapped, Esc closes. |
+| **Nav** | `src/partials/nav.html`, injected at build. Horizontal logo (`/brand/logo-horizontal.svg`) left; **Home · About · Portfolio · Contact**; current page underlined (`aria-current="page"`). Visible on load. On Home it fades out while you scroll down through the hero and comes back when you scroll up or the hero ends. ≥ 720px: the four tabs. Below: a 44px *Menu* button → full-height sheet (logo, Close, the four pages in large Outfit, *Book a Free Consultation*), focus-trapped, Esc closes. |
 | **Footer** (navy-deep) | `src/partials/footer.html`. Light horizontal logo + italic tagline · the four pages · *Book a Free Consultation* · "Serving Long Island, New York" · © year. Email, phone and socials appear only once Noah supplies them. |
 | **Every consultation button** | Links to `/contact`. Regular `<a href>` links everywhere, so each route loads on its own. |
 
@@ -106,7 +118,7 @@ behind the closing heading, so the page ends where the hero did.
 
 1. **Hero** (CLAUDE.md), ending on the stacked logo.
 2. **Services: five cards.** This replaces the ruled index; Noah asked for cards. Flat paper-2 panels
-   with a 1px rule, no shadows, no icons. A Caslon name, one sentence, and a small 01–05 numeral:
+   with a 1px rule, no shadows, no icons. An Outfit name, one sentence, and a small 01–05 numeral:
    - **SEO:** Help local customers find you when they search for what you offer.
    - **GEO (AI search):** Structure your content so AI search tools understand what you do and surface it in answers.
    - **Website Design & Development:** A custom, mobile-friendly site that makes the next step easy.
@@ -162,7 +174,7 @@ Web3Forms access key. Without it the live page hides the form and says plainly t
 
 ## Components
 
-- **Buttons:** primary: navy fill, paper text, Hanken 500, 2px radius, 48px min height. On hover and
+- **Buttons:** primary: navy fill, paper text, Outfit 500, 2px radius, 48px min height. On hover and
   focus a short line slides in under the label (200ms). Light variant on navy. One primary per section.
 - **Service cards:** `--paper-2` fill, 1px `--rule` border, 2px radius, no shadow.
 - **Carousel cards:** paper, 1px `--rule` border; the active card's border goes `--ink`.

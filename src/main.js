@@ -1,6 +1,6 @@
-import '@fontsource/libre-caslon-text/latin-400.css';
-import '@fontsource/libre-caslon-text/latin-400-italic.css';
-import '@fontsource-variable/hanken-grotesk';
+import '@fontsource-variable/outfit/wght.css';
+import '@fontsource-variable/public-sans/wght.css';
+import '@fontsource-variable/public-sans/wght-italic.css';
 import './styles/main.css';
 
 import gsap from 'gsap';
