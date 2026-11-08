@@ -19,6 +19,10 @@
    the expanded bar can't cover it. --safe-* keep clear of the notch and the home indicator. */
 :root {
   --bar: 0px;
+  /* Hero text keeps clear of the controls group (top) and the Scroll cue + progress line (bottom). */
+  --hud-t: calc(var(--nav-h) + 72px);
+  --hud-b: calc(112px + var(--bar) + var(--safe-b));
+  --safe-t: env(safe-area-inset-top, 0px);
   --safe-b: env(safe-area-inset-bottom, 0px);
   --safe-l: env(safe-area-inset-left, 0px);
   --safe-r: env(safe-area-inset-right, 0px);
@@ -436,7 +440,7 @@ html:not(.motion) .hero__stage::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 70% 55% at 18% 18%, rgba(247, 244, 236, 0.7), rgba(247, 244, 236, 0) 70%);
+  background: radial-gradient(ellipse 70% 55% at 50% 22%, rgba(247, 244, 236, 0.7), rgba(247, 244, 236, 0) 70%);
   pointer-events: none;
 }
 html:not(.motion) .hero__beats {
@@ -454,9 +458,10 @@ html:not(.motion) .beat--3 {
 }
 html:not(.motion) .beat--1 {
   position: absolute;
-  left: var(--gutter);
-  right: var(--gutter);
-  top: calc(var(--nav-h) + clamp(32px, 7vh, 96px));
+  left: calc(var(--gutter) + var(--safe-l));
+  right: calc(var(--gutter) + var(--safe-r));
+  top: calc(var(--hud-t) + clamp(0px, 3vh, 40px));
+  text-align: center;
   isolation: isolate;
   color: var(--ink);
 }
@@ -470,9 +475,6 @@ html:not(.motion) .beat--1::before {
   filter: blur(28px);
 }
 @media (min-width: 1024px) {
-  html:not(.motion) .beat--1 {
-    top: calc(var(--nav-h) + clamp(24px, 5vh, 64px));
-  }
   html:not(.motion) .beat--1 .beat__title {
     max-width: none;
   }
@@ -562,8 +564,9 @@ html:not(.motion) .beat--1::before {
 }
 .motion .beat {
   position: absolute;
-  left: var(--gutter);
-  right: var(--gutter);
+  left: calc(var(--gutter) + var(--safe-l));
+  right: calc(var(--gutter) + var(--safe-r));
+  text-align: center;
   visibility: hidden;
   isolation: isolate;
 }
@@ -581,13 +584,17 @@ html:not(.motion) .beat--1::before {
   background: radial-gradient(closest-side, rgba(2, 18, 40, 0.6), rgba(2, 18, 40, 0.25) 55%, transparent);
 }
 .motion .beat--1 {
-  top: calc(var(--nav-h) + clamp(32px, 7vh, 96px));
+  top: calc(var(--hud-t) + clamp(0px, 3vh, 40px));
   color: var(--ink);
+}
+.beat__title,
+.beat__sub {
+  margin-inline: auto;
 }
 /* Beat 2 plays over C2b, where the ball fills the centre: keep it low and clear of the ball. */
 .motion .beat--2 {
   top: auto;
-  bottom: calc(clamp(64px, 12vh, 136px) + var(--bar) + var(--safe-b));
+  bottom: max(calc(clamp(64px, 12vh, 136px) + var(--bar) + var(--safe-b)), var(--hud-b));
   color: var(--ink);
 }
 /* Beat 3 sits below the globe; main.js sets --below from the circle target. */
@@ -603,15 +610,14 @@ html:not(.motion) .beat--1::before {
   line-height: 1.12;
 }
 @media (min-width: 1024px) {
-  .motion .beat--1 {
-    top: calc(var(--nav-h) + clamp(24px, 5vh, 64px));
-  }
   .motion .beat--1 .beat__title {
     max-width: none;
   }
   .motion .beat--2 {
-    bottom: calc(clamp(56px, 10vh, 120px) + var(--bar));
-    width: min(34%, 520px);
+    bottom: max(calc(clamp(56px, 10vh, 120px) + var(--bar)), var(--hud-b));
+    width: min(64%, 900px);
+    left: calc((100% - min(64%, 900px)) / 2);
+    right: auto;
   }
 }
 
@@ -665,16 +671,38 @@ html:not(.motion) .beat--1::before {
 .hero__cue.is-gone {
   opacity: 0;
 }
-/* Skip: a quiet text button bottom-right, gone once the hero hands off to the site. */
+/* The hero's controls (motion toggle + skip): one small group top-right. While the nav shows they
+   sit just under it; once it fades out they rise into its space. Half-transparent while the reader
+   scrolls, full on hover, focus or touch. They never share space with a beat: every beat starts
+   below --hud-t and ends above --hud-b (2026-11-08). */
+.hero__controls {
+  position: absolute;
+  z-index: 3;
+  top: calc(var(--nav-h) + 8px);
+  right: calc(var(--gutter) + var(--safe-r));
+  display: flex;
+  gap: 8px;
+  transition:
+    top 450ms var(--ease),
+    opacity 300ms var(--ease);
+}
+.hero__controls.is-up {
+  top: calc(12px + var(--safe-t));
+}
+.hero__controls.is-scrolling {
+  opacity: 0.5;
+}
+.hero__controls:hover,
+.hero__controls:focus-within,
+.hero__controls:active {
+  opacity: 1;
+}
+/* Skip: a quiet text button, gone once the hero hands off to the site. */
 .motion .hero__skip {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  position: absolute;
-  right: calc(var(--gutter) + var(--safe-r));
-  bottom: calc(34px + var(--bar) + var(--safe-b));
-  z-index: 3;
-  min-height: 40px;
+  min-height: 44px;
   padding: 0 16px;
   background: rgba(247, 244, 236, 0.78);
   -webkit-backdrop-filter: blur(8px);
@@ -1648,13 +1676,9 @@ html:not(.motion) .beat--1::before {
   padding-top: calc(var(--nav-h) + clamp(56px, 8vw, 128px));
 }
 
-/* Hero motion toggle: discreet, bottom-left, in both the story and the still version. */
+/* Hero motion toggle: discreet, in the controls group, in both the story and the still version. */
 .hero__motion {
-  position: absolute;
-  left: calc(var(--gutter) + var(--safe-l));
-  bottom: calc(34px + var(--bar) + var(--safe-b));
-  z-index: 3;
-  min-height: 40px;
+  min-height: 44px;
   padding: 0 14px;
   border: 0;
   border-radius: 999px;
@@ -1678,11 +1702,6 @@ html:not(.motion) .beat--1::before {
 /* Reduced motion keeps the story but drops the moving film grain. */
 .reduced .hero__grain {
   display: none;
-}
-@media (max-width: 600px) {
-  .motion .hero__cue {
-    bottom: calc(96px + var(--bar) + var(--safe-b));
-  }
 }
 
 /* Full-page screenshot that scrolls inside a portfolio window (sites that refuse framing here). */

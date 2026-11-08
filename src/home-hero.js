@@ -165,15 +165,29 @@ export function initHero({ scroller, nav, navH, reduced, returning, markSeen }) 
 
   // Nav: on at load; fades out as the reader scrolls down into the hero, back on scroll-up and for
   // good once the hero ends. Keyboard focus always brings it back.
+  // The controls group follows it: under the nav while it shows, up in its space once it fades, and
+  // half-transparent while the reader is scrolling.
+  const controls = $('.hero__controls');
   let lastY = 0;
+  let idle = 0;
+  const syncControls = () => controls?.classList.toggle('is-up', nav.classList.contains('is-hidden'));
   scroller.on((y) => {
     const pin = ScrollTrigger.getById('hero');
     const inHero = pin && y > 24 && y < pin.end - 1;
     if (!inHero || y < lastY - 2) nav.classList.remove('is-hidden');
     else if (y > lastY + 2) nav.classList.add('is-hidden');
+    if (Math.abs(y - lastY) > 0.5) {
+      controls?.classList.add('is-scrolling');
+      clearTimeout(idle);
+      idle = setTimeout(() => controls?.classList.remove('is-scrolling'), 700);
+    }
+    syncControls();
     lastY = y;
   });
-  nav.addEventListener('focusin', () => nav.classList.remove('is-hidden'));
+  nav.addEventListener('focusin', () => {
+    nav.classList.remove('is-hidden');
+    syncControls();
+  });
 
   // This module loads after the page's first layout pass, so measure again now that the pin exists
   // (it moves every section below it). On the next frame, so the setup above and this layout pass
@@ -191,6 +205,7 @@ export function initHero({ scroller, nav, navH, reduced, returning, markSeen }) 
       ScrollTrigger.update();
       ScrollTrigger.getById('hero')?.getTween()?.progress(1);
       nav.classList.remove('is-hidden');
+      syncControls();
     }
   });
 }
