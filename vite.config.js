@@ -76,7 +76,7 @@ function directHtml() {
   const links = [];
   if (SITE.workEmail) links.push(`<a href="mailto:${esc(SITE.workEmail)}">${esc(SITE.workEmail)}</a>`);
   if (SITE.phone) links.push(`<a href="${telHref(SITE.phone)}">${esc(SITE.phone)}</a>`);
-  return links.length ? `<p class="closing__direct"><span>Or reach us:</span> ${links.join(' ')}</p>` : '';
+  return links.length ? `<p class="closing__direct">${links.join(' ')}</p>` : '';
 }
 
 // Contact details from src/site-config.js. Empty values are TODO(client) and are not rendered.
@@ -154,7 +154,7 @@ function pages() {
         let out = html
           .replace('<!-- @head -->', head)
           .replace('<!-- @nav -->', mark(read('nav')))
-          .replace('<!-- @footer -->', mark(read('footer')).replace('<!-- @footer-contact -->', footerContactHtml()))
+          .replace('<!-- @footer -->', mark(read('footer')).replace('<!-- @footer-contact -->', footerContactHtml()).replace('<!-- @terms -->', SITE.terms ? ' · <a href="/terms">Terms of Service</a>' : ''))
           .replace('<dl class="details" data-details-list></dl>', `<dl class="details" data-details-list>${detailsHtml()}</dl>`);
         out = out.replace(/<!-- @direct -->/g, directHtml());
         out = splitWordsHtml(out)
