@@ -74,22 +74,25 @@ continuing.** Never lock or hijack the scroll. Every percentage lives in one con
 
 | Scroll | Picture | Text |
 |---|---|---|
-| 0–9% | HOLD on the battlefield (K1) | **Beat 1** in on load, fully visible 0–9%: "Minutemen Marketing." / "Ready at a minute's notice." |
-| 9–12% | K1 (C1 starts at 11%) | Beat 1 fades out |
-| 11–27% | C1 push-in to the soldier (K1 → K2); the 27–30% hold stays on C1's own last frame | — |
+| 0–0.8% | Short HOLD on the battlefield (K1) | **Beat 1** in on load, fully visible 0–9%: "Minutemen Marketing." / "Ready at a minute's notice." |
+| 0.8–27% | C1 push-in to the soldier (K1 → K2), starting on the first wheel click (`CHOREO.c1Remap` runs through Kling's slow ease-in); the 27–30% hold stays on C1's own last frame | Beat 1 stays fully visible over the start of the push-in, fades out 9–12% |
 | 27–30% | HOLD on the soldier | — |
 | 30–41% | C2, the shot and the ball leaving the muzzle | — |
 | 41–56% | **C2b, FOLLOW THE BULLET** — side-tracking with the ball (start frame `c2-last.png`) | **Beat 2** in 43%, fully visible 46–55%, out 55–58%: "Response time as fast as a bullet." |
 | 56–68% | C3, the ball climbs to the globe (start = C2b's last frame, end = K4); its globe settles onto the 50% circle | — |
 | 68–85% | The globe; **C4, BULLET AROUND THE GLOBE** — one orbit, behind the globe on the far side | **Beat 3** in 69%, fully visible 72–85%, fades out 85–88% as the globe turns navy: "With the right website, you can reach an audience around the world." — below the globe, **never overlapping it** |
 | 85–100% | Three slow fades: painted globe → navy-and-white globe (85–91%) → logo circle (91–96%) → site (96–100%) | — |
-(Updated 2026-11-05 for C2b and C4; the numbers live in `src/hero/choreography.js`.)
+(Updated 2026-11-05 for C2b and C4, 2026-11-08 for the short opening hold; the numbers live in
+`src/hero/choreography.js`.)
 
 - **Pinned length:** **1000vh desktop, 650vh mobile** (Noah, 2026-11-05).
 - **Text timing rule (Noah, 2026-11-05):** beats 1 and 2 fully visible for at least 8% of the scroll each, beat 3 at least 12% and fading only as the globe turns navy; fades about 3%.
-- **Smoothness:** Lenis `lerp ≈ 0.08`; ScrollTrigger `scrub: 1`; draw on `requestAnimationFrame`
+- **Smoothness:** Lenis `lerp ≈ 0.08`; ScrollTrigger `scrub: 0.35` (was 1: stacked on Lenis it added a
+  second ~1s catch-up, so the first wheel click felt dead); draw on `requestAnimationFrame`
   **only when the frame or scene state changes**; preload frames with a minimal progress indicator.
-- **Text fades:** opacity + 16px rise + slight blur-to-sharp, about **3% of the scroll** each.
+- **Text fades:** opacity + 16px rise + slight blur-to-sharp, about **3% of the scroll** each. The
+  words are hidden by a `tl.set` at the moment their line switches on; without it a ScrollTrigger
+  refresh left them at full opacity and the line flashed on, off, on (fixed 2026-11-08).
 
 **Below the hero:** each chapter (Ready, Aim, Fire, Heard) gets **one brief pinned moment** where its
 headline fades in on the shot line, then the content scrolls up. **One cross-fade** of one image into
@@ -138,6 +141,10 @@ interface elements or borders.
   ball is repainted per frame as a matte, upper-left-lit lead sphere with grain (auto-detected before
   2.4s, a hand-measured track after), and the first frames get the same warm-gold flash as C2.
   Frames: `public/hero/v1/c2b/` (15fps, 92). Last frame `assets/keyframes/c2b-last.png` = C3's start.
+  **File `f_0017` (2026-11-08):** the repaint drew the ball ~6× too big on that one frame in all three
+  sets (the one-frame "giant ball" right after the shot). Rebuilt from f_0016 + f_0018 by
+  `scripts/fix-c2b-frame17.cjs` and served as `f_0017-fix1.webp` (`ASSETS.c2b.fix`), because
+  `/hero/v1` is cached as immutable: never overwrite a file there, add a new name.
   (C2b v2, task `130bef5a-…`, was matte but egg-shaped and huge — not used.)
 - **APPROVED C4 (orbit): `assets/clips/c4-orbit.mp4`** (task `dbb25ecc-895f-4f88-baeb-03cc158fd6a4`),
   start = end = `k4.png`. Ball passes cleanly behind the globe. Frames `public/hero/v1/c4/` (15fps,
@@ -157,8 +164,12 @@ interface elements or borders.
   height, clearly visible oil brushwork on the globe matching K1, a small round ball with a thin
   trail (no capsule). (Superseded by the approved K4 below.)
 - **APPROVED C1 (push-in): `assets/clips/c1-pushin.mp4`** (task `70a8541a-58c3-4697-a2e2-aaa4bbc0dec0`),
-  start `k1-cool`, end `k2.png`, 6s. Frames `public/hero/v1/c1/` (15fps, 92); the crop travels from
-  K1's focus to K2's.
+  Kling 4.0, 6s, 72 credits, start `k1-cool`, end `k2.png`. Frames `public/hero/v1/c1/` (15fps, 92); the
+  crop travels from K1's focus to K2's. **Known footage flaws (2026-11-08):** the end soldier is not
+  K1's featured man: Kling fades a new figure in out of the smoke behind the line (frames 8–16) and
+  pushes past K1's man to him, which reads as the soldier popping in; and it adds muzzle flashes
+  and smoke puffs on the background soldiers' muskets (frames 16–32). Both are in the footage,
+  not the code; only a regenerated C1 fixes them (quoted to Noah, awaiting his OK).
 - **APPROVED C3 (climb to the globe): `assets/clips/c3-climb.mp4`** (task
   `eaba141e-9eda-4513-b416-97b59cd31732`), start `c2b-last.png`, end `k4.png`, 8s. Frames
   `public/hero/v1/c3/` (15fps, 122). Its white-cloud middle is compressed (`CHOREO.c3Remap`), and over
@@ -263,7 +274,12 @@ the Vite stack and pushes to `main`, both by Noah's explicit choice.
   of the scroll position**: each frame knows where in the hero it is needed, and six workers fetch the
   nearest pending frames within a window (30% ahead on desktop, 18% on phones, 10% with Save-Data;
   6% behind), every 4th frame of a clip first. At the top of the page a phone loads 38 files (K1 + the
-  first part of C1) instead of all 475. When adding or replacing a clip, regenerate every set.
+  first part of C1) instead of all 475. When adding or replacing a clip, regenerate every set. Clip frames start loading as soon as K1
+  is in (not when the preloader lifts), and the queue takes every 4th frame, then every 2nd, before
+  the in-betweens (2026-11-08: on slow 4G the frame on screen now stays within a few frames of the
+  scroll). The 1280 and 960 sets of C1, C2b and C3 repeat files 46/61/76 (24→15fps extraction);
+  `ASSETS.<clip>.dupes` skips them. A clip with nothing loaded yet stands in with its neighbouring
+  clip's frame, never an unrelated still.
 - **Mobile edge-to-edge (2026-11-05):** the pinned stage and canvas are `100lvh` (largest viewport,
   `100vh` fallback) on a navy ground, so collapsing/expanding the browser bar never shows a strip.
   Bottom-anchored controls lift by `--bar` (`100lvh - 100svh`) plus the safe-area inset;
