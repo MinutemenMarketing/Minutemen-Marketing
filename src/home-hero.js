@@ -10,7 +10,7 @@ const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 
 // `reduced`: the visitor prefers reduced motion. The story still plays (it only moves when they
 // scroll), but without the extras: plain opacity fades, no word stagger, no grain, no scrub lag.
-export function initHero({ scroller, nav, navH, reduced }) {
+export function initHero({ scroller, nav, navH, reduced, returning, markSeen }) {
   const hero = $('.hero');
   if (!reduced) hero.style.setProperty('--grain', `url(${grainTile()})`);
   // Words are split at build time (vite.config.js); split here only if a page wasn't.
@@ -81,7 +81,9 @@ export function initHero({ scroller, nav, navH, reduced }) {
   // Skip: jump straight past the hero to the first section, with the hero settled on its last
   // frame (no fast-forward through the story), and move focus there.
   const skip = $('[data-skip]');
+  const motionBtn = $('[data-motion-toggle]');
   skip.addEventListener('click', () => {
+    markSeen();
     const intro = $('#main');
     scroller.to(intro.getBoundingClientRect().top + window.scrollY - navH());
     ScrollTrigger.update();
@@ -131,6 +133,8 @@ export function initHero({ scroller, nav, navH, reduced }) {
           gsap.set(trail, { scaleX: state.p / 100 });
           if (state.p > 0.4) cue.classList.add('is-gone');
           skip.classList.toggle('is-gone', state.p > 95);
+          motionBtn?.classList.toggle('is-gone', state.p > 95);
+          if (state.p > 95) markSeen();
         },
       },
       0,
@@ -172,6 +176,16 @@ export function initHero({ scroller, nav, navH, reduced }) {
     ScrollTrigger.sort();
     ScrollTrigger.refresh();
     scroller.resize();
+    // Back on Home in the same session after watching the story: land just past it, nav showing,
+    // the hero settled on its last frame (scrolling up still plays it backwards). "Replay intro"
+    // (/?intro) starts it from the top.
+    if (returning) {
+      preload.classList.add('is-done');
+      scroller.to($('#main').getBoundingClientRect().top + window.scrollY - navH());
+      ScrollTrigger.update();
+      ScrollTrigger.getById('hero')?.getTween()?.progress(1);
+      nav.classList.remove('is-hidden');
+    }
   });
 }
 

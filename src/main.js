@@ -98,6 +98,22 @@ const scroller = {
 };
 initPage();
 
+// "Has watched the hero" lasts for the browser session only (a fresh visit gets the full story).
+function heroSeen() {
+  try {
+    return sessionStorage.getItem('mm-hero-seen') === '1';
+  } catch {
+    return false;
+  }
+}
+function markHeroSeen() {
+  try {
+    sessionStorage.setItem('mm-hero-seen', '1');
+  } catch {
+    // storage blocked: every visit gets the full story
+  }
+}
+
 function readPref() {
   try {
     return localStorage.getItem('mm-hero');
@@ -131,20 +147,24 @@ function initPage() {
     requestAnimationFrame(() => scroller.to($(location.hash).getBoundingClientRect().top + scrollY - navH()));
   }
 
-  // Home: the hero opens at the top, full-screen, every time (no restored mid-story position).
+  // Home: the hero opens at the top, full-screen (no restored mid-story position). Once a visitor
+  // has watched it this session, coming back to Home lands just past it instead (see heroSeen).
   if ($('.hero')) {
+    const returning = heroSeen() && !location.hash && !qs.has('intro');
     if (!location.hash) {
       history.scrollRestoration = 'manual';
       window.scrollTo(0, 0);
     }
+    html.classList.toggle('hero-returning', returning);
     initMotionToggle();
+    if (wantsStill && returning) requestAnimationFrame(() => scroller.to($('#main').getBoundingClientRect().top + scrollY - navH()));
     if (!wantsStill) {
       html.classList.add('motion');
       // The hero loads its own module (Home preloads it in the head, so it downloads alongside the
       // main script). If it fails to load or throws, the hero becomes the still version.
       const qa = new URLSearchParams(location.search).get('herofail'); // ?herofail=script simulates it
       (qa === 'script' ? Promise.reject(new Error('QA: hero script failure')) : import('./home-hero.js'))
-        .then((m) => m.initHero({ scroller, nav, navH, reduced: reduceMotion }))
+        .then((m) => m.initHero({ scroller, nav, navH, reduced: reduceMotion, returning, markSeen: markHeroSeen }))
         .catch(() => {
           html.classList.remove('motion');
           html.classList.add('hero-failed');
