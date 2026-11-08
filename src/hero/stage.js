@@ -305,10 +305,11 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
       const t = local(S.c1, p);
       if (ASSETS.c1) {
         // C1 opens on K1 and ends on K2, so its crop travels from K1's focus to K2's.
-        const d = dissolve('c1', t);
+        const ct = remap(CHOREO.c1Remap, t);
+        const d = dissolve('c1', ct);
         if (d < 1) ops.push(k1);
         const f = ease(t);
-        ops.push(['seq', 'c1', t, d, lerp(FOCUS.k1Soldier.x, FOCUS.k2Soldier.x, f), lerp(FOCUS.k1Soldier.y, FOCUS.k2Soldier.y, f), 1, fitAt(clamp01((t - 0.6) / 0.4))]);
+        ops.push(['seq', 'c1', ct, d, lerp(FOCUS.k1Soldier.x, FOCUS.k2Soldier.x, f), lerp(FOCUS.k1Soldier.y, FOCUS.k2Soldier.y, f), 1, fitAt(clamp01((t - 0.6) / 0.4))]);
       } else {
         // Placeholder: push in on the soldier in K1, then dissolve to K2.
         ops.push(['img', 'k1', 1, FOCUS.k1Soldier.x, FOCUS.k1Soldier.y, lerp(1, 2.4, ease(clamp01(t / 0.85)))]);
@@ -474,7 +475,7 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
   const AHEAD = saveData ? 10 : phone ? 18 : 30; // % of the hero to keep loaded ahead
   const BEHIND = 6; // and a little behind, for scrolling back
   const SEG = { c1: S.c1, c2: S.c2, c2b: S.c2b, c3: S.c3, c4: S.k4Hold };
-  const REMAP = { c3: CHOREO.c3Remap, c4: CHOREO.c4Remap };
+  const REMAP = { c1: CHOREO.c1Remap, c3: CHOREO.c3Remap, c4: CHOREO.c4Remap };
   const invert = (points, f) => remap(points.map(([x, y]) => [y, x]), f);
   const jobs = [];
   const waiting = []; // workers parked until the reader scrolls

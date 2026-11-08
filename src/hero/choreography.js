@@ -3,14 +3,18 @@
 
 export const CHOREO = {
   pin: { desktop: 1000, mobile: 650 }, // pinned length in vh
-  scrub: 1,
+  // Scrub smoothing in seconds. Lenis already smooths the wheel; a long scrub on top of it adds a
+  // second catch-up, so the first wheel click felt dead (2026-11-08: 1 → 0.35).
+  scrub: 0.35,
   lenisLerp: 0.08,
   textFade: 3, // each text fade-in / fade-out takes this % of the scroll
   dissolveFrames: 5, // cross-dissolve at every clip join (frames of the incoming clip)
 
   scenes: {
-    k1Hold: [0, 11], // battlefield (beat 1 in on load, fully visible to 9%, out 9–12%)
-    c1: [11, 27], // C1: the push-in across the battlefield to the soldier
+    // A short hold, then the push-in starts on the first wheel click (Noah, 2026-11-08). Beat 1 stays
+    // fully visible over the start of the push-in (to 9%) and fades out 9–12%.
+    k1Hold: [0, 0.8], // battlefield
+    c1: [0.8, 27], // C1: the push-in across the battlefield to the soldier
     k2Hold: [27, 30], // hold on the soldier
     c2: [30, 41], // the shot and the ball leaving the muzzle
     c2b: [41, 56], // FOLLOW THE BULLET — side-tracking with the ball (beat 2 over it)
@@ -27,6 +31,14 @@ export const CHOREO = {
     [0, 0],
     [0.3, 0.364],
     [0.36, 0.629],
+    [1, 1],
+  ],
+
+  // C1 remap: Kling's camera eases in very slowly over the first ~12 frames, so the scroll moves
+  // through that stretch faster and the first wheel click visibly moves the frame.
+  c1Remap: [
+    [0, 0],
+    [0.06, 0.2],
     [1, 1],
   ],
 
