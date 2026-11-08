@@ -1282,12 +1282,6 @@ html:not(.motion) .beat--1::before {
 .person__name {
   font: 400 clamp(2rem, 3.4vw, 2.75rem) / 1.1 var(--display);
 }
-.person__role {
-  font: 600 0.75rem/1.4 var(--sans);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-2);
-}
 .person__bio {
   color: var(--ink-2);
 }

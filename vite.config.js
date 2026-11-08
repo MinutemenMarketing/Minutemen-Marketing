@@ -50,7 +50,7 @@ function splitWordsHtml(html) {
 
 // Founder portraits (matched set in public/founders/, 240 and 400 px, AVIF + WebP).
 const FOUNDER_ALT = {
-  noah: 'Noah, co-founder of Minutemen Marketing',
+  noah: 'Noah Medina, co-founder of Minutemen Marketing',
   ethan: 'Ethan Eghbali, co-founder of Minutemen Marketing',
 };
 function founderPhotoHtml(name, sizes) {
