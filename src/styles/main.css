@@ -26,7 +26,7 @@
   --sans: 'Public Sans Variable', 'Public Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   --gutter: clamp(20px, 5vw, 56px);
-  --band: clamp(80px, 8.5vw, 136px);
+  --band: clamp(64px, 6.5vw, 104px); /* tightened 2026-11-08: less dead space between sections */
   --shell: 1240px;
   --measure: 34rem;
 
@@ -141,7 +141,7 @@ em {
 .h2 {
   font-size: clamp(2.25rem, 4.6vw, 3.75rem);
   line-height: 1.08;
-  max-width: 17ch;
+  max-width: 22ch;
 }
 .lede {
   font-size: clamp(1.1875rem, 1.7vw, 1.375rem);
@@ -785,22 +785,25 @@ html:not(.motion) .beat--1::before {
   gap: 16px;
   margin-top: clamp(40px, 5vw, 72px);
 }
+/* Two big cards (the two biggest services) over three small ones. */
 @media (min-width: 720px) {
   .cards {
     grid-template-columns: repeat(2, 1fr);
   }
+  .card:last-child {
+    grid-column: span 2;
+  }
 }
-@media (min-width: 1024px) {
-  /* 3 + 2: the last two cards share the bottom row */
+@media (min-width: 960px) {
   .cards {
     grid-template-columns: repeat(6, 1fr);
     gap: 20px;
   }
-  .card {
+  .card,
+  .card:last-child {
     grid-column: span 2;
   }
-  .card:nth-child(4),
-  .card:nth-child(5) {
+  .card--big {
     grid-column: span 3;
   }
 }
@@ -862,24 +865,26 @@ html:not(.motion) .beat--1::before {
   overflow: hidden;
 }
 .work__body {
-  display: grid;
-  gap: 40px;
-  margin-top: clamp(40px, 5vw, 72px);
+  margin-top: clamp(32px, 4vw, 56px);
 }
-@media (min-width: 1024px) {
-  .work__body {
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 56px;
-  }
+.carousel {
+  max-width: 1120px;
+  margin-inline: auto;
 }
-.work__cta {
-  display: flex;
+/* The active card opens that client's section on /portfolio. */
+.slide__link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
 }
-@media (max-width: 1023px) {
-  .work__cta .btn {
-    width: 100%;
-  }
+.slide.is-active .slide__link {
+  cursor: pointer;
+}
+.slide.is-active .slide__link:hover .slide__name,
+.slide.is-active .slide__link:focus-visible .slide__name {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
 }
 .carousel {
   min-width: 0;
@@ -1036,28 +1041,30 @@ html:not(.motion) .beat--1::before {
   display: grid;
   gap: 40px;
 }
+/* Intro (heading, lede, button) on the left, the two founders large on the right. */
 @media (min-width: 1024px) {
   .founders__grid {
     grid-template-columns: 5fr 6fr;
-    gap: 96px;
-    align-items: start;
+    gap: clamp(48px, 6vw, 96px);
+    align-items: center;
   }
-  .founders__body {
-    padding-top: 52px; /* level with the heading, below the shot line */
+  .founders__names {
+    justify-content: end;
   }
 }
 .founders__body {
   display: grid;
-  gap: 28px;
+  gap: 24px;
   justify-items: start;
+}
+.founders__body .opener {
+  margin-bottom: 0;
 }
 .founders__names {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 220px));
-  gap: 24px clamp(20px, 4vw, 56px);
+  grid-template-columns: repeat(2, minmax(0, 260px));
+  gap: 24px clamp(20px, 3vw, 40px);
   width: 100%;
-  padding-top: 24px;
-  border-top: 1px solid var(--rule);
 }
 .founder {
   display: grid;
@@ -1070,7 +1077,7 @@ html:not(.motion) .beat--1::before {
   display: flex;
   align-items: center;
   gap: 6px;
-  font: 400 clamp(1.75rem, 3vw, 2.75rem) / 1.05 var(--display);
+  font: 400 clamp(1.5rem, 2.1vw, 2rem) / 1.1 var(--display);
   letter-spacing: -0.015em;
 }
 
@@ -1120,14 +1127,17 @@ html:not(.motion) .beat--1::before {
   color: var(--on-navy);
   overflow: hidden;
 }
+/* Centred band: eyebrow, heading, button, then email and phone on one line. */
 .closing__inner {
   position: relative;
   display: grid;
-  justify-items: start;
+  justify-items: center;
+  text-align: center;
   gap: 28px;
   padding-block: var(--band);
 }
 .closing__h {
+  margin-inline: auto;
   max-width: 16ch;
   font-size: clamp(2.5rem, 5.6vw, 4.75rem);
   line-height: 1.04;
@@ -1139,10 +1149,12 @@ html:not(.motion) .beat--1::before {
 }
 .closing .opener {
   margin-bottom: 0;
+  justify-content: center;
 }
 .closing__direct {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 8px 28px;
   color: var(--on-navy-2);
 }
@@ -1804,15 +1816,11 @@ html:not(.motion) .beat--1::before {
     justify-content: center;
   }
   .founders__body > .btn,
-  .work__cta .btn,
   .form .btn,
   .notfound__inner .btn,
   .closing__inner .btn {
     justify-self: stretch;
     width: 100%;
-  }
-  .work__cta {
-    justify-content: center;
   }
 
   /* About: each founder stacked, photo above name, all centred. */
@@ -1963,4 +1971,42 @@ html:not(.motion) .beat--1::before {
 .nav__links a,
 .btn {
   font-family: var(--display);
+}
+
+/* Big service cards: bigger type and room; the small three stay compact. */
+.card--big {
+  padding: clamp(32px, 3.6vw, 56px) clamp(28px, 3vw, 48px) clamp(36px, 4vw, 60px);
+  background: var(--paper-2, #efeadf);
+}
+.card--big .card__h {
+  font-size: clamp(1.875rem, 3vw, 2.75rem);
+  line-height: 1.05;
+}
+.card--big p {
+  font-size: clamp(1.0625rem, 1.3vw, 1.25rem);
+}
+.card:not(.card--big) .card__h {
+  font-size: clamp(1.375rem, 1.8vw, 1.625rem);
+}
+
+/* Phones: heading and lede, then the two founders, then the button. */
+@media (max-width: 1023px) {
+  .founders__grid {
+    gap: 24px;
+  }
+  .founders__body {
+    display: contents;
+  }
+  .founders__names {
+    order: 2;
+    margin-block: 8px;
+  }
+  .founders__body > .btn {
+    order: 3;
+  }
+}
+@media (max-width: 767px) {
+  .founders__grid {
+    justify-items: center;
+  }
 }

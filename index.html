@@ -67,19 +67,20 @@
       <section class="section shell" id="services" aria-labelledby="services-h">
         <div class="opener"><span class="shot" aria-hidden="true"></span><p class="eyebrow">Services</p></div>
         <h2 class="h2" id="services-h">Five services that help customers <em>find and choose you.</em></h2>
+        <!-- Our two biggest services get the two big cards (Noah, 2026-11-08). -->
         <ul class="cards">
-          <li class="card"><span class="card__num">01</span><h3 class="card__h">SEO</h3><p>Help local customers find you when they search for what you offer.</p></li>
-          <li class="card"><span class="card__num">02</span><h3 class="card__h">GEO <span class="card__sub">(AI search)</span></h3><p>Structure your content so AI search tools understand what you do and surface it in answers.</p></li>
-          <li class="card"><span class="card__num">03</span><h3 class="card__h">Website Design &amp; Development</h3><p>A custom, mobile-friendly site that makes the next step easy.</p></li>
-          <li class="card"><span class="card__num">04</span><h3 class="card__h">Domain Acquisition</h3><p>Find, secure and connect a domain that fits your brand.</p></li>
-          <li class="card"><span class="card__num">05</span><h3 class="card__h">Social Media Management</h3><p>Plan, create and manage content that keeps your channels active.</p></li>
+          <li class="card card--big"><span class="card__num">01</span><h3 class="card__h">Website Design &amp; Development</h3><p>A custom, mobile-friendly site that makes the next step easy.</p></li>
+          <li class="card card--big"><span class="card__num">02</span><h3 class="card__h">Social Media Management</h3><p>Plan, create and manage content that keeps your channels active.</p></li>
+          <li class="card"><span class="card__num">03</span><h3 class="card__h">Search Engine Optimization <span class="card__sub">(SEO)</span></h3><p>Help local customers find you when they search for what you offer.</p></li>
+          <li class="card"><span class="card__num">04</span><h3 class="card__h">GEO <span class="card__sub">(AI search)</span></h3><p>Structure your content so AI search tools understand what you do and surface it in answers.</p></li>
+          <li class="card"><span class="card__num">05</span><h3 class="card__h">Domain Acquisition</h3><p>Find, secure and connect a domain that fits your brand.</p></li>
         </ul>
       </section>
 
       <section class="section work" id="work" aria-labelledby="work-h">
         <div class="shell">
           <div class="opener"><span class="shot" aria-hidden="true"></span><p class="eyebrow">Client work</p></div>
-          <h2 class="h2" id="work-h">Sites we built for <em>local businesses.</em></h2>
+          <h2 class="h2" id="work-h">Client sites we built, <em>live today.</em></h2>
         </div>
         <div class="work__body shell">
           <!-- Factual project highlights only. TODO(client): real testimonials (name, business, town,
@@ -88,6 +89,7 @@
             <div class="carousel__view">
               <ul class="carousel__track" data-track>
                 <li class="slide" aria-roledescription="slide" aria-label="1 of 2" data-client="beauty">
+                  <a class="slide__link" href="/portfolio#beauty">
                   <figure class="slide__card">
                     <img src="/work/work-beauty-900.webp" srcset="/work/work-beauty-900.webp 900w, /work/work-beauty-1600.webp 1600w" sizes="(min-width: 1024px) 34vw, 86vw" width="1600" height="1000" loading="lazy" alt="The Beauty &amp; Wellness addict NY homepage" />
                     <figcaption>
@@ -96,8 +98,10 @@
                       <p class="slide__text">A multi-page site for the practice Dr. Sheila Omrani and Nurse Lisa Farazmand run together, with the <em>drip addict</em> IV therapy line set apart in its own dark style.</p>
                     </figcaption>
                   </figure>
+                </a>
                 </li>
                 <li class="slide" aria-roledescription="slide" aria-label="2 of 2" data-client="smiles">
+                  <a class="slide__link" href="/portfolio#smiles">
                   <figure class="slide__card">
                     <img src="/work/work-smiles-900.webp" srcset="/work/work-smiles-900.webp 900w, /work/work-smiles-1600.webp 1600w" sizes="(min-width: 1024px) 34vw, 86vw" width="1600" height="1000" loading="lazy" alt="The Smiles by Nilou homepage" />
                     <figcaption>
@@ -106,6 +110,7 @@
                       <p class="slide__text">A redesign of Nilou's old Wix site. Her own before-and-after photos open the page, with session prices and a contact form further down.</p>
                     </figcaption>
                   </figure>
+                </a>
                 </li>
               </ul>
             </div>
@@ -115,43 +120,35 @@
               <button class="carousel__btn" type="button" data-next aria-label="Next project">→</button>
             </div>
           </div>
-          <div class="work__cta">
-            <a class="btn btn--primary btn--big" href="/portfolio">View Our Portfolio</a>
-          </div>
         </div>
       </section>
 
       <section class="section shell founders" aria-labelledby="founders-h">
         <div class="founders__grid">
-          <div>
+          <div class="founders__body">
             <div class="opener"><span class="shot" aria-hidden="true"></span><p class="eyebrow">Meet the Founders</p></div>
             <h2 class="h2" id="founders-h">You work with the people <em>who build your site.</em></h2>
-          </div>
-          <div class="founders__body">
             <p class="lede">Noah and Ethan started Minutemen Marketing on Long Island. You talk to them directly, from the first call to launch day.</p>
-            <dl class="founders__names">
-              <div class="founder">
-                <!-- @photo:noah:(min-width: 1024px) 220px, 42vw -->
-                <dt>Noah <!-- @founder-link:noah:Noah --></dt>
-                <dd>Design direction, interface and build</dd>
-              </div>
-              <div class="founder">
-                <!-- @photo:ethan:(min-width: 1024px) 220px, 42vw -->
-                <dt>Ethan <!-- @founder-link:ethan:Ethan Eghbali --></dt>
-                <dd>Strategy, messaging and search</dd>
-              </div>
-            </dl>
             <a class="btn btn--primary" href="/about#founders">Meet the Founders</a>
           </div>
+          <dl class="founders__names">
+              <div class="founder">
+                <!-- @photo:noah:(min-width: 1024px) 260px, 42vw -->
+                <!-- TODO(client): Noah's last name (not anywhere in the project yet). -->
+                <dt>Noah <!-- @founder-link:noah:Noah --></dt>
+              </div>
+              <div class="founder">
+                <!-- @photo:ethan:(min-width: 1024px) 260px, 42vw -->
+                <dt>Ethan Eghbali <!-- @founder-link:ethan:Ethan Eghbali --></dt>
+              </div>
+            </dl>
         </div>
       </section>
 
       <section class="closing" aria-labelledby="closing-h">
         <div class="closing__inner shell">
-          <div class="contact__ring" aria-hidden="true"></div>
           <div class="opener opener--dark"><span class="shot" aria-hidden="true"></span><p class="eyebrow">Free consultation</p></div>
           <h2 class="h2 closing__h" id="closing-h">A marketing plan built around your business.</h2>
-          <p class="closing__text">We choose the services your business needs and build the plan around them.</p>
           <a class="btn btn--light btn--big" href="/contact">Book a Free Consultation</a>
           <!-- @direct -->
         </div>

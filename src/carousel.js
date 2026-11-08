@@ -44,7 +44,7 @@ export function initCarousel(root, { reduceMotion }) {
     c.removeAttribute('aria-roledescription');
     c.removeAttribute('aria-label');
     c.dataset.logical = logical;
-    c.addEventListener('click', () => go(logical === 0 ? index + 1 : index - 1));
+    c.addEventListener('click', (e) => (e.preventDefault(), go(logical === 0 ? index + 1 : index - 1)));
     return c;
   };
   if (n > 1) {
@@ -92,7 +92,16 @@ export function initCarousel(root, { reduceMotion }) {
 
   $('[data-prev]', root).addEventListener('click', () => go(index - 1));
   $('[data-next]', root).addEventListener('click', () => go(index + 1));
-  slides.forEach((s, i) => s.addEventListener('click', () => i !== index && go(i)));
+  // The active card links to that client's section on /portfolio; a side card only moves the
+  // carousel to itself, and a swipe never follows the link.
+  slides.forEach((s, i) =>
+    s.addEventListener('click', (e) => {
+      if (i !== index || swiped) {
+        e.preventDefault();
+        if (i !== index && !swiped) go(i);
+      }
+    }),
+  );
   root.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowLeft') (e.preventDefault(), go(index - 1));
     if (e.key === 'ArrowRight') (e.preventDefault(), go(index + 1));
@@ -101,15 +110,21 @@ export function initCarousel(root, { reduceMotion }) {
   // Swipe (touch or pen): a clear horizontal drag of 40px or more.
   let startX = null;
   let startY = 0;
+  let swiped = false;
   root.addEventListener('pointerdown', (e) => {
     if (e.pointerType === 'mouse') return;
     startX = e.clientX;
     startY = e.clientY;
+    swiped = false;
   });
   root.addEventListener('pointerup', (e) => {
     if (startX === null) return;
     const dx = e.clientX - startX;
-    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(e.clientY - startY)) go(index + (dx < 0 ? 1 : -1));
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(e.clientY - startY)) {
+      swiped = true;
+      setTimeout(() => (swiped = false), 400);
+      go(index + (dx < 0 ? 1 : -1));
+    }
     startX = null;
   });
 
