@@ -1203,8 +1203,8 @@ html:not(.motion) .beat--1::before {
 .prose {
   display: grid;
   gap: 1em;
-  max-width: 30rem;
-  font: 400 clamp(1.25rem, 1.8vw, 1.625rem) / 1.45 var(--display);
+  max-width: 34rem;
+  font: 400 clamp(1.125rem, 1.45vw, 1.3125rem) / 1.6 var(--sans); /* running text: the body face */
   color: var(--ink);
   text-wrap: pretty;
 }
@@ -2008,5 +2008,46 @@ html:not(.motion) .beat--1::before {
 @media (max-width: 767px) {
   .founders__grid {
     justify-items: center;
+  }
+}
+
+/* About: the two founders side by side across the full width, photo above name. */
+.people--full {
+  grid-template-columns: 1fr;
+  gap: clamp(40px, 5vw, 64px);
+  margin-top: clamp(8px, 2vw, 24px);
+}
+@media (min-width: 720px) {
+  .people--full {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.people--full .person,
+.people--full .person:first-child {
+  grid-template-columns: 1fr;
+  align-items: start;
+  justify-items: start;
+  gap: 20px;
+  padding: 0;
+  border: 0;
+}
+.people--full .portrait {
+  width: 100%;
+  max-width: 480px;
+}
+.people--full .person__name {
+  font-size: clamp(2rem, 3.6vw, 3.25rem);
+}
+@media (max-width: 767px) {
+  .people--full .person,
+  .people--full .person:first-child {
+    justify-items: center;
+    text-align: center;
+  }
+  .people--full .portrait {
+    max-width: 340px;
+  }
+  .founders-full .opener {
+    justify-content: center;
   }
 }
