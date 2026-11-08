@@ -143,6 +143,10 @@ export function initHero({ scroller, nav, navH, reduced }) {
       const el = `[data-beat="${n}"]`;
       const ws = words(n);
       tl.set(el, SHOWN, b[n].in);
+      // Hide the words at the same moment the line switches on. Without this, a refresh (which
+      // invalidates the timeline) left them at full opacity, so the line flashed fully on, then each
+      // word's staggered fade snapped it to 0 and brought it back: on, off, on (2026-11-08).
+      tl.set(ws, HIDDEN, b[n].in);
       tl.fromTo(ws, HIDDEN, { ...SHOWN, duration: fade, stagger: stagger((fade * 0.5) / ws.length) }, b[n].in);
       tl.to(el, { ...HIDDEN, duration: fade }, b[n].out);
     }
