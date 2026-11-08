@@ -33,7 +33,6 @@ export function initHero({ scroller, nav, navH, reduced }) {
   const lift = () => {
     if (lifted) return;
     lifted = true;
-    stage.go(); // now fetch the clip frames
     gsap.to(ring, { strokeDashoffset: 0, duration: 0.4, ease: 'power2.out' });
     setTimeout(() => {
       preload.classList.add('is-done');

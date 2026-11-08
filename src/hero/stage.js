@@ -262,8 +262,9 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
   }
 
   // Nearest loaded frame of a sequence, so a fast scroll never paints a blank. If a reader outruns
-  // the loader and none of the clip has arrived yet, show the still it starts or ends on.
-  const STAND_IN = { c1: 'k1', c2: 'k2', c2b: 'k2', c3: 'k4', c4: 'k4' };
+  // the loader and none of the clip has arrived yet, show what the clip starts on (or, past its
+  // middle, ends on): a still, or the neighbouring clip's frame — never a different scene.
+  const STAND_IN = { c1: ['k1', 'k2'], c2: ['k2', 'k2'], c2b: [['c2', 1], ['c3', 0]], c3: [['c2b', 1], 'k4'], c4: ['k4', 'k4'] };
   // Frame indices actually played: every file, minus repeated ones in this tier.
   const order = {};
   const played = (name) =>
@@ -279,7 +280,9 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
         if (frames[i + d]) return frames[i + d];
       }
     }
-    return a[STAND_IN[name]] || a.k1 || null;
+    const s = STAND_IN[name][t < 0.5 ? 0 : 1];
+    if (Array.isArray(s)) return a.seq[s[0]]?.some(Boolean) ? frame(s[0], s[1]) : a.k1 || null;
+    return a[s] || a.k1 || null;
   }
 
   // Cross-dissolve weight at the head of a clip: 0 on its first frame, 1 after `dissolveFrames`.
@@ -486,7 +489,11 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
   const waiting = []; // workers parked until the reader scrolls
 
   function buildJobs() {
-    const add = (key, src, at, coarse = true) => jobs.push({ key, src, at: at + (coarse ? 0 : 1.2) });
+    // Priority is "where in the hero it's needed" plus a lead for the in-betweens: every 4th frame
+    // first, then every 2nd, then the rest. On a slow connection the reader then always has a frame
+    // a few steps away instead of the loader trailing behind them (2026-11-08: a slow-4G phone that
+    // swiped straight into C1 showed frames 10–19 behind, then a jump when they landed).
+    const add = (key, src, at, step = 4) => jobs.push({ key, src, at, lead: step === 4 ? 0 : step === 2 ? 3 : 6 });
     add('k1', still(ASSETS.k1), 0);
     add('k2', still(ASSETS.k2), S.k2Hold[0] - 4);
     add('k4', still(ASSETS.k4), S.c3[0] + 2);
@@ -501,7 +508,7 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
         const f = list.indexOf(i) / (list.length - 1);
         const t = REMAP[name] ? invert(REMAP[name], f) : f;
         const src = `${ASSETS.base}/${phone ? 'm/' : hd ? 'hd/' : ''}${s.dir}/${(s.fix?.[i + 1] || s.pattern.replace('%04d', String(i + 1).padStart(4, '0')))}`;
-        add(`${name}:${i}`, src, from + t * (to - from), i % 4 === 0);
+        add(`${name}:${i}`, src, from + t * (to - from), i % 4 === 0 ? 4 : i % 2 === 0 ? 2 : 1);
       }
     }
   }
@@ -513,7 +520,7 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     for (let i = 0; i < jobs.length; i++) {
       const d = jobs[i].at - p;
       if (d > AHEAD || d < -BEHIND) continue;
-      const score = d >= 0 ? d : -d * 3;
+      const score = (d >= 0 ? d : -d * 3) + jobs[i].lead;
       if (score < bestScore) {
         bestScore = score;
         best = i;
@@ -526,8 +533,6 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     return best < 0 ? null : jobs.splice(best, 1)[0];
   }
 
-  let go;
-  const started = new Promise((r) => (go = r));
   async function load() {
     buildJobs();
     const initial = jobs.filter((j) => j.at <= AHEAD).length;
@@ -539,9 +544,8 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     let initialFailed = 0;
     onProgress(++initialDone / initial, true);
     request();
-    // Clip frames wait until the opening is on screen (the preloader lifts: go()), so the painting,
-    // fonts and script get the bandwidth first. A scroll before then shows the opening still.
-    await started;
+    // Clip frames start as soon as the opening painting is in (not when the preloader lifts): the
+    // push-in begins on the first scroll, so its frames have to be on their way already.
     const worker = async () => {
       for (;;) {
         const job = nextJob();
@@ -571,7 +575,6 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
   load();
 
   return {
-    go: () => go(),
     set(progress) {
       p = progress;
       waiting.splice(0).forEach((resume) => resume()); // the window moved: look again
