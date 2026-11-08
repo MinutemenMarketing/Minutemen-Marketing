@@ -93,9 +93,11 @@ export const FOCUS = {
   c2bBall: { x: 0.5, y: 0.45 }, // ball in the side-tracking shot (C2b)
   // K4 v2 globe (and every C4 frame): centre and diameter as a fraction of image height.
   k4Globe: { x: 0.498, y: 0.505, d: 0.685 },
-  // Logo ring inside /brand/logo-stacked.svg: centre (fractions of width / height) and diameter
-  // (fraction of width). Measured from logo-square, which the vector was traced from.
-  logoRing: { x: 0.4964, y: 0.4215, d: 0.8616 },
+  // Logo ring inside /brand/logo-stacked.svg: centre (fractions of width / height) and OUTER
+  // diameter (fraction of width). Fitted to the vector itself (2026-11-08, circle fit to the ring's
+  // sides, ±0.3% across fits); the old numbers came from logo-square and put the ring ~1.5% left,
+  // ~0.8% low and 2.7% too big, so it visibly missed the globe.
+  logoRing: { x: 0.511, y: 0.4138, d: 0.8388 },
 };
 
 // Shared circle target (CLAUDE.md): centred, diameter = 50% of frame height,
