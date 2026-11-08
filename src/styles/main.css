@@ -1262,20 +1262,32 @@ html:not(.motion) .beat--1::before {
   margin: 0;
   list-style: none;
 }
+/* Text above, then the site window at full width. Nothing on this page is sticky (2026-11-08: the
+   text column used to stick under the nav while the window scrolled past). */
 .project {
   display: grid;
-  gap: 36px;
+  gap: clamp(28px, 3vw, 44px);
 }
 @media (min-width: 1024px) {
-  .project {
+  .project .project__text {
     grid-template-columns: 5fr 7fr;
-    gap: 64px;
+    column-gap: 64px;
     align-items: start;
+    max-width: none;
   }
-  .project__text {
-    position: sticky;
-    top: calc(var(--nav-h) + 40px);
-  }
+}
+.project__id,
+.project__copy {
+  display: grid;
+  gap: 16px;
+  justify-items: start;
+}
+.project__copy {
+  max-width: 44rem;
+}
+.project__copy > p:not([class]) {
+  color: var(--ink-2);
+  text-wrap: pretty;
 }
 .project__text {
   display: grid;
@@ -1283,7 +1295,7 @@ html:not(.motion) .beat--1::before {
   justify-items: start;
   max-width: 40ch;
 }
-.project__text > p:not([class]) {
+.project__copy > p:not([class]) {
   color: var(--ink-2);
   text-wrap: pretty;
 }
@@ -1354,15 +1366,12 @@ html:not(.motion) .beat--1::before {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+/* A 1440x900 desktop viewport, scaled to the window (src/portfolio.js sets --frame-scale). */
 .browser__view {
   position: relative;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 1440 / 900;
+  overflow: hidden;
   background: #fff;
-}
-@media (min-width: 768px) {
-  .browser__view {
-    aspect-ratio: 16 / 10;
-  }
 }
 .browser__shot {
   position: absolute;
@@ -1374,9 +1383,12 @@ html:not(.motion) .beat--1::before {
 }
 .browser__frame {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  top: 0;
+  left: 0;
+  width: 1440px;
+  height: 900px;
+  transform: scale(var(--frame-scale, 1));
+  transform-origin: 0 0;
   border: 0;
   opacity: 0;
   transition: opacity 500ms var(--ease);
@@ -1777,12 +1789,14 @@ html:not(.motion) .beat--1::before {
   .notfound__inner,
   .closing__inner,
   .founders__body,
-  .project__text {
+  .project__text,
+  .project__id,
+  .project__copy {
     justify-items: center;
   }
   .prose,
   .lede,
-  .project__text > p:not([class]) {
+  .project__copy > p:not([class]) {
     margin-inline: auto;
   }
 
@@ -1847,7 +1861,7 @@ html:not(.motion) .beat--1::before {
   .project__text {
     max-width: none;
   }
-  .project__text > p:not([class]) {
+  .project__copy > p:not([class]) {
     max-width: 40ch;
   }
 

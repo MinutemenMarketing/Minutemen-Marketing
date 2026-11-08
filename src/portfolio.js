@@ -4,6 +4,9 @@
 // that site allows to frame it).
 
 const FRAME_TIMEOUT = 15000;
+// Each site renders at a standard laptop viewport and is scaled to fit its window, so the layout is
+// exactly what a desktop visitor sees (Noah, 2026-11-08), on every screen size.
+const DESKTOP = { w: 1440, h: 900 };
 
 export function initFrames(windows) {
   if (!windows.length) return;
@@ -46,5 +49,10 @@ function mount(win) {
     win.classList.add('is-live');
   });
   view.setAttribute('data-lenis-prevent', ''); // wheel and touch scroll the site, not the page
+  frame.width = DESKTOP.w;
+  frame.height = DESKTOP.h;
+  const fit = () => view.style.setProperty('--frame-scale', String(view.clientWidth / DESKTOP.w));
+  new ResizeObserver(fit).observe(view);
+  fit();
   view.append(frame);
 }
