@@ -1,14 +1,14 @@
-// K1 detail layer for the code push-in: the right/lower part of k1-cool.png at high resolution,
+// K1 detail layer for the code push-in: the right/lower part of k1-v2.png at high resolution,
 // left and top edges feathered into alpha so it blends into the full K1 still underneath.
 const sharp = require('sharp');
-const SRC = 'C:/Claude Code/minute-men-marketing/assets/keyframes/k1-cool.png';
+const SRC = 'C:/Claude Code/minute-men-marketing/assets/keyframes/k1-v2.png';
 const OUT = 'C:/Claude Code/minute-men-marketing/public/hero/v1/';
 const R = { x0: 0.30, y0: 0.12, x1: 1, y1: 1 }, F = 0.06; // feather, fraction of the region
 (async () => {
   const W = 5504, H = 3072;
   const left = Math.round(R.x0 * W), top = Math.round(R.y0 * H);
   const cw = W - left, ch = H - top;
-  for (const [name, k] of [['k1d-1920', 0.8], ['k1d-1280', 0.56], ['k1d-m', 0.46]]) {
+  for (const [name, k] of [['k1dv2-1920', 0.8], ['k1dv2-1280', 0.56], ['k1dv2-m', 0.46]]) {
     const w = Math.round(cw * k), h = Math.round(ch * k);
     const rgb = await sharp(SRC).extract({ left, top, width: cw, height: ch }).resize(w, h).removeAlpha().raw().toBuffer();
     const a = Buffer.alloc(w * h);

@@ -34,15 +34,15 @@ export const CHOREO = {
     [1, 1],
   ],
 
-  // C1, drawn in code since 2026-11-08 (two Kling versions invented soldiers and smoke): a camera
-  // push-in on the K1 painting itself, then painted smoke drifts right to left across the frame and
-  // K2 is underneath when it clears. Fractions of the c1 scene:
-  // - push: the camera moves over [0, push] with start speed `start` and end speed `end` (slopes of
-  //   a cubic; `start` is set so the first wheel click moves the frame as much as the old clip did)
-  //   and keeps creeping by `creep` until the swap;
-  // - wipe: the smoke crosses the frame over this range; it fully covers the frame around its middle,
-  //   where K1 is swapped for K2; K2 then settles from `settle` to 1 so the hold starts still.
-  pushIn: { push: 0.7, start: 0.76, end: 0.3, creep: 0.05, wipe: [0.6, 1], settle: 1.06 },
+  // C1, drawn in code since 2026-11-08: a camera push-in on the K1 painting (k1-v2, whose featured
+  // soldier is K2's man) that ends on exactly K2's framing, then K2 crossfades in on top of it.
+  // Fractions of the c1 scene:
+  // - push: the camera moves over [0, push] on a cubic with start speed `start` (set so the first
+  //   wheel click moves the frame as much as the old clip did) and end speed `end`;
+  // - fade: K1 -> K2 crossfade, both drawn at the matched place;
+  // - wipe/smoke: a light painted-smoke band (strength `smoke`) drifts across, densest mid-crossfade,
+  //   to soften the small differences in his face and musket.
+  pushIn: { push: 0.74, start: 0.84, end: 0.15, fade: [0.72, 0.9], wipe: [0.58, 1], smoke: 0.5 },
 
   // C3 remap: its middle (about 2.2–4.4s of 8s, 0.274–0.547) is almost all white cloud, so the
   // scroll moves through it faster.
@@ -67,7 +67,7 @@ export const CHOREO = {
 // Assets. Swap a placeholder for the real thing by editing this block only.
 export const ASSETS = {
   base: '/hero/v1',
-  k1: 'k1', // + '-1920.webp' / '-1280.webp'
+  k1: 'k1v2', // + '-1920.webp' / '-1280.webp': k1-v2.png (K2's soldier in the line, 2026-11-08)
   k2: 'k2',
   k4: 'k4v2', // approved K4 (v2, ball shrunk)
   logo: '/brand/logo-stacked.svg', // stacked logo (mark over MINUTEMEN MARKETING), traced vector
@@ -76,7 +76,7 @@ export const ASSETS = {
   // extraction artefact; the 1920 set has none), skipped so the scrub never stalls on them.
   // K1 at high resolution for the code push-in (scripts/k1-detail.cjs): the right/lower part of
   // k1-cool.png, feathered at its left and top edges, drawn over the K1 still. -1920 / -1280 / -m.
-  k1Detail: { name: 'k1d', x0: 0.3, y0: 0.12, x1: 1, y1: 1 },
+  k1Detail: { name: 'k1dv2', x0: 0.3, y0: 0.12, x1: 1, y1: 1 },
   c2: { dir: 'c2', count: 78, pattern: 'f_%04d.webp' },
   // f_0017: the matte-ball repaint drew the ball ~6× too big on this one frame (2026-11-08). Rebuilt
   // from f_0016 + f_0018 with one ball at the midpoint size and position, in all three sets.
@@ -87,9 +87,12 @@ export const ASSETS = {
 
 // Where things sit inside each still, as fractions of the image (measured from the files).
 export const FOCUS = {
-  k1Soldier: { x: 0.585, y: 0.5 }, // featured soldier in k1-cool
-  // His whole figure, hat to boots and back to muzzle, in k1-cool (where the push-in ends).
-  k1Box: { x0: 0.548, x1: 0.722, y0: 0.385, y1: 0.79 },
+  k1Soldier: { x: 0.63, y: 0.5 }, // featured soldier in k1-v2 (the opening framing centres on him)
+  k1Man: { x: 0.634, y: 0.6 }, // his centre in k1-v2: the point the push-in zooms toward
+  // The region of k1-v2 that is K2's whole frame: the same man at the same place and size. Fitted
+  // 2026-11-08 by a scale + offset search (normalised cross-correlation on his head and torso, 0.62):
+  // scale 1.85. The push-in ends on it and K2 crossfades in on top.
+  k1K2Frame: { x0: 0.4179, y0: 0.2969, w: 0.5407, h: 0.5404 },
   k2Soldier: { x: 0.36, y: 0.48 }, // soldier body in k2 / C2
   // His whole figure plus the musket to just past the muzzle, in C1's end, the hold and C2. Portrait
   // screens fit this box to their width so he is never cropped (Noah, 2026-11-05).

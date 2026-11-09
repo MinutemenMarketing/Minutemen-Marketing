@@ -174,7 +174,8 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     const e = edgeLayer.getContext('2d');
     e.setTransform(ctx.getTransform());
     e.clearRect(0, 0, w, h);
-    e.drawImage(img, x0, y0, dw, dh);
+    if (typeof img === 'function') img(e);
+    else e.drawImage(img, x0, y0, dw, dh);
     e.globalCompositeOperation = 'destination-out';
     const f = Math.min(dw, dh) * frac;
     const erase = (gx0, gy0, gx1, gy1, rx, ry, rw, rh) => {
@@ -196,31 +197,70 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     ctx.restore();
   }
 
-  // Portrait framing for the soldier: from cover (fit 0) to "his whole figure and musket fit the
-  // width" (fit 1). The space above and below fills with a soft, low-res copy of the same frame.
-  // C1 in code: a camera over the K1 painting. `f` 0 = the opening framing (as K1 is drawn before
-  // the push-in), 1 = his whole figure filling the frame; `extra` zooms a little further. The K1
-  // still is drawn first, then the high-resolution detail layer over it at the same place (its left
-  // and top edges are feathered, so the two read as one picture).
-  function k1Cam(f, extra = 1) {
+  // C1 in code: a camera over the K1 painting (k1-v2, whose featured soldier is K2's man). It is a
+  // rect that travels from K1's opening framing (f 0) to the K1 region that matches K2's hold
+  // framing exactly (f 1, FOCUS.k1K2Frame), zooming toward him. On portrait screens that end rect is
+  // the fitted one, with the same soft wash above as the hold. K2 crossfades in drawn at the same
+  // matched place (k2a), so the two read as one picture moving together.
+  function k1Rect(f, fit) {
+    const img = a.k1;
+    const A = img.naturalWidth / img.naturalHeight;
+    const M = FOCUS.k1K2Frame;
+    const s0 = heldRect(img, FOCUS.k1Soldier.x, FOCUS.k1Soldier.y, 0);
+    const r2 = heldRect(a.k2 || img, FOCUS.k2Soldier.x, FOCUS.k2Soldier.y, fit);
+    const ew = r2.w / M.w;
+    const e = { x: r2.x - M.x0 * ew, y: r2.y - (M.y0 * ew) / A, w: ew };
+    const W = Math.exp(lerp(Math.log(s0.w), Math.log(e.w), f));
+    const { x: ax, y: ay } = FOCUS.k1Man;
+    let x = lerp(s0.x + ax * s0.w, e.x + ax * e.w, f) - ax * W;
+    let y = lerp(s0.y + (ay * s0.w) / A, e.y + (ay * e.w) / A, f) - (ay * W) / A;
+    if (W >= w) x = Math.min(0, Math.max(w - W, x));
+    if (W / A >= h) y = Math.min(0, Math.max(h - W / A, y));
+    return { x, y, w: W, h: W / A, zoom: W / s0.w };
+  }
+  const covers = (r) => r.x <= 0.5 && r.y <= 0.5 && r.x + r.w >= w - 0.5 && r.y + r.h >= h - 0.5;
+  function k1Cam(f, k2a, fit) {
     const img = a.k1;
     if (!img) return;
-    const A = img.naturalWidth / img.naturalHeight;
-    const B = FOCUS.k1Box;
-    const s0 = Math.max(w, h * A); // px per image width at the cover framing
-    const s1 = Math.max(s0, Math.min((0.94 * w) / (B.x1 - B.x0), (0.94 * h * A) / (B.y1 - B.y0)));
-    const sc = Math.exp(lerp(Math.log(s0), Math.log(s1), f)) * extra;
-    const clampTo = (v, half) => Math.min(1 - half, Math.max(half, v));
-    const hx = w / (2 * sc);
-    const hy = (h * A) / (2 * sc);
-    // Start where cover() puts K1 (soldier as central as cropping allows), end on his box.
-    const cx = clampTo(lerp(clampTo(FOCUS.k1Soldier.x, w / (2 * s0)), (B.x0 + B.x1) / 2, f), hx);
-    const cy = clampTo(lerp(clampTo(FOCUS.k1Soldier.y, (h * A) / (2 * s0)), (B.y0 + B.y1) / 2, f), hy);
-    const dx = w / 2 - cx * sc;
-    const dy = h / 2 - (cy * sc) / A;
-    ctx.drawImage(img, dx, dy, sc, sc / A);
+    const r = k1Rect(f, fit);
     const D = ASSETS.k1Detail;
-    if (a.k1d && sc > s0 * 1.02) ctx.drawImage(a.k1d, dx + D.x0 * sc, dy + (D.y0 * sc) / A, (D.x1 - D.x0) * sc, ((D.y1 - D.y0) * sc) / A);
+    // The K1 still, then the high-resolution detail layer over it at the same place (its left and
+    // top edges are feathered, so the two read as one picture).
+    const drawK1 = (c) => {
+      c.drawImage(img, r.x, r.y, r.w, r.h);
+      if (a.k1d && r.zoom > 1.02) c.drawImage(a.k1d, r.x + D.x0 * r.w, r.y + D.y0 * r.h, (D.x1 - D.x0) * r.w, (D.y1 - D.y0) * r.h);
+    };
+    const M = FOCUS.k1K2Frame;
+    const r2 = { x: r.x + M.x0 * r.w, y: r.y + M.y0 * r.h, w: r.w * M.w, h: r.h * M.h };
+    if (k2a < 1) {
+      // Portrait: late in the push the visible part of K1 narrows to K2's frame region, so it ends
+      // with the same edge and wash as K2's hold (landscape frames cover the screen anyway).
+      const kk = fit ? ease(clamp01((f - 0.5) / 0.5)) : 0;
+      const v = { x: lerp(r.x, r2.x, kk), y: lerp(r.y, r2.y, kk), w: lerp(r.w, r2.w, kk), h: lerp(r.h, r2.h, kk) };
+      if (covers(v)) drawK1(ctx);
+      else {
+        wash(img, 1);
+        const clipped = (c) => {
+          c.save();
+          c.beginPath();
+          c.rect(v.x, v.y, v.w, v.h);
+          c.clip();
+          drawK1(c);
+          c.restore();
+        };
+        feathered(clipped, v.x, v.y, v.w, v.h, 0.1, 1);
+      }
+    }
+    if (k2a > 0 && a.k2) {
+      if (covers(r2)) {
+        ctx.globalAlpha = k2a;
+        ctx.drawImage(a.k2, r2.x, r2.y, r2.w, r2.h);
+        ctx.globalAlpha = 1;
+      } else {
+        wash(a.k2, k2a);
+        feathered(a.k2, r2.x, r2.y, r2.w, r2.h, 0.1, k2a);
+      }
+    }
   }
 
   // Painted smoke band (smoke.js), built once. `u` 0 = just off the right edge, 1 = gone off the
@@ -236,7 +276,8 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     smokeTex.height = H;
     smokeTex.getContext('2d').putImageData(new ImageData(smokePixels(W, H), W, H), 0, 0);
   }
-  function smoke(u) {
+  function smoke(u, strength = 1) {
+    if (import.meta.env.DEV && window.__noSmoke) return; // QA: the bare hand-off
     buildSmoke();
     const travel = (SMOKE.span + 1) * w;
     const tw = SMOKE.span * w;
@@ -245,10 +286,11 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     ctx.imageSmoothingQuality = 'high';
     // depth pass: bigger, fainter, a touch faster (leads in, trails out)
     const u2 = u * 1.1 - 0.05;
-    ctx.globalAlpha = 0.3;
+    ctx.globalAlpha = 0.3 * strength;
     ctx.drawImage(smokeTex, w - u2 * travel - tw * 0.08, h / 2 - (th * 1.15) / 2 - bob, tw * 1.15, th * 1.15);
-    ctx.globalAlpha = 1;
+    ctx.globalAlpha = strength;
     ctx.drawImage(smokeTex, w - u * travel, h / 2 - th / 2 + bob, tw, th);
+    ctx.globalAlpha = 1;
   }
 
   const softCopy = document.createElement('canvas');
@@ -257,41 +299,53 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
   const midCopy = document.createElement('canvas');
   midCopy.width = 48;
   midCopy.height = 27;
-  function framed(img, alpha, fx, fy, z, fit) {
-    if (!img || alpha <= 0) return;
-    if (!fit) return cover(img, alpha, fx, fy, z);
+  // Where an image sits for the soldier shots: the cover framing around (fx, fy), eased by `fit`
+  // toward the portrait framing where his whole figure and musket fit the width (FOCUS.soldierBox).
+  function heldRect(img, fx, fy, fit) {
     const iw = img.naturalWidth || img.width;
     const ih = img.naturalHeight || img.height;
-    // cover rect (as cover() computes it, z = 1)
     const csc = Math.max(w / iw, h / ih);
     const cw = iw * csc;
     const chh = ih * csc;
     const cx = Math.min(0, Math.max(w - cw, w / 2 - fx * cw));
     const cy = Math.min(0, Math.max(h - chh, h / 2 - fy * chh));
-    // fit rect: the subject box fills the width (with a little air), centred
+    if (!fit) return { x: cx, y: cy, w: cw, h: chh };
     const B = FOCUS.soldierBox;
     const fsc = Math.min((w * 0.94) / ((B.x1 - B.x0) * iw), (h * 0.94) / ((B.y1 - B.y0) * ih));
     const fw = iw * fsc;
     const fh = ih * fsc;
     const fx0 = w / 2 - ((B.x0 + B.x1) / 2) * fw;
     // He stands on the bottom edge (his boots are at the very bottom of the frame), so only the
-    // top edge ever shows and is feathered into the soft copy.
+    // top edge ever shows and is feathered into the soft wash.
     const fy0 = Math.max(h - fh, h / 2 - ((B.y0 + B.y1) / 2) * fh);
     const k = ease(fit);
-    const sx = softCopy.getContext('2d');
-    // Only the sky and treeline (top 45% of the frame), averaged to 3×3 and stretched back up:
-    // a smooth misty wash with no ghost of the figure in it.
-    // Two steps (frame → 48×27 → 3×3) so the colours are averaged, not point-sampled.
+    return { x: lerp(cx, fx0, k), y: lerp(cy, fy0, k), w: lerp(cw, fw, k), h: lerp(chh, fh, k) };
+  }
+  // The space around a fitted frame: only the sky and treeline (top 45% of the image), averaged to
+  // 3x3 and stretched back up: a smooth misty wash with no ghost of the figure in it. Two steps
+  // (image -> 48x27 -> 3x3) so the colours are averaged, not point-sampled.
+  function wash(img, alpha) {
+    const iw = img.naturalWidth || img.width;
+    const ih = img.naturalHeight || img.height;
     const mx = midCopy.getContext('2d');
     mx.imageSmoothingQuality = 'high';
     mx.drawImage(img, 0, 0, iw, ih * 0.45, 0, 0, 48, 27);
+    const sx = softCopy.getContext('2d');
     sx.imageSmoothingQuality = 'high';
     sx.clearRect(0, 0, 3, 3);
     sx.drawImage(midCopy, 0, 0, 3, 3);
     ctx.globalAlpha = alpha;
     ctx.drawImage(softCopy, 0.5, 0.5, 2, 2, 0, 0, w, h);
     ctx.globalAlpha = 1;
-    feathered(img, lerp(cx, fx0, k), lerp(cy, fy0, k), lerp(cw, fw, k), lerp(chh, fh, k), 0.1, alpha);
+  }
+  // Portrait framing for the soldier: from cover (fit 0) to his whole figure fitting the width
+  // (fit 1), with the soft wash above.
+  function framed(img, alpha, fx, fy, z, fit) {
+    if (!img || alpha <= 0) return;
+    if (!fit) return cover(img, alpha, fx, fy, z);
+    const r = heldRect(img, fx, fy, fit);
+    wash(img, alpha);
+    feathered(img, r.x, r.y, r.w, r.h, 0.1, alpha);
   }
 
   // A small, soft copy of the globe scene with the globe itself painted out (sky and clouds only),
@@ -358,7 +412,7 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     const c2bFx = (t) => lerp(c2Fx(1), FOCUS.c2bBall.x, swing(t));
     const c2bFy = (t) => lerp(FOCUS.k2Soldier.y, FOCUS.c2bBall.y, swing(t));
     // K2 as the hold and C2's opening frame draw it: framed, fitted on portrait screens.
-    const c1Last = (z = 1) => ['still', 'k2', 1, FOCUS.k2Soldier.x, FOCUS.k2Soldier.y, z, fitAt(1)];
+    const c1Last = () => ['still', 'k2', 1, FOCUS.k2Soldier.x, FOCUS.k2Soldier.y, 1, fitAt(1)];
     const globeFrame = () => (ASSETS.c4 ? ['globe', 'c4', 1, 1] : ['globe', 'k4', 1, 1]);
 
     if (p < S.c1[0]) {
@@ -366,25 +420,15 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     } else if (p < S.k2Hold[0]) {
       const t = local(S.c1, p);
       const P = CHOREO.pushIn;
-      const u = local(P.wipe, t); // smoke travel, 0–1
-      // K1 → K2 crossfade while the densest smoke covers the frame (u 0.42–0.58).
-      const x = ease(clamp01((u - 0.42) / 0.16));
-      const swap = lerp(P.wipe[0], P.wipe[1], 0.42);
-      if (x < 1) {
-        // Push-in on a cubic with set start and end speeds: `start` matches how far the first wheel
-        // click moved the old clip (measured 2026-11-08), `end` slows into the creep.
-        const q = clamp01(t / P.push);
-        const [m0, m1] = [P.start, P.end];
-        const f = (m0 + m1 - 2) * q ** 3 + (3 - 2 * m0 - m1) * q ** 2 + m0 * q;
-        ops.push(['k1cam', f, 1 + P.creep * clamp01((t - P.push) / Math.max(1e-3, swap - P.push))]);
-      }
-      if (x > 0) {
-        // K2 behind the smoke, settling to the hold's framing as the smoke clears.
-        const k = c1Last(lerp(P.settle, 1, ease(local([swap, 1], t))));
-        k[2] = x;
-        ops.push(k);
-      }
-      if (u > 0 && u < 1) ops.push(['smoke', u]);
+      // Push-in on a cubic with set start and end speeds: `start` matches how far the first wheel
+      // click moved the old clip (measured 2026-11-08), `end` lets it settle onto K2's framing.
+      const q = clamp01(t / P.push);
+      const [m0, m1] = [P.start, P.end];
+      const f = (m0 + m1 - 2) * q ** 3 + (3 - 2 * m0 - m1) * q ** 2 + m0 * q;
+      const x = ease(local(P.fade, t)); // K1 -> K2, same man in the same place
+      ops.push(x < 1 ? ['k1cam', f, x, fitAt(1)] : c1Last());
+      const u = local(P.wipe, t); // light smoke drifting across, densest mid-crossfade
+      if (u > 0 && u < 1) ops.push(['smoke', u, P.smoke]);
     } else if (p < S.c2[0]) {
       // Hold on C1's own last frame (≈ K2), so the hold and the clip before it never jump.
       ops.push(c1Last());
@@ -448,9 +492,9 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
         ctx.fillStyle = PAPER;
         ctx.fillRect(0, 0, w, h);
       } else if (kind === 'k1cam') {
-        k1Cam(rest[0], rest[1]);
+        k1Cam(rest[0], rest[1], rest[2]);
       } else if (kind === 'smoke') {
-        smoke(rest[0]);
+        smoke(rest[0], rest[1]);
       } else if (kind === 'still') {
         const [name, alpha, fx, fy, z, fit] = rest;
         framed(a[name], alpha, fx, fy, z, fit);
