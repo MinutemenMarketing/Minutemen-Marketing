@@ -728,8 +728,7 @@ html:not(.motion) .beat--1::before {
 .hero__skip:focus-visible::after {
   transform: scaleX(1.6);
 }
-.hero__skip.is-gone,
-.hero__motion.is-gone {
+.hero__skip.is-gone {
   opacity: 0;
   visibility: hidden;
   transition: opacity 600ms var(--ease), visibility 0s 600ms;
@@ -1670,29 +1669,6 @@ html:not(.motion) .beat--1::before {
   padding-top: calc(var(--nav-h) + clamp(56px, 8vw, 128px));
 }
 
-/* Hero motion toggle: discreet, in the controls group, in both the story and the still version. */
-.hero__motion {
-  min-height: 44px;
-  padding: 0 14px;
-  border: 0;
-  border-radius: 999px;
-  background: rgba(247, 244, 236, 0.66);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-  font: 500 0.6875rem/1 var(--sans);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-2);
-  cursor: pointer;
-  transition: color var(--micro) var(--ease), background var(--micro) var(--ease);
-}
-.hero__motion:hover {
-  color: var(--ink);
-  background: rgba(247, 244, 236, 0.9);
-}
-.hero-failed .hero__motion {
-  display: none; /* the story failed to load: offering to play it would only fail again */
-}
 /* Reduced motion keeps the story but drops the moving film grain. */
 .reduced .hero__grain {
   display: none;
@@ -1929,38 +1905,6 @@ html:not(.motion) .beat--1::before {
   min-width: 44px;
 }
 
-/* "Replay intro": only when Home skipped the hero for a returning visitor (this session). */
-.replay {
-  display: none;
-}
-.hero-returning .replay {
-  display: flex;
-  justify-content: flex-end;
-  padding-top: clamp(16px, 3vw, 28px);
-  margin-bottom: calc(-1 * clamp(16px, 3vw, 28px));
-}
-.replay a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  font-size: 0.75rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--ink);
-  opacity: 0.72;
-  text-decoration: underline;
-  text-underline-offset: 0.3em;
-  text-decoration-thickness: 1px;
-}
-.replay a:hover,
-.replay a:focus-visible {
-  opacity: 1;
-}
-@media (max-width: 767px) {
-  .hero-returning .replay {
-    justify-content: center;
-  }
-}
 
 /* ---------- Type (2026-11-08): Outfit display, Public Sans body ----------
    Headings are semibold Outfit; the emphasised phrase drops to light weight instead of italic
@@ -2007,9 +1951,7 @@ html:not(.motion) .beat--1::before {
 .card__num,
 .slide__meta,
 .hero__skip,
-.hero__motion,
 .hero__cue,
-.replay a,
 .nav__links a,
 .btn {
   font-family: var(--display);
@@ -2098,4 +2040,12 @@ html:not(.motion) .beat--1::before {
    plays on those same words. Keeps the first paint as the largest paint (2026-11-08). */
 .motion .beat--1 {
   visibility: visible;
+}
+
+/* Beat 3 (Noah, 2026-11-08): regular weight, with only "reach an audience around the world." bold. */
+.beat--3 .beat__title {
+  font-weight: 400;
+}
+.beat--3 .beat__title strong {
+  font-weight: 700;
 }

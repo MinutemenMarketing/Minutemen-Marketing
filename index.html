@@ -10,11 +10,10 @@
     <!-- Organization schema: founders by full name (Noah, 2026-11-08). Facts only. -->
     <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Minutemen Marketing","url":"https://minutemenmarketing.com/","logo":"https://minutemenmarketing.com/brand/logo-stacked.svg","founder":[{"@type":"Person","name":"Noah Medina"},{"@type":"Person","name":"Ethan Eghbali"}]}</script>
     <!-- @head -->
-    <!-- Story mode before first paint (same rule as src/main.js: everyone except visitors who chose the
-         still version). The hero's first words then paint once, at their final size, so that first
+    <!-- Story mode before first paint (same rule as src/main.js: everyone). The hero's first words then paint once, at their final size, so that first
          paint stays the page's largest paint. If the main script never starts, fall back to the still
          version after 8s. Without JS this never runs and the still version shows. -->
-    <script>(function(){var d=document.documentElement,s;try{s=localStorage.getItem('mm-hero')==='still'}catch(e){}if(s||/[?&]herofail=script/.test(location.search))return;d.classList.add('motion');setTimeout(function(){if(!window.__mmBooted){d.classList.remove('motion');d.classList.add('hero-failed')}},8000)})()</script>
+    <script>(function(){var d=document.documentElement;if(/[?&]herofail=script/.test(location.search))return;d.classList.add('motion');setTimeout(function(){if(!window.__mmBooted){d.classList.remove('motion');d.classList.add('hero-failed')}},8000)})()</script>
     <!-- Same tiers as the hero loader (src/hero/stage.js): 1920 for 1440px+ or 2x screens 1024px+. -->
     <link rel="preload" as="image" href="/hero/v1/k1v2-1920.webp" media="(min-width: 1440px), (min-width: 1024px) and (min-resolution: 2dppx)" />
     <link rel="preload" as="image" href="/hero/v1/k1v2-1280.webp" media="(max-width: 1439px) and (max-resolution: 1.99dppx), (max-width: 1023px)" />
@@ -47,17 +46,15 @@
             <p class="beat__title" data-words>Response time <em>as fast as a bullet.</em></p>
           </div>
           <div class="beat beat--3" data-beat="3">
-            <p class="beat__title" data-words>With the right website, you can reach <em>an audience around the world.</em></p>
+            <p class="beat__title" data-words>With the right marketing, you can <strong>reach an audience around the world.</strong></p>
           </div>
         </div>
         <!-- Scroll progress, drawn as the bullet's trail. -->
         <div class="hero__trail" aria-hidden="true"><span></span></div>
         <p class="hero__cue" aria-hidden="true">Scroll</p>
-        <!-- The hero's two controls, grouped top-right in the space the nav leaves when it fades out.
-             The motion toggle is the visitor's choice between the story and the still version
-             (remembered on this device). -->
+        <!-- Skip, top-right in the space the nav leaves when it fades out. (The "Reduce motion" chip was
+             removed on 2026-11-08 at Noah's request.) -->
         <div class="hero__controls">
-          <button class="hero__motion" type="button" data-motion-toggle aria-pressed="false">Reduce motion</button>
           <button class="hero__skip" type="button" data-skip>Skip intro</button>
         </div>
         <!-- Preloader: the logo's open ring draws itself as the opening frames arrive. -->
@@ -73,8 +70,6 @@
     </section>
 
     <main id="main">
-      <!-- Shown only when Home skipped the hero for a returning visitor (html.hero-returning). -->
-      <p class="replay shell"><a href="/?intro">Replay intro</a></p>
       <section class="section shell" id="services" aria-labelledby="services-h">
         <div class="opener"><span class="shot" aria-hidden="true"></span><p class="eyebrow">Services</p></div>
         <h2 class="h2" id="services-h">Five services that help customers <em>find and choose you.</em></h2>

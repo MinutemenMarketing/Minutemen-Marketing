@@ -85,7 +85,6 @@ export function initHero({ scroller, nav, navH, reduced, returning, markSeen }) 
   // Skip: jump straight past the hero to the first section, with the hero settled on its last
   // frame (no fast-forward through the story), and move focus there.
   const skip = $('[data-skip]');
-  const motionBtn = $('[data-motion-toggle]');
   skip.addEventListener('click', () => {
     markSeen();
     const intro = $('#main');
@@ -139,7 +138,6 @@ export function initHero({ scroller, nav, navH, reduced, returning, markSeen }) 
           gsap.set(trail, { scaleX: state.p / 100 });
           if (state.p > 0.4) cue.classList.add('is-gone');
           skip.classList.toggle('is-gone', state.p > 95);
-          motionBtn?.classList.toggle('is-gone', state.p > 95);
           if (state.p > 95) markSeen();
         },
       },

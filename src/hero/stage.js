@@ -69,6 +69,7 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
   let ctx = canvas.getContext('2d'); // reassigned while drawing into an offscreen group
   const a = { seq: {} };
   let p = 0;
+  let dir = 1; // last direction of travel through the hero: 1 down, -1 up
   let w = 0;
   let h = 0;
   let lastKey = '';
@@ -632,7 +633,7 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     let best = -1;
     let bestScore = Infinity;
     for (let i = 0; i < jobs.length; i++) {
-      const d = jobs[i].at - p;
+      const d = (jobs[i].at - p) * dir; // "ahead" in the direction the reader is scrolling
       if (d > AHEAD || d < -BEHIND) continue;
       const score = (d >= 0 ? d : -d * 3) + jobs[i].lead;
       if (score < bestScore) {
@@ -690,6 +691,7 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
 
   return {
     set(progress) {
+      if (Math.abs(progress - p) > 0.01) dir = progress < p ? -1 : 1;
       p = progress;
       waiting.splice(0).forEach((resume) => resume()); // the window moved: look again
       request();

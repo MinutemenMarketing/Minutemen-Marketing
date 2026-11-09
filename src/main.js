@@ -80,7 +80,13 @@ if (form) initContact(form);
    version is the visitor's own choice (the hero's "Reduce motion" toggle, remembered) or the
    automatic fallback when the story fails to load. */
 const html = document.documentElement;
-const wantsStill = readPref() === 'still';
+// The hero plays for everyone (the "Reduce motion" chip and its saved still choice were removed on
+// 2026-11-08); clear a choice saved before then so nobody is stuck on the still version.
+try {
+  localStorage.removeItem('mm-hero');
+} catch {
+  // storage blocked: nothing saved
+}
 let lenis = null;
 if (reduceMotion) html.classList.add('reduced');
 else initSmooth();
@@ -112,14 +118,6 @@ function markHeroSeen() {
     sessionStorage.setItem('mm-hero-seen', '1');
   } catch {
     // storage blocked: every visit gets the full story
-  }
-}
-
-function readPref() {
-  try {
-    return localStorage.getItem('mm-hero');
-  } catch {
-    return null;
   }
 }
 
@@ -156,23 +154,18 @@ function initPage() {
       history.scrollRestoration = 'manual';
       window.scrollTo(0, 0);
     }
-    html.classList.toggle('hero-returning', returning);
-    initMotionToggle();
-    if (wantsStill && returning) requestAnimationFrame(() => scroller.to($('#main').getBoundingClientRect().top + scrollY - navH()));
-    if (!wantsStill) {
-      html.classList.add('motion');
-      // The hero loads its own module (Home preloads it in the head, so it downloads alongside the
-      // main script). If it fails to load or throws, the hero becomes the still version.
-      const qa = new URLSearchParams(location.search).get('herofail'); // ?herofail=script simulates it
-      (qa === 'script' ? Promise.reject(new Error('QA: hero script failure')) : import('./home-hero.js'))
-        .then((m) => m.initHero({ scroller, nav, navH, reduced: reduceMotion, returning, markSeen: markHeroSeen }))
-        .catch(() => {
-          html.classList.remove('motion');
-          html.classList.add('hero-failed');
-          ScrollTrigger.refresh();
-          scroller.resize();
-        });
-    }
+    html.classList.add('motion');
+    // The hero loads its own module (Home preloads it in the head, so it downloads alongside the
+    // main script). If it fails to load or throws, the hero becomes the still version.
+    const qa = new URLSearchParams(location.search).get('herofail'); // ?herofail=script simulates it
+    (qa === 'script' ? Promise.reject(new Error('QA: hero script failure')) : import('./home-hero.js'))
+      .then((m) => m.initHero({ scroller, nav, navH, reduced: reduceMotion, returning, markSeen: markHeroSeen }))
+      .catch(() => {
+        html.classList.remove('motion');
+        html.classList.add('hero-failed');
+        ScrollTrigger.refresh();
+        scroller.resize();
+      });
   }
 
   // Shot lines draw once as a section arrives (with reduced motion they are simply there).
@@ -190,24 +183,6 @@ function initPage() {
   // Fonts and lazy images change heights; re-measure once they settle.
   document.fonts?.ready.then(() => ScrollTrigger.refresh());
   window.addEventListener('load', () => ScrollTrigger.refresh());
-}
-
-// The hero's discreet "Reduce motion" / "Play animation" toggle, remembered on this device.
-function initMotionToggle() {
-  const btn = $('[data-motion-toggle]');
-  if (!btn) return;
-  btn.textContent = wantsStill ? 'Play animation' : 'Reduce motion';
-  btn.setAttribute('aria-pressed', String(wantsStill));
-  btn.addEventListener('click', () => {
-    try {
-      if (wantsStill) localStorage.removeItem('mm-hero');
-      else localStorage.setItem('mm-hero', 'still');
-    } catch {
-      // storage blocked: the choice lasts for this visit only
-    }
-    window.scrollTo(0, 0);
-    location.reload();
-  });
 }
 
 function focusHeading(target) {
