@@ -679,15 +679,22 @@ html:not(.motion) .beat--1::before {
   position: absolute;
   z-index: 3;
   top: calc(var(--nav-h) + 8px);
-  right: calc(var(--gutter) + var(--safe-r));
+  /* The nav's own right edge: the gutter on phones, the 1240px content column on wide screens. */
+  right: max(calc(var(--gutter) + var(--safe-r)), calc((100% - var(--shell)) / 2));
   display: flex;
   gap: 8px;
-  transition:
-    top 450ms var(--ease),
-    opacity 300ms var(--ease);
+  transition: opacity 300ms var(--ease);
 }
+/* Flush in the top-right corner, centred in the nav's band, below the notch (2026-11-09). */
 .hero__controls.is-up {
-  top: calc(12px + var(--safe-t));
+  top: calc(var(--safe-t) + (var(--nav-h) - 44px) / 2);
+}
+/* Changing place: a quick fade out and back in, never a slide across the hero. */
+.hero__controls.is-hop,
+.hero__controls.is-hop:hover,
+.hero__controls.is-hop:focus-within {
+  opacity: 0;
+  transition: opacity 140ms linear;
 }
 .hero__controls.is-scrolling {
   opacity: 0.5;

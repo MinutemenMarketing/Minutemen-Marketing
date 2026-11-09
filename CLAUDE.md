@@ -189,7 +189,7 @@ interface elements or borders.
   to that region late in the push so the edge and soft wash match K2's hold). The curve is a cubic
   with set start/end speeds; `CHOREO.pushIn.start` is tuned so the first wheel click moves the frame as
   much as the original Kling clip (per-pixel change 7.19 vs 7.24 at 1440×900). The high-resolution
-  detail layer `k1dv2-1920/-1280/-m.webp` (`scripts/k1-detail.cjs`) keeps it sharp. Then K2 crossfades in
+  detail layer `k1dv3-1920/-1280/-m.webp` (`scripts/k1-detail.cjs`) keeps it sharp. Then K2 crossfades in
   drawn at the same matched place (`pushIn.fade`), under a light pass of the painted smoke from
   `src/hero/smoke.js` (`pushIn.smoke` 0.5, densest mid-crossfade) that softens the small face and
   musket-length differences. No figure parallax (K1 has no clean figure mask). In dev,
@@ -247,7 +247,12 @@ The copy says "bullet" by Noah's choice; the artwork still shows a round lead mu
 
 ### Hero controls and returning visitors (2026-11-08)
 
-Only **Skip intro** (top-right, in the space the nav leaves). The "Reduce motion" chip and its saved
+Only **Skip intro**, flush in the top-right corner: centred in the nav's band, its right edge on the nav's
+content edge (the gutter on phones, the 1240px column on wide screens), below the notch. Inside the
+hero the nav stays hidden after the first scroll (it returns at the very top, after the hero and on
+keyboard focus); while it shows, Skip waits just under it, and a change of place is a quick fade, never
+a slide. (2026-11-09: Skip used to slide 72px with the nav on every change of scroll direction, which
+read as a glitch on phones.) The "Reduce motion" chip and its saved
 still choice were removed at Noah's request; any saved choice is cleared on load. Returning visitors
 (watched the hero this session) land at Services with the whole hero above them, settled on the logo;
 scrolling up plays it backwards (the frame loader looks ahead in the direction of travel). No

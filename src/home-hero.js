@@ -168,11 +168,28 @@ export function initHero({ scroller, nav, navH, reduced, returning, markSeen }) 
   const controls = $('.hero__controls');
   let lastY = 0;
   let idle = 0;
-  const syncControls = () => controls?.classList.toggle('is-up', nav.classList.contains('is-hidden'));
+  // Skip sits flush in the corner while the nav is hidden, just under the nav while it shows. A change
+  // of place fades out, moves, fades back in (it used to slide 72px on every change of direction,
+  // which read as a glitch on phones, 2026-11-09).
+  let hop = 0;
+  const syncControls = () => {
+    if (!controls) return;
+    const up = nav.classList.contains('is-hidden');
+    if (up === controls.classList.contains('is-up') || hop) return;
+    controls.classList.add('is-hop');
+    hop = setTimeout(() => {
+      controls.classList.toggle('is-up', nav.classList.contains('is-hidden'));
+      requestAnimationFrame(() => controls.classList.remove('is-hop'));
+      hop = 0;
+    }, 150);
+  };
   scroller.on((y) => {
     const pin = ScrollTrigger.getById('hero');
     const inHero = pin && y > 24 && y < pin.end - 1;
-    if (!inHero || y < lastY - 2) nav.classList.remove('is-hidden');
+    // Inside the hero the nav stays out of the way (it comes back at the very top, after the hero and
+    // on keyboard focus); flipping it on every change of scroll direction made the top of the hero
+    // jump on phones (2026-11-09).
+    if (!inHero) nav.classList.remove('is-hidden');
     else if (y > lastY + 2) nav.classList.add('is-hidden');
     if (Math.abs(y - lastY) > 0.5) {
       controls?.classList.add('is-scrolling');
