@@ -125,12 +125,12 @@ adds them to the carousel with the names they approve. Nothing goes on the site 
 > smilesbynilou.com on the portfolio page. Is that OK with you? Could you send me one or two sentences
 > about working with us? I'd post them with your first name and Smiles by Nilou. Thank you!
 
-**To Beauty & Wellness addict NY (Dr. Sheila Omrani and Nurse Lisa Farazmand):**
+**To Beauty & Wellness addict (Dr. Sheila Omrani and Nurse Lisa Farazmand):**
 
 > Hi Sheila and Lisa, it's Noah from Minutemen Marketing. We're launching our new website, and I'd
 > like to show beautyandwellnessny.com on the portfolio page. Are you both OK with that? Could you send
 > me one or two sentences about working with us? I'd post them with your names and Beauty & Wellness
-> addict NY. Thank you!
+> addict. Thank you!
 
 (Both texts were checked with stop-slop. Swap "Sheila" for "Dr. Omrani" if that's how you address
 her.)
