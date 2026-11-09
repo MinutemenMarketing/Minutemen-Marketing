@@ -337,6 +337,10 @@ the Vite stack and pushes to `main`, both by Noah's explicit choice.
   scroll). The 1280 and 960 sets of C2b and C3 repeat files 46/61/76 (24→15fps extraction);
   `ASSETS.<clip>.dupes` skips them. A clip with nothing loaded yet stands in with its neighbouring
   clip's frame, never an unrelated still.
+- **Phone framing (2026-11-09):** portrait screens show the real painting full-screen (cover crop centred
+  on the soldier, panning to the muzzle and ball; `CHOREO.phoneFill = 'cover'`). The old fitted framing
+  with a 3×3 "wash" above it shifted with every C2 frame and read as blurry moving clouds; `?fill=sky`
+  keeps a static-K1-sky alternative for comparison. A 9:16 Runway-expand upgrade is quoted in NEXT-STEPS.
 - **Mobile edge-to-edge (2026-11-05):** the pinned stage and canvas are `100lvh` (largest viewport,
   `100vh` fallback) on a navy ground, so collapsing/expanding the browser bar never shows a strip.
   Bottom-anchored controls lift by `--bar` (`100lvh - 100svh`) plus the safe-area inset;

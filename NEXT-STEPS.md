@@ -292,6 +292,35 @@ touch on fast and slow 4G clean. Firefox still can't run on this machine.
   every changed frame has a new name, no service worker. Anything that looked old was a deploy still
   in progress or an already-open tab.
 
+- **Phones: no more blurry moving fill.** Root cause: on portrait screens the soldier scenes were
+  shrunk to fit his whole figure across the width and the space above was filled with the top of
+  the current frame averaged to 3×3 and stretched, so it shifted with every C2 frame. Phones now get
+  the real painting full-screen (`CHOREO.phoneFill = 'cover'`), centred on the soldier, then panning
+  to the muzzle and the ball. A static K1-sky alternative (`?fill=sky`) was compared at 390px and
+  looked worse (soft, upscaled sky with a seam). Sheet: `qa/shots/phone-fill-compare.jpg`.
+
+### Quote, not spent: true 9:16 phone versions (Runway video expand, 28 credits per source second)
+
+| Asset | Length | Credits |
+|---|---|---|
+| C2 firing | 5.04s | ≈141 (168 if billed per whole second) |
+| C2b follow the bullet | 6.04s | ≈169 (196) |
+| C3 climb to the globe | 8.04s | ≈225 (252) |
+| C4 orbit | 6.04s | ≈169 (196) |
+| K1, K2, K4 stills, 9:16 image outpaint (Nano Banana Pro, 2K) | — | 3 × 20 = 60 |
+| Video upscale of the four 9:16 clips (expand outputs at most 1080p) | — | ≈ 4 × 13 = 52 |
+| **Total** | | **≈ 816 (up to ≈ 924)** of 1,280 |
+
+C1 needs nothing (it is drawn in code from K1). Process: upload the four 1280px clips; expand each to
+9:16 with the existing scene continued; check every frame; upscale; extract a new phone set
+(`public/hero/v2/m/`, e.g. 1080×1920, same frame counts: C2 from 1.8s at 24fps = 78, C2b 92, C3 122,
+C4 91) with `vframes.mjs`; redo the free per-frame fixes in the new geometry (C2 gold flash and the
+clean-plate background, which needs a new 9:16 plate, ~20 credits more; C2b matte ball track and
+f_0017; C3 globe-settle and C4 globe positions); new 9:16 K1/K2/K4 stills and K1 detail layer; and a
+phone tier in `choreography.js` with its own FOCUS coordinates. Trade-off: in a 9:16 expand the
+original 16:9 picture becomes a band about a third of the screen tall, so the soldier is smaller than
+in today's cover crop; everything above and below him is newly painted.
+
 ## Open items (waiting on Noah)
 
 1. **Terms of Service text** → create `terms/index.html`, add it to `PAGES` in `vite.config.js`, set
