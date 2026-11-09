@@ -1,6 +1,7 @@
 // Hero stage: loads the stills and frame sequences, then paints one canvas from a scroll position
 // (0–100). Paints only on requestAnimationFrame and only when the computed layers change.
 import { CHOREO, ASSETS, FOCUS, circleTarget } from './choreography.js';
+import { SMOKE, smokePixels } from './smoke.js';
 
 const S = CHOREO.scenes;
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
@@ -197,6 +198,59 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
 
   // Portrait framing for the soldier: from cover (fit 0) to "his whole figure and musket fit the
   // width" (fit 1). The space above and below fills with a soft, low-res copy of the same frame.
+  // C1 in code: a camera over the K1 painting. `f` 0 = the opening framing (as K1 is drawn before
+  // the push-in), 1 = his whole figure filling the frame; `extra` zooms a little further. The K1
+  // still is drawn first, then the high-resolution detail layer over it at the same place (its left
+  // and top edges are feathered, so the two read as one picture).
+  function k1Cam(f, extra = 1) {
+    const img = a.k1;
+    if (!img) return;
+    const A = img.naturalWidth / img.naturalHeight;
+    const B = FOCUS.k1Box;
+    const s0 = Math.max(w, h * A); // px per image width at the cover framing
+    const s1 = Math.max(s0, Math.min((0.94 * w) / (B.x1 - B.x0), (0.94 * h * A) / (B.y1 - B.y0)));
+    const sc = Math.exp(lerp(Math.log(s0), Math.log(s1), f)) * extra;
+    const clampTo = (v, half) => Math.min(1 - half, Math.max(half, v));
+    const hx = w / (2 * sc);
+    const hy = (h * A) / (2 * sc);
+    // Start where cover() puts K1 (soldier as central as cropping allows), end on his box.
+    const cx = clampTo(lerp(clampTo(FOCUS.k1Soldier.x, w / (2 * s0)), (B.x0 + B.x1) / 2, f), hx);
+    const cy = clampTo(lerp(clampTo(FOCUS.k1Soldier.y, (h * A) / (2 * s0)), (B.y0 + B.y1) / 2, f), hy);
+    const dx = w / 2 - cx * sc;
+    const dy = h / 2 - (cy * sc) / A;
+    ctx.drawImage(img, dx, dy, sc, sc / A);
+    const D = ASSETS.k1Detail;
+    if (a.k1d && sc > s0 * 1.02) ctx.drawImage(a.k1d, dx + D.x0 * sc, dy + (D.y0 * sc) / A, (D.x1 - D.x0) * sc, ((D.y1 - D.y0) * sc) / A);
+  }
+
+  // Painted smoke band (smoke.js), built once. `u` 0 = just off the right edge, 1 = gone off the
+  // left; the opaque core covers the frame around u = 0.5, and K1 crossfades to K2 under it. A second,
+  // slightly larger and fainter pass runs a little ahead and behind it, for depth.
+  let smokeTex = null;
+  function buildSmoke() {
+    if (smokeTex) return;
+    const W = 512;
+    const H = Math.round((W / SMOKE.span) * SMOKE.tall);
+    smokeTex = document.createElement('canvas');
+    smokeTex.width = W;
+    smokeTex.height = H;
+    smokeTex.getContext('2d').putImageData(new ImageData(smokePixels(W, H), W, H), 0, 0);
+  }
+  function smoke(u) {
+    buildSmoke();
+    const travel = (SMOKE.span + 1) * w;
+    const tw = SMOKE.span * w;
+    const th = SMOKE.tall * w;
+    const bob = Math.sin(u * Math.PI) * 0.03 * h;
+    ctx.imageSmoothingQuality = 'high';
+    // depth pass: bigger, fainter, a touch faster (leads in, trails out)
+    const u2 = u * 1.1 - 0.05;
+    ctx.globalAlpha = 0.3;
+    ctx.drawImage(smokeTex, w - u2 * travel - tw * 0.08, h / 2 - (th * 1.15) / 2 - bob, tw * 1.15, th * 1.15);
+    ctx.globalAlpha = 1;
+    ctx.drawImage(smokeTex, w - u * travel, h / 2 - th / 2 + bob, tw, th);
+  }
+
   const softCopy = document.createElement('canvas');
   softCopy.width = 3;
   softCopy.height = 3;
@@ -264,7 +318,7 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
   // Nearest loaded frame of a sequence, so a fast scroll never paints a blank. If a reader outruns
   // the loader and none of the clip has arrived yet, show what the clip starts on (or, past its
   // middle, ends on): a still, or the neighbouring clip's frame — never a different scene.
-  const STAND_IN = { c1: ['k1', 'k2'], c2: ['k2', 'k2'], c2b: [['c2', 1], ['c3', 0]], c3: [['c2b', 1], 'k4'], c4: ['k4', 'k4'] };
+  const STAND_IN = { c2: ['k2', 'k2'], c2b: [['c2', 1], ['c3', 0]], c3: [['c2b', 1], 'k4'], c4: ['k4', 'k4'] };
   // Frame indices actually played: every file, minus repeated ones in this tier.
   const order = {};
   const played = (name) =>
@@ -298,32 +352,39 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     const portrait = w / h < 1.3;
     const fitAt = (v) => (portrait ? v : 0);
     const k1 = ['img', 'k1', 1, FOCUS.k1Soldier.x, FOCUS.k1Soldier.y, 1];
-    const k2 = (alpha = 1, z = 1) => ['img', 'k2', alpha, FOCUS.k2Soldier.x, FOCUS.k2Soldier.y, z];
     const c2Fx = (t) => (narrow ? lerp(FOCUS.k2Soldier.x, NARROW_FLIGHT_X, ease(t)) : FOCUS.k2Soldier.x);
     // C2b opens on C2's crop (so the join dissolve lines up) and drifts to the ball as the camera swings.
     const swing = (t) => ease(clamp01(t / 0.25));
     const c2bFx = (t) => lerp(c2Fx(1), FOCUS.c2bBall.x, swing(t));
     const c2bFy = (t) => lerp(FOCUS.k2Soldier.y, FOCUS.c2bBall.y, swing(t));
-    const c1Last = () => (ASSETS.c1 ? ['seq', 'c1', 1, 1, FOCUS.k2Soldier.x, FOCUS.k2Soldier.y, 1, fitAt(1)] : k2());
+    // K2 as the hold and C2's opening frame draw it: framed, fitted on portrait screens.
+    const c1Last = (z = 1) => ['still', 'k2', 1, FOCUS.k2Soldier.x, FOCUS.k2Soldier.y, z, fitAt(1)];
     const globeFrame = () => (ASSETS.c4 ? ['globe', 'c4', 1, 1] : ['globe', 'k4', 1, 1]);
 
     if (p < S.c1[0]) {
       ops.push(k1);
     } else if (p < S.k2Hold[0]) {
       const t = local(S.c1, p);
-      if (ASSETS.c1) {
-        // C1 opens on K1 and ends on K2, so its crop travels from K1's focus to K2's.
-        const ct = remap(CHOREO.c1Remap, t);
-        const d = dissolve('c1', ct);
-        if (d < 1) ops.push(k1);
-        const f = ease(t);
-        ops.push(['seq', 'c1', ct, d, lerp(FOCUS.k1Soldier.x, FOCUS.k2Soldier.x, f), lerp(FOCUS.k1Soldier.y, FOCUS.k2Soldier.y, f), 1, fitAt(clamp01((t - 0.6) / 0.4))]);
-      } else {
-        // Placeholder: push in on the soldier in K1, then dissolve to K2.
-        ops.push(['img', 'k1', 1, FOCUS.k1Soldier.x, FOCUS.k1Soldier.y, lerp(1, 2.4, ease(clamp01(t / 0.85)))]);
-        const x = ease(clamp01((t - 0.55) / 0.45));
-        if (x > 0) ops.push(k2(x, lerp(1.35, 1, x)));
+      const P = CHOREO.pushIn;
+      const u = local(P.wipe, t); // smoke travel, 0–1
+      // K1 → K2 crossfade while the densest smoke covers the frame (u 0.42–0.58).
+      const x = ease(clamp01((u - 0.42) / 0.16));
+      const swap = lerp(P.wipe[0], P.wipe[1], 0.42);
+      if (x < 1) {
+        // Push-in on a cubic with set start and end speeds: `start` matches how far the first wheel
+        // click moved the old clip (measured 2026-11-08), `end` slows into the creep.
+        const q = clamp01(t / P.push);
+        const [m0, m1] = [P.start, P.end];
+        const f = (m0 + m1 - 2) * q ** 3 + (3 - 2 * m0 - m1) * q ** 2 + m0 * q;
+        ops.push(['k1cam', f, 1 + P.creep * clamp01((t - P.push) / Math.max(1e-3, swap - P.push))]);
       }
+      if (x > 0) {
+        // K2 behind the smoke, settling to the hold's framing as the smoke clears.
+        const k = c1Last(lerp(P.settle, 1, ease(local([swap, 1], t))));
+        k[2] = x;
+        ops.push(k);
+      }
+      if (u > 0 && u < 1) ops.push(['smoke', u]);
     } else if (p < S.c2[0]) {
       // Hold on C1's own last frame (≈ K2), so the hold and the clip before it never jump.
       ops.push(c1Last());
@@ -386,6 +447,13 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
       if (kind === 'paper') {
         ctx.fillStyle = PAPER;
         ctx.fillRect(0, 0, w, h);
+      } else if (kind === 'k1cam') {
+        k1Cam(rest[0], rest[1]);
+      } else if (kind === 'smoke') {
+        smoke(rest[0]);
+      } else if (kind === 'still') {
+        const [name, alpha, fx, fy, z, fit] = rest;
+        framed(a[name], alpha, fx, fy, z, fit);
       } else if (kind === 'img') {
         const [name, alpha, fx, fy, z] = rest;
         cover(a[name], alpha, fx, fy, z);
@@ -482,8 +550,8 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
   // frames to show while the in-betweens arrive.
   const AHEAD = saveData ? 10 : phone ? 18 : 30; // % of the hero to keep loaded ahead
   const BEHIND = 6; // and a little behind, for scrolling back
-  const SEG = { c1: S.c1, c2: S.c2, c2b: S.c2b, c3: S.c3, c4: S.k4Hold };
-  const REMAP = { c1: CHOREO.c1Remap, c3: CHOREO.c3Remap, c4: CHOREO.c4Remap };
+  const SEG = { c2: S.c2, c2b: S.c2b, c3: S.c3, c4: S.k4Hold };
+  const REMAP = { c3: CHOREO.c3Remap, c4: CHOREO.c4Remap };
   const invert = (points, f) => remap(points.map(([x, y]) => [y, x]), f);
   const jobs = [];
   const waiting = []; // workers parked until the reader scrolls
@@ -495,7 +563,9 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     // swiped straight into C1 showed frames 10–19 behind, then a jump when they landed).
     const add = (key, src, at, step = 4) => jobs.push({ key, src, at, lead: step === 4 ? 0 : step === 2 ? 3 : 6 });
     add('k1', still(ASSETS.k1), 0);
-    add('k2', still(ASSETS.k2), S.k2Hold[0] - 4);
+    // C1 is the K1 painting itself: its detail layer next, then K2 (under the smoke at ~21%).
+    add('k1d', `${ASSETS.base}/${ASSETS.k1Detail.name}-${phone ? 'm' : size()}.webp`, S.c1[0]);
+    add('k2', still(ASSETS.k2), S.c1[0] + 8);
     add('k4', still(ASSETS.k4), S.c3[0] + 2);
     add('logo', ASSETS.logo, S.toLogo[0] - 6);
     for (const name of Object.keys(SEG)) {

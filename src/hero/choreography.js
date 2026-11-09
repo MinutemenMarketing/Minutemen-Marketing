@@ -14,7 +14,7 @@ export const CHOREO = {
     // A short hold, then the push-in starts on the first wheel click (Noah, 2026-11-08). Beat 1 stays
     // fully visible over the start of the push-in (to 9%) and fades out 9–12%.
     k1Hold: [0, 0.8], // battlefield
-    c1: [0.8, 27], // C1: the push-in across the battlefield to the soldier
+    c1: [0.8, 27], // C1: the push-in on K1 to the soldier, then the smoke wipe to K2 (code, no footage)
     k2Hold: [27, 30], // hold on the soldier
     c2: [30, 41], // the shot and the ball leaving the muzzle
     c2b: [41, 56], // FOLLOW THE BULLET — side-tracking with the ball (beat 2 over it)
@@ -34,13 +34,15 @@ export const CHOREO = {
     [1, 1],
   ],
 
-  // C1 remap: Kling's camera eases in very slowly over the first ~12 frames, so the scroll moves
-  // through that stretch faster and the first wheel click visibly moves the frame.
-  c1Remap: [
-    [0, 0],
-    [0.06, 0.2],
-    [1, 1],
-  ],
+  // C1, drawn in code since 2026-11-08 (two Kling versions invented soldiers and smoke): a camera
+  // push-in on the K1 painting itself, then painted smoke drifts right to left across the frame and
+  // K2 is underneath when it clears. Fractions of the c1 scene:
+  // - push: the camera moves over [0, push] with start speed `start` and end speed `end` (slopes of
+  //   a cubic; `start` is set so the first wheel click moves the frame as much as the old clip did)
+  //   and keeps creeping by `creep` until the swap;
+  // - wipe: the smoke crosses the frame over this range; it fully covers the frame around its middle,
+  //   where K1 is swapped for K2; K2 then settles from `settle` to 1 so the hold starts still.
+  pushIn: { push: 0.7, start: 0.76, end: 0.3, creep: 0.05, wipe: [0.6, 1], settle: 1.06 },
 
   // C3 remap: its middle (about 2.2–4.4s of 8s, 0.274–0.547) is almost all white cloud, so the
   // scroll moves through it faster.
@@ -72,7 +74,9 @@ export const ASSETS = {
   // `fix`: frame files replaced after a repair, saved under a new name because /hero/v1 is cached
   // as immutable. `dupes`: files that repeat the previous frame in the 1280 and 960 sets (a 24→15fps
   // extraction artefact; the 1920 set has none), skipped so the scrub never stalls on them.
-  c1: { dir: 'c1', count: 92, pattern: 'f_%04d.webp', dupes: [46, 61, 76] },
+  // K1 at high resolution for the code push-in (scripts/k1-detail.cjs): the right/lower part of
+  // k1-cool.png, feathered at its left and top edges, drawn over the K1 still. -1920 / -1280 / -m.
+  k1Detail: { name: 'k1d', x0: 0.3, y0: 0.12, x1: 1, y1: 1 },
   c2: { dir: 'c2', count: 78, pattern: 'f_%04d.webp' },
   // f_0017: the matte-ball repaint drew the ball ~6× too big on this one frame (2026-11-08). Rebuilt
   // from f_0016 + f_0018 with one ball at the midpoint size and position, in all three sets.
@@ -84,6 +88,8 @@ export const ASSETS = {
 // Where things sit inside each still, as fractions of the image (measured from the files).
 export const FOCUS = {
   k1Soldier: { x: 0.585, y: 0.5 }, // featured soldier in k1-cool
+  // His whole figure, hat to boots and back to muzzle, in k1-cool (where the push-in ends).
+  k1Box: { x0: 0.548, x1: 0.722, y0: 0.385, y1: 0.79 },
   k2Soldier: { x: 0.36, y: 0.48 }, // soldier body in k2 / C2
   // His whole figure plus the musket to just past the muzzle, in C1's end, the hold and C2. Portrait
   // screens fit this box to their width so he is never cropped (Noah, 2026-11-05).
