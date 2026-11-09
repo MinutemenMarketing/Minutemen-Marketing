@@ -7,6 +7,7 @@ const FRAME_TIMEOUT = 15000;
 // Each site renders at a standard laptop viewport and is scaled to fit its window, so the layout is
 // exactly what a desktop visitor sees (Noah, 2026-11-08), on every screen size.
 const DESKTOP = { w: 1440, h: 900 };
+const MIN_NATIVE = 1024;
 
 export function initFrames(windows) {
   if (!windows.length) return;
@@ -49,9 +50,18 @@ function mount(win) {
     win.classList.add('is-live');
   });
   view.setAttribute('data-lenis-prevent', ''); // wheel and touch scroll the site, not the page
-  frame.width = DESKTOP.w;
-  frame.height = DESKTOP.h;
-  const fit = () => view.style.setProperty('--frame-scale', String(view.clientWidth / DESKTOP.w));
+  // Crisp windows (2026-11-08): a window 1024px or wider shows the site at its own width, unscaled,
+  // exactly as if opened directly (still the site's desktop layout). A fractional CSS scale on the
+  // 1440px page was resampled after drawing and looked frosted on 1x screens. Narrower windows (phones,
+  // high-density screens) keep the 1440px desktop view scaled to fit.
+  const fit = () => {
+    const W = view.clientWidth;
+    const native = W >= MIN_NATIVE;
+    frame.width = native ? W : DESKTOP.w;
+    frame.height = native ? view.clientHeight : DESKTOP.h;
+    view.classList.toggle('is-native', native);
+    view.style.setProperty('--frame-scale', native ? '1' : String(W / DESKTOP.w));
+  };
   new ResizeObserver(fit).observe(view);
   fit();
   view.append(frame);

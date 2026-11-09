@@ -1423,11 +1423,15 @@ html:not(.motion) .beat--1::before {
   transform: scale(var(--frame-scale, 1));
   transform-origin: 0 0;
   border: 0;
-  opacity: 0;
-  transition: opacity 500ms var(--ease);
+  visibility: hidden; /* shown once loaded; no opacity layer (it kept the window soft) */
+}
+.browser__view.is-native .browser__frame {
+  width: 100%;
+  height: 100%;
+  transform: none;
 }
 .browser.is-live .browser__frame {
-  opacity: 1;
+  visibility: visible;
 }
 .browser.is-shot .browser__frame {
   display: none;
@@ -2072,4 +2076,69 @@ html:not(.motion) .beat--1::before {
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--ink-2);
+}
+
+/* ---------- Portfolio as a case-study list (2026-11-08) ----------
+   Intro, a hairline, then one block per project in the same order: number, client, location, what
+   they needed / what we built, the window, Open Live Website. A hairline between projects. */
+.divider {
+  margin: clamp(40px, 5vw, 72px) 0 0;
+  border: 0;
+  border-top: 1px solid var(--rule);
+}
+.projects {
+  gap: 0;
+  padding-block: 0 var(--band);
+}
+.project {
+  gap: clamp(24px, 2.6vw, 36px);
+  padding-block: clamp(56px, 7vw, 104px);
+}
+.project + .project {
+  /* the hairline spans the content width, like the divider under the intro */
+  background: linear-gradient(var(--rule), var(--rule)) top center / calc(100% - 2 * var(--gutter)) 1px no-repeat;
+}
+.project__head {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+}
+.brief {
+  display: grid;
+  gap: 24px;
+}
+@media (min-width: 768px) {
+  .brief {
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(32px, 4vw, 64px);
+  }
+}
+.brief__label {
+  margin-bottom: 8px;
+  font: 600 0.75rem/1.4 var(--display);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.brief__item p {
+  max-width: 46ch;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+.project > .link-out {
+  justify-self: start;
+  margin-top: 0;
+}
+@media (max-width: 767px) {
+  .project__head,
+  .brief__item {
+    justify-items: center;
+    text-align: center;
+  }
+  .brief__item p {
+    margin-inline: auto;
+  }
+  .project > .link-out {
+    justify-self: center;
+  }
 }
