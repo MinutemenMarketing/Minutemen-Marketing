@@ -270,6 +270,28 @@ touch on fast and slow 4G clean. Firefox still can't run on this machine.
   (@minutemenmarketing) / LinkedIn under small labels; error lines reserved so errors cause zero
   layout shift (CLS 0 at 1440/375/390/430).
 
+## Done 2026-11-09
+
+- **Live checklist** of the 2026-11-08 batch: every item passes on minutemenmarketing.com
+  (`qa/verify-live.mjs`, plus the returning-visitor flow, hand-off screenshots and the form-shift test).
+- **Client name:** "Beauty & Wellness addict" (no "NY") on Home, Portfolio, alt text, meta and
+  LAUNCH.md; the location line stays "Great Neck, NY".
+- **Portfolio:** Beauty & Wellness addict's "What we built" now says we highlighted their top client
+  reviews: one Google review featured on their homepage, five together on their About page (checked
+  on beautyandwellnessny.com).
+- **Contact:** service checkboxes = the Home card titles, in card order; the Web3Forms email lists the
+  full names (checked by intercepting the request; nothing sent).
+- **Skip intro** flush in the top-right corner, aligned to the nav's edge (gutter on phones, the 1240px
+  column on wide screens), centred in the nav band, below the notch. **Phone glitch root cause:** Skip
+  was tied to the nav, which flipped on every change of scroll direction, so Skip slid 72px up and down
+  over the hero (62–69 moves per run in emulation). The nav now stays hidden inside the hero and Skip
+  fades (not slides) the one time it changes place: 2 moves per run. Collision check 56/56; hero pass
+  clean. Note: the WebKit emulator on Windows draws Outfit/Public Sans thin (default instance) while
+  laying them out at the right weights; real iPhones render the weights normally.
+- **Caching:** HTML revalidates on every visit, JS/CSS are content-hashed, hero frames are versioned and
+  every changed frame has a new name, no service worker. Anything that looked old was a deploy still
+  in progress or an already-open tab.
+
 ## Open items (waiting on Noah)
 
 1. **Terms of Service text** → create `terms/index.html`, add it to `PAGES` in `vite.config.js`, set
@@ -277,4 +299,3 @@ touch on fast and slow 4G clean. Firefox still can't run on this machine.
 2. **Real client testimonials** (name, business, town, and permission to publish). LAUNCH.md step 4
    has the two request texts.
 3. **Noah's LinkedIn URL** → `founders.noah.linkedin` in `src/site-config.js`.
-4. (done 2026-11-09) Contact checkboxes now match the service card titles.
