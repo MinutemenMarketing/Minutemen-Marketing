@@ -2142,3 +2142,50 @@ html:not(.motion) .beat--1::before {
     justify-self: center;
   }
 }
+
+/* ---------- Contact layout (2026-11-08) ----------
+   Desktop: the form in a defined panel on the left, the details on the right. Mobile: stacked, form
+   first. Details grouped under small labels in the site's label style. */
+.contact-page__form {
+  padding: clamp(24px, 3.2vw, 48px);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: var(--paper-2);
+}
+@media (min-width: 1024px) {
+  .contact-page {
+    grid-template-columns: 7fr 4fr;
+    gap: clamp(56px, 6vw, 96px);
+  }
+  .contact-page__details {
+    padding-top: clamp(24px, 3.2vw, 48px);
+    border-top: 0;
+  }
+}
+.details {
+  gap: 22px;
+}
+.details dt {
+  margin-bottom: 4px;
+  font: 600 0.75rem/1.4 var(--display);
+  letter-spacing: 0.2em;
+}
+/* Form errors: each field keeps one line free beneath it; the message fills it, nothing moves. */
+.form {
+  row-gap: 6px;
+}
+.field .err {
+  min-height: 1.5rem;
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.form .btn {
+  margin-top: 12px;
+}
+.form__status {
+  min-height: 1.5rem;
+}

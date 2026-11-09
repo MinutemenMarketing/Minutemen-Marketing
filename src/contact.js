@@ -15,7 +15,7 @@ export function initContact(form) {
     let msg = '';
     const label = $('label', field).textContent.trim().toLowerCase().replace(/^your /, '');
     if (input.required && !input.value.trim()) msg = `Please add ${label === 'message' ? 'a message' : `your ${label}`}.`;
-    else if (input.value && !input.checkValidity()) msg = 'Please enter an email like name@business.com.';
+    else if (input.value && !input.checkValidity()) msg = 'Enter an email like name@business.com.';
     let err = $('.err', field);
     if (msg && !err) {
       err = document.createElement('p');
@@ -28,6 +28,15 @@ export function initContact(form) {
     if (msg) input.setAttribute('aria-describedby', err.id);
     else input.removeAttribute('aria-describedby');
     return !msg;
+  }
+  // Every field has its error line from the start (empty, its height reserved in CSS), so a message
+  // appearing or clearing never moves anything (2026-11-08).
+  for (const f of fields) {
+    const input = $('input, textarea', f);
+    const err = document.createElement('p');
+    err.className = 'err';
+    err.id = `${input.id}-err`;
+    f.append(err);
   }
   fields.forEach((f) => $('input, textarea', f).addEventListener('blur', () => check(f)));
 
