@@ -89,7 +89,7 @@ function detailsHtml() {
   if (SITE.workEmail) add('Email', SITE.workEmail, `mailto:${SITE.workEmail}`);
   if (SITE.otherEmail) add('Also', SITE.otherEmail, `mailto:${SITE.otherEmail}`);
   if (SITE.phone) add('Phone', SITE.phone, telHref(SITE.phone));
-  if (SITE.instagram) add('Instagram', SITE.instagram.replace(/^https?:\/\/(www\.)?/, ''), SITE.instagram, true);
+  if (SITE.instagram) add('Instagram', SITE.instagram.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''), SITE.instagram, true);
   if (SITE.linkedin) add('LinkedIn', 'LinkedIn', SITE.linkedin, true);
   for (const o of SITE.other || []) if (o?.url) add(o.label || 'Link', o.label || o.url, o.url, true);
   return rows.join('');
