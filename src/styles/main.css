@@ -802,9 +802,8 @@ html:not(.motion) .beat--1::before {
     grid-template-columns: 5fr 7fr;
     gap: 80px;
   }
+  /* In the page flow; nothing on the site is sticky (2026-11-08). */
   .split__head {
-    position: sticky;
-    top: calc(var(--nav-h) + 48px);
     align-self: start;
   }
 }
@@ -2048,4 +2047,29 @@ html:not(.motion) .beat--1::before {
 }
 .beat--3 .beat__title strong {
   font-weight: 700;
+}
+
+/* About, "Why we started": the founders' paragraph set as a quoted message from them. */
+.note {
+  margin: 0;
+}
+.note__quote {
+  margin: 0;
+  padding-left: clamp(18px, 2vw, 28px);
+  border-left: 2px solid var(--ink);
+}
+.note__quote p {
+  font-family: var(--sans);
+  font-style: italic;
+  font-size: clamp(1.125rem, 1.5vw, 1.3125rem);
+  line-height: 1.65;
+  color: var(--ink);
+}
+.note__by {
+  margin-top: 18px;
+  padding-left: clamp(18px, 2vw, 28px);
+  font: 600 0.75rem/1.4 var(--display);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-2);
 }
