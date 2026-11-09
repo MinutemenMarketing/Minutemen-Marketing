@@ -3,7 +3,7 @@
 Updated 2026-11-08, end of session. `CLAUDE.md` is the contract (hero spec, rules, every
 approved asset with its Runway task ID); `DESIGN.md` is the approved four-page design. Read both first.
 
-**Runway credits: 1,420** (2026-11-08: 95 within Noah's 200-credit approval — C1 regeneration 94,
+**Runway credits: 1,340** (2026-11-08: K1 edit 80 within Noah's 120-credit cap; earlier: 95 within Noah's 200-credit approval — C1 regeneration 94,
 background removal 1; then 72 within the 250-credit C1 rebuild approval — C2 v3, failed). Rule unchanged: quote the cost and wait for Noah's OK before every
 generation.
 
@@ -236,6 +236,16 @@ touch on fast and slow 4G clean. Firefox still can't run on this machine.
   shows its usual scripted-scroll opacity jumps) and the collision check 56/56. Sheets:
   `qa/shots/pushin-desktop.jpg`, `smoke-desktop.jpg`, `pushin-smoke-phone.jpg`.
 
+- **New K1 with K2's soldier** (80 credits, two Nano Banana Pro variants; Noah chose B). The push-in
+  now lands on exactly K2's framing (same man, same place and size, desktop and phone) and K2
+  crossfades in at that place under a light smoke pass. Side-by-sides: `qa/shots/handoff-desktop.jpg`,
+  `handoff-phone.jpg` (last push-in frame, K2 hold, first full C2 frame) and the two `-sequence` sheets.
+  The new K1 is also the opening frame, the reduced-motion still and the share image (`og-v2.jpg`:
+  painting with the horizontal logo over a soft paper wash). First click unchanged (7.19 vs 7.24,
+  live). Live hero pass clean (WebKit swipe: its usual scripted-scroll jumps); collision check 56/56.
+  Seen in the side-by-side: the first fully shown C2 frame already has small muzzle flashes in the
+  background line (that is the existing C2 footage, not new).
+
 ## Open items (waiting on Noah)
 
 2. **Terms of Service text** → create `terms/index.html`, add it to `PAGES` in `vite.config.js`, set
@@ -244,5 +254,5 @@ touch on fast and slow 4G clean. Firefox still can't run on this machine.
 4. **Real client testimonials** (name, business, town, and permission to publish). LAUNCH.md step 4
    has the two request texts.
 5. **Noah's LinkedIn URL** → `founders.noah.linkedin` in `src/site-config.js`.
-6. **C1:** resolved in code (see above). Worth one look on a real phone and laptop: the smoke wipe
-   is the only part of the hero no AI model or Noah has seen in motion yet.
+6. **C1:** resolved in code with the new K1 (see above). Give the push-in and hand-off one scroll on a
+   real phone and laptop.

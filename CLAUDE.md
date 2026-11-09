@@ -114,7 +114,15 @@ interface elements or borders.
 
 - **`reference/start.png` rule:** if that file exists, use it as K1 (or as K1's style reference) instead
   of generating a new battlefield. As of 2026-11-04 it does not exist; K1 below was generated.
-- **APPROVED opening still (current): `assets/keyframes/k1-cool.png`** — `k1.png` with a local
+- **APPROVED opening still (current, 2026-11-08): `assets/keyframes/k1-v2.png`**: `k1-cool.png` edited with
+  Nano Banana Pro (K2 as the reference; tasks `bd2dfdf9-…` = variant A, **`17ff2483-6687-45e8-870f-1845cb0a222b` =
+  variant B, chosen by Noah**; 80 credits for both, `assets/drafts/k1-edit-{a,b}.png`) so the featured
+  soldier is K2's man (hat with pale trim, navy coat, red cuffs, strap and box, boots, profile aim),
+  a step in front of the line; everything else unchanged (the corner signature dropped out). Served as
+  `k1v2-1920/-1280.webp` (opening frame, reduced-motion still, preload) and in the share image
+  `og-v2.jpg`. Its region `FOCUS.k1K2Frame` (x 0.418–0.959, y 0.297–0.837) is K2's whole frame: same man
+  at the same place and size (scale 1.85, fitted by normalised cross-correlation on his head and torso).
+- **Previous opening still: `assets/keyframes/k1-cool.png`** — `k1.png` with a local
   cool color grade (0 credits; GDI+ color matrix: red cut, blue lifted, saturation ~0.75). Steel-blue
   sky, cooler smoke, gray-olive field, coats near the logo navy. **Noah wants the sequence cool, to
   match the navy brand:** every later stage must match this grade, so drop "warm golden-hour" from the
@@ -163,16 +171,17 @@ interface elements or borders.
   globe is ~80% of frame height and reads as a satellite render. Noah wants K4 v2: ~50% of frame
   height, clearly visible oil brushwork on the globe matching K1, a small round ball with a thin
   trail (no capsule). (Superseded by the approved K4 below.)
-- **C1 is code since 2026-11-08 (Noah: no more credits on C1).** `src/hero/stage.js` `k1Cam()` moves a
-  camera over the K1 still (cover framing → `FOCUS.k1Box`, his whole figure at 94% of the frame) on a
-  cubic with set start/end speeds (`CHOREO.pushIn.start` is tuned so the first wheel click moves the
-  frame as much as the old clip: per-pixel change 7.21 vs 7.24 at 1440×900), and draws the
-  high-resolution detail layer `k1d-1920/-1280/-m.webp` (right/lower K1, feathered left and top edges;
-  `scripts/k1-detail.cjs`) over it. `src/hero/smoke.js` builds a painted-smoke band once in code (K1's
-  smoke colours, lit from the upper left, wispy ends, opaque core); `smoke()` slides it across in two
-  depths and K1 crossfades to K2 under the core (≈ 2% of the scroll fully covered). No figure
-  parallax: K1 has no clean figure mask, and cutting one would cost credits or leave halos; the two
-  smoke depths carry the depth instead. The old Kling C1 below and its frame folders are retired.
+- **C1 is code since 2026-11-08 (Noah: no more credits on C1).** `src/hero/stage.js` `k1Rect()`/`k1Cam()`
+  move a camera rect over the K1 still from the opening framing to the K1 region that matches K2's
+  hold framing exactly (`FOCUS.k1K2Frame`; on portrait screens the fitted framing, with K1 narrowing
+  to that region late in the push so the edge and soft wash match K2's hold). The curve is a cubic
+  with set start/end speeds; `CHOREO.pushIn.start` is tuned so the first wheel click moves the frame as
+  much as the original Kling clip (per-pixel change 7.19 vs 7.24 at 1440×900). The high-resolution
+  detail layer `k1dv2-1920/-1280/-m.webp` (`scripts/k1-detail.cjs`) keeps it sharp. Then K2 crossfades in
+  drawn at the same matched place (`pushIn.fade`), under a light pass of the painted smoke from
+  `src/hero/smoke.js` (`pushIn.smoke` 0.5, densest mid-crossfade) that softens the small face and
+  musket-length differences. No figure parallax (K1 has no clean figure mask). In dev,
+  `window.__noSmoke = true` hides the smoke for hand-off checks.
 - **Retired C1 (push-in): `assets/clips/c1-pushin.mp4`** (task `70a8541a-58c3-4697-a2e2-aaa4bbc0dec0`),
   Kling 4.0, 6s, 72 credits, start `k1-cool`, end `k2.png`. Frames `public/hero/v1/c1/` (15fps, 92); the
   crop travels from K1's focus to K2's. **Known footage flaws (2026-11-08):** the end soldier is not
