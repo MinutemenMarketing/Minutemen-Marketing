@@ -140,8 +140,8 @@ function pages() {
           `<meta property="og:title" content="${title}" />`,
           `<meta property="og:description" content="${desc}" />`,
           `<meta property="og:url" content="${url}" />`,
-          `<meta property="og:image" content="${ORIGIN}/og-v2.jpg" />`,
-          `<meta property="og:image:secure_url" content="${ORIGIN}/og-v2.jpg" />`,
+          `<meta property="og:image" content="${ORIGIN}/og-v3.jpg" />`,
+          `<meta property="og:image:secure_url" content="${ORIGIN}/og-v3.jpg" />`,
           '<meta property="og:image:type" content="image/jpeg" />',
           '<meta property="og:image:width" content="1200" />',
           '<meta property="og:image:height" content="630" />',
@@ -149,7 +149,7 @@ function pages() {
           '<meta name="twitter:card" content="summary_large_image" />',
           `<meta name="twitter:title" content="${title}" />`,
           `<meta name="twitter:description" content="${desc}" />`,
-          `<meta name="twitter:image" content="${ORIGIN}/og-v2.jpg" />`,
+          `<meta name="twitter:image" content="${ORIGIN}/og-v3.jpg" />`,
         ].join('\n    ');
         let out = html
           .replace('<!-- @head -->', head)

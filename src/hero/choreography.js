@@ -34,7 +34,7 @@ export const CHOREO = {
     [1, 1],
   ],
 
-  // C1, drawn in code since 2026-11-08: a camera push-in on the K1 painting (k1-v2, whose featured
+  // C1, drawn in code since 2026-11-08: a camera push-in on the K1 painting (k1-v3, whose featured
   // soldier is K2's man) that ends on exactly K2's framing, then K2 crossfades in on top of it.
   // Fractions of the c1 scene:
   // - push: the camera moves over [0, push] on a cubic with start speed `start` (set so the first
@@ -67,8 +67,8 @@ export const CHOREO = {
 // Assets. Swap a placeholder for the real thing by editing this block only.
 export const ASSETS = {
   base: '/hero/v1',
-  k1: 'k1v2', // + '-1920.webp' / '-1280.webp': k1-v2.png (K2's soldier in the line, 2026-11-08)
-  k2: 'k2',
+  k1: 'k1v3', // + '-1920.webp' / '-1280.webp': k1-v3.png (K2's soldier in the line, no musket smoke)
+  k2: 'k2v2', // k2.png with the C2 clean plate on the background line (scripts/fix-k2-background.cjs)
   k4: 'k4v2', // approved K4 (v2, ball shrunk)
   logo: '/brand/logo-stacked.svg', // stacked logo (mark over MINUTEMEN MARKETING), traced vector
   // `fix`: frame files replaced after a repair, saved under a new name because /hero/v1 is cached
@@ -76,8 +76,10 @@ export const ASSETS = {
   // extraction artefact; the 1920 set has none), skipped so the scrub never stalls on them.
   // K1 at high resolution for the code push-in (scripts/k1-detail.cjs): the right/lower part of
   // k1-cool.png, feathered at its left and top edges, drawn over the K1 still. -1920 / -1280 / -m.
-  k1Detail: { name: 'k1dv2', x0: 0.3, y0: 0.12, x1: 1, y1: 1 },
-  c2: { dir: 'c2', count: 78, pattern: 'f_%04d.webp' },
+  k1Detail: { name: 'k1dv3', x0: 0.3, y0: 0.12, x1: 1, y1: 1 },
+  // C2: every frame repaired (2026-11-08): the background line comes from a clean plate (no gunsmoke
+  // puffs or muzzle flashes on the soldiers behind him), see scripts/fix-c2-background-flashes.cjs.
+  c2: { dir: 'c2', count: 78, pattern: 'f_%04d-fix1.webp' },
   // f_0017: the matte-ball repaint drew the ball ~6× too big on this one frame (2026-11-08). Rebuilt
   // from f_0016 + f_0018 with one ball at the midpoint size and position, in all three sets.
   c2b: { dir: 'c2b', count: 92, pattern: 'f_%04d.webp', fix: { 17: 'f_0017-fix1.webp' }, dupes: [46, 61, 76] },
@@ -87,9 +89,9 @@ export const ASSETS = {
 
 // Where things sit inside each still, as fractions of the image (measured from the files).
 export const FOCUS = {
-  k1Soldier: { x: 0.63, y: 0.5 }, // featured soldier in k1-v2 (the opening framing centres on him)
-  k1Man: { x: 0.634, y: 0.6 }, // his centre in k1-v2: the point the push-in zooms toward
-  // The region of k1-v2 that is K2's whole frame: the same man at the same place and size. Fitted
+  k1Soldier: { x: 0.63, y: 0.5 }, // featured soldier in k1-v3 (the opening framing centres on him)
+  k1Man: { x: 0.634, y: 0.6 }, // his centre in k1-v3: the point the push-in zooms toward
+  // The region of k1-v3 that is K2's whole frame: the same man at the same place and size. Fitted
   // 2026-11-08 by a scale + offset search (normalised cross-correlation on his head and torso, 0.62):
   // scale 1.85. The push-in ends on it and K2 crossfades in on top.
   k1K2Frame: { x0: 0.4179, y0: 0.2969, w: 0.5407, h: 0.5404 },
