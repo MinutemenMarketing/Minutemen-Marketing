@@ -6,7 +6,7 @@ export const SITE = {
   workEmail: 'minutemenmrktng@gmail.com',
   otherEmail: '', // TODO(client)
   phone: '(631) 882-8022', // shown as written; links as tel:+16318828022
-  instagram: '', // TODO(client): full URL. Shows in the footer and on Contact once set.
+  instagram: 'https://www.instagram.com/minutemenmarketing/', // footer and Contact
   // Terms of Service: false until Noah sends the text. Set true (and add terms/index.html + the page
   // to PAGES in vite.config.js) to show the footer link to /terms.
   terms: false, // TODO(client): Terms of Service text
