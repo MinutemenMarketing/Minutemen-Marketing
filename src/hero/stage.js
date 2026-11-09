@@ -219,6 +219,21 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     if (W / A >= h) y = Math.min(0, Math.max(h - W / A, y));
     return { x, y, w: W, h: W / A, zoom: W / s0.w };
   }
+  // Draw only the part of `img` that lands inside the canvas: the smoke band is about four screens
+  // wide and the K1 detail layer 3000px, and drawing them whole every frame cost time on software
+  // and low-end GPUs (2026-11-08).
+  function drawVisible(c, img, dx, dy, dw, dh) {
+    const iw = img.naturalWidth || img.width;
+    const ih = img.naturalHeight || img.height;
+    const x0 = Math.max(0, dx);
+    const y0 = Math.max(0, dy);
+    const x1 = Math.min(w, dx + dw);
+    const y1 = Math.min(h, dy + dh);
+    if (x1 <= x0 || y1 <= y0) return;
+    const sx = ((x0 - dx) / dw) * iw;
+    const sy = ((y0 - dy) / dh) * ih;
+    c.drawImage(img, sx, sy, ((x1 - x0) / dw) * iw, ((y1 - y0) / dh) * ih, x0, y0, x1 - x0, y1 - y0);
+  }
   const covers = (r) => r.x <= 0.5 && r.y <= 0.5 && r.x + r.w >= w - 0.5 && r.y + r.h >= h - 0.5;
   function k1Cam(f, k2a, fit) {
     const img = a.k1;
@@ -228,8 +243,8 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     // The K1 still, then the high-resolution detail layer over it at the same place (its left and
     // top edges are feathered, so the two read as one picture).
     const drawK1 = (c) => {
-      c.drawImage(img, r.x, r.y, r.w, r.h);
-      if (a.k1d && r.zoom > 1.02) c.drawImage(a.k1d, r.x + D.x0 * r.w, r.y + D.y0 * r.h, (D.x1 - D.x0) * r.w, (D.y1 - D.y0) * r.h);
+      drawVisible(c, img, r.x, r.y, r.w, r.h);
+      if (a.k1d && r.zoom > 1.02) drawVisible(c, a.k1d, r.x + D.x0 * r.w, r.y + D.y0 * r.h, (D.x1 - D.x0) * r.w, (D.y1 - D.y0) * r.h);
     };
     const M = FOCUS.k1K2Frame;
     const r2 = { x: r.x + M.x0 * r.w, y: r.y + M.y0 * r.h, w: r.w * M.w, h: r.h * M.h };
@@ -255,7 +270,7 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     if (k2a > 0 && a.k2) {
       if (covers(r2)) {
         ctx.globalAlpha = k2a;
-        ctx.drawImage(a.k2, r2.x, r2.y, r2.w, r2.h);
+        drawVisible(ctx, a.k2, r2.x, r2.y, r2.w, r2.h);
         ctx.globalAlpha = 1;
       } else {
         wash(a.k2, k2a);
@@ -288,9 +303,9 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     // depth pass: bigger, fainter, a touch faster (leads in, trails out)
     const u2 = u * 1.1 - 0.05;
     ctx.globalAlpha = 0.3 * strength;
-    ctx.drawImage(smokeTex, w - u2 * travel - tw * 0.08, h / 2 - (th * 1.15) / 2 - bob, tw * 1.15, th * 1.15);
+    drawVisible(ctx, smokeTex, w - u2 * travel - tw * 0.08, h / 2 - (th * 1.15) / 2 - bob, tw * 1.15, th * 1.15);
     ctx.globalAlpha = strength;
-    ctx.drawImage(smokeTex, w - u * travel, h / 2 - th / 2 + bob, tw, th);
+    drawVisible(ctx, smokeTex, w - u * travel, h / 2 - th / 2 + bob, tw, th);
     ctx.globalAlpha = 1;
   }
 
