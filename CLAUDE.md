@@ -80,7 +80,7 @@ continuing.** Never lock or hijack the scroll. Every percentage lives in one con
 | 30–41% | C2, the shot and the ball leaving the muzzle | — |
 | 41–56% | **C2b, FOLLOW THE BULLET** — side-tracking with the ball (start frame `c2-last.png`) | **Beat 2** in 43%, fully visible 46–55%, out 55–58%: "Response time as fast as a bullet." |
 | 56–68% | C3, the ball climbs to the globe (start = C2b's last frame, end = K4); its globe settles onto the 50% circle | — |
-| 68–85% | The globe; **C4, BULLET AROUND THE GLOBE** — one orbit, behind the globe on the far side | **Beat 3** in 69%, fully visible 72–85%, fades out 85–88% as the globe turns navy: "With the right website, you can reach an audience around the world." — below the globe, **never overlapping it** |
+| 68–85% | The globe; **C4, BULLET AROUND THE GLOBE** — one orbit, behind the globe on the far side | **Beat 3** in 69%, fully visible 72–85%, fades out 85–88% as the globe turns navy: "With the right marketing, you can **reach an audience around the world.**" (only that phrase bold) — below the globe, **never overlapping it** |
 | 85–100% | Three slow fades: painted globe → navy-and-white globe (85–91%) → logo circle (91–96%) → site (96–100%) | — |
 (Updated 2026-11-05 for C2b and C4, 2026-11-08 for the short opening hold; the numbers live in
 `src/hero/choreography.js`.)
@@ -114,7 +114,19 @@ interface elements or borders.
 
 - **`reference/start.png` rule:** if that file exists, use it as K1 (or as K1's style reference) instead
   of generating a new battlefield. As of 2026-11-04 it does not exist; K1 below was generated.
-- **APPROVED opening still (current, 2026-11-08): `assets/keyframes/k1-v2.png`**: `k1-cool.png` edited with
+- **APPROVED opening still (current, 2026-11-08 late): `assets/keyframes/k1-v3.png`** = k1-v2 with the
+  musket smoke puffs along the firing line removed (Nano Banana Pro, task `f4c41b0e-e9aa-4d6c-b8d3-bb10f1121692`,
+  40 credits). Same geometry as k1-v2 (refit: scale 1.85, NCC 0.635, `FOCUS.k1K2Frame` unchanged). Served as
+  `k1v3-1920/-1280.webp`, detail `k1dv3-*`, share image `og-v3.jpg`.
+- **K2 hold still: `k2v2-1920/-1280.webp`** = k2.png with the C2 clean plate on its background line
+  (`scripts/fix-k2-background.cjs`), so the hold matches C2.
+- **C2 frames are all repaired (`f_00NN-fix1.webp`, 2026-11-08):** the footage had muzzle flashes on the
+  background soldiers (frames 1–17), gunsmoke puffs at their chests (all 78 frames) and a glow under his
+  arm (1–13). A clean plate (C2 hd frame 19 edited by Nano Banana Pro, task
+  `4a6c7b43-1c8d-49eb-977d-633ce727fc8c`, 20 credits, `assets/drafts/c2-plate.png`) is blended into the
+  background line of every frame in every tier, brightness-matched per frame on the stone wall
+  (`scripts/fix-c2-background-flashes.cjs`). The camera is static over C2, so the plate holds.
+- **Previous opening still (k1-v2): `assets/keyframes/k1-v2.png`**: `k1-cool.png` edited with
   Nano Banana Pro (K2 as the reference; tasks `bd2dfdf9-…` = variant A, **`17ff2483-6687-45e8-870f-1845cb0a222b` =
   variant B, chosen by Noah**; 80 credits for both, `assets/drafts/k1-edit-{a,b}.png`) so the featured
   soldier is K2's man (hat with pale trim, navy coat, red cuffs, strap and box, boots, profile aim),
@@ -228,10 +240,18 @@ interface elements or borders.
 
 1. Over the battlefield (opening/push-in): **"Minutemen Marketing."** / "Ready at a minute's notice."
 2. As he fires and the bullet flies (fire + ball tracking): **"Response time as fast as a bullet."**
-3. As the bullet circles the globe: **"With the right website, you can reach an audience around the
-   world."**
+3. As the bullet circles the globe: "With the right marketing, you can **reach an audience around the
+   world.**" (Noah, 2026-11-08: regular weight, only "reach an audience around the world." bold)
 
 The copy says "bullet" by Noah's choice; the artwork still shows a round lead musket ball.
+
+### Hero controls and returning visitors (2026-11-08)
+
+Only **Skip intro** (top-right, in the space the nav leaves). The "Reduce motion" chip and its saved
+still choice were removed at Noah's request; any saved choice is cleared on load. Returning visitors
+(watched the hero this session) land at Services with the whole hero above them, settled on the logo;
+scrolling up plays it backwards (the frame loader looks ahead in the direction of travel). No
+"Replay intro" link.
 
 ### Reduced motion
 

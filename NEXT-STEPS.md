@@ -3,7 +3,7 @@
 Updated 2026-11-08, end of session. `CLAUDE.md` is the contract (hero spec, rules, every
 approved asset with its Runway task ID); `DESIGN.md` is the approved four-page design. Read both first.
 
-**Runway credits: 1,340** (2026-11-08: K1 edit 80 within Noah's 120-credit cap; earlier: 95 within Noah's 200-credit approval — C1 regeneration 94,
+**Runway credits: 1,280** (2026-11-08 late: smoke removal 60 within Noah's 150-credit cap; K1 edit 80 within Noah's 120-credit cap; earlier: 95 within Noah's 200-credit approval — C1 regeneration 94,
 background removal 1; then 72 within the 250-credit C1 rebuild approval — C2 v3, failed). Rule unchanged: quote the cost and wait for Noah's OK before every
 generation.
 
@@ -246,13 +246,36 @@ touch on fast and slow 4G clean. Firefox still can't run on this machine.
   Seen in the side-by-side: the first fully shown C2 frame already has small muzzle flashes in the
   background line (that is the existing C2 footage, not new).
 
+## Done 2026-11-08 (late)
+
+- **Hero:** Skip intro only (Reduce motion chip removed). Returning visitors land at Services with the
+  full hero above; scrolling up shows the logo, then the whole animation backwards (Replay link
+  removed). Globe line: "With the right marketing, you can **reach an audience around the world.**"
+- **Background smoke and flashes removed** (60 of 150 credits): the musket puffs were in the K1
+  painting (fixed by an edit, k1-v3); the muzzle flashes and chest-level puffs were in the C2 footage
+  (every frame repaired with a clean plate); K2's still had one faint puff (same plate). Details in
+  CLAUDE.md.
+- **Page titles:** "Minutemen Marketing"; "About | Minutemen Marketing"; "Portfolio | Minutemen
+  Marketing"; "Contact | Minutemen Marketing". Meta descriptions unchanged.
+- **Services:** Noah's exact copy; GEO card titled "Generative Engine Optimization (GEO)" like SEO.
+- **Founders:** Ethan first (left, first on mobile), Noah second, everywhere incl. schema; new intro.
+- **About:** "Why we started" set as a quoted message from the founders; nothing on the site is
+  sticky any more (the split heading was `position: sticky`).
+- **Instagram** live in the footer and on Contact.
+- **Portfolio:** root cause of the frosted windows was the fractional CSS transform scale (0.86) on the
+  1440px iframe; windows 1024px+ now show the site unscaled, narrower ones keep the scaled desktop
+  view; no opacity layer; full-resolution fallback screenshots. Case-study structure with hairlines.
+  (The soft photo at the top of Beauty & Wellness is that site's own `blur(3px)` design.)
+- **Contact:** form panel left, details right (form first on mobile); Email / Phone / Instagram
+  (@minutemenmarketing) / LinkedIn under small labels; error lines reserved so errors cause zero
+  layout shift (CLS 0 at 1440/375/390/430).
+
 ## Open items (waiting on Noah)
 
-2. **Terms of Service text** → create `terms/index.html`, add it to `PAGES` in `vite.config.js`, set
+1. **Terms of Service text** → create `terms/index.html`, add it to `PAGES` in `vite.config.js`, set
    `terms: true` in `src/site-config.js`.
-3. **Instagram URL** → `instagram` in `src/site-config.js` (footer and Contact pick it up).
-4. **Real client testimonials** (name, business, town, and permission to publish). LAUNCH.md step 4
+2. **Real client testimonials** (name, business, town, and permission to publish). LAUNCH.md step 4
    has the two request texts.
-5. **Noah's LinkedIn URL** → `founders.noah.linkedin` in `src/site-config.js`.
-6. **C1:** resolved in code with the new K1 (see above). Give the push-in and hand-off one scroll on a
-   real phone and laptop.
+3. **Noah's LinkedIn URL** → `founders.noah.linkedin` in `src/site-config.js`.
+4. Optional: the Contact form's service checkbox still says "GEO (AI search)"; say if it should read
+   "Generative Engine Optimization (GEO)" like the card.
