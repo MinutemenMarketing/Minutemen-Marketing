@@ -277,5 +277,4 @@ touch on fast and slow 4G clean. Firefox still can't run on this machine.
 2. **Real client testimonials** (name, business, town, and permission to publish). LAUNCH.md step 4
    has the two request texts.
 3. **Noah's LinkedIn URL** → `founders.noah.linkedin` in `src/site-config.js`.
-4. Optional: the Contact form's service checkbox still says "GEO (AI search)"; say if it should read
-   "Generative Engine Optimization (GEO)" like the card.
+4. (done 2026-11-09) Contact checkboxes now match the service card titles.
