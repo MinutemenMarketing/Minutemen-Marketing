@@ -75,7 +75,7 @@ continuing.** Never lock or hijack the scroll. Every percentage lives in one con
 | Scroll | Picture | Text |
 |---|---|---|
 | 0–0.8% | Short HOLD on the battlefield (K1) | **Beat 1** in on load, fully visible 0–9%: "Minutemen Marketing." / "Ready at a minute's notice." |
-| 0.8–27% | C1 push-in to the soldier (K1 → K2), starting on the first wheel click (`CHOREO.c1Remap` runs through Kling's slow ease-in); the 27–30% hold stays on C1's own last frame | Beat 1 stays fully visible over the start of the push-in, fades out 9–12% |
+| 0.8–27% | C1, drawn in code (2026-11-08): the camera pushes in on the K1 painting to the featured soldier from the first wheel click, then painted smoke drifts right to left across the frame and K1 crossfades to K2 under its core (`CHOREO.pushIn`); the 27–30% hold is the K2 still | Beat 1 stays fully visible over the start of the push-in, fades out 9–12% |
 | 27–30% | HOLD on the soldier | — |
 | 30–41% | C2, the shot and the ball leaving the muzzle | — |
 | 41–56% | **C2b, FOLLOW THE BULLET** — side-tracking with the ball (start frame `c2-last.png`) | **Beat 2** in 43%, fully visible 46–55%, out 55–58%: "Response time as fast as a bullet." |
@@ -163,7 +163,17 @@ interface elements or borders.
   globe is ~80% of frame height and reads as a satellite render. Noah wants K4 v2: ~50% of frame
   height, clearly visible oil brushwork on the globe matching K1, a small round ball with a thin
   trail (no capsule). (Superseded by the approved K4 below.)
-- **APPROVED C1 (push-in): `assets/clips/c1-pushin.mp4`** (task `70a8541a-58c3-4697-a2e2-aaa4bbc0dec0`),
+- **C1 is code since 2026-11-08 (Noah: no more credits on C1).** `src/hero/stage.js` `k1Cam()` moves a
+  camera over the K1 still (cover framing → `FOCUS.k1Box`, his whole figure at 94% of the frame) on a
+  cubic with set start/end speeds (`CHOREO.pushIn.start` is tuned so the first wheel click moves the
+  frame as much as the old clip: per-pixel change 7.21 vs 7.24 at 1440×900), and draws the
+  high-resolution detail layer `k1d-1920/-1280/-m.webp` (right/lower K1, feathered left and top edges;
+  `scripts/k1-detail.cjs`) over it. `src/hero/smoke.js` builds a painted-smoke band once in code (K1's
+  smoke colours, lit from the upper left, wispy ends, opaque core); `smoke()` slides it across in two
+  depths and K1 crossfades to K2 under the core (≈ 2% of the scroll fully covered). No figure
+  parallax: K1 has no clean figure mask, and cutting one would cost credits or leave halos; the two
+  smoke depths carry the depth instead. The old Kling C1 below and its frame folders are retired.
+- **Retired C1 (push-in): `assets/clips/c1-pushin.mp4`** (task `70a8541a-58c3-4697-a2e2-aaa4bbc0dec0`),
   Kling 4.0, 6s, 72 credits, start `k1-cool`, end `k2.png`. Frames `public/hero/v1/c1/` (15fps, 92); the
   crop travels from K1's focus to K2's. **Known footage flaws (2026-11-08):** the end soldier is not
   K1's featured man: Kling fades a new figure in out of the smoke behind the line (frames 8–16) and
@@ -286,11 +296,11 @@ the Vite stack and pushes to `main`, both by Noah's explicit choice.
   approved 1280 frames, so C2b's matte ball and C2's gold flash are kept). Frames load **just ahead
   of the scroll position**: each frame knows where in the hero it is needed, and six workers fetch the
   nearest pending frames within a window (30% ahead on desktop, 18% on phones, 10% with Save-Data;
-  6% behind), every 4th frame of a clip first. At the top of the page a phone loads 38 files (K1 + the
-  first part of C1) instead of all 475. When adding or replacing a clip, regenerate every set. Clip frames start loading as soon as K1
+  6% behind), every 4th frame of a clip first. At the top of the page a phone loads K1, its detail layer
+  and K2, then C2 frames as the reader nears them. When adding or replacing a clip, regenerate every set. Clip frames start loading as soon as K1
   is in (not when the preloader lifts), and the queue takes every 4th frame, then every 2nd, before
   the in-betweens (2026-11-08: on slow 4G the frame on screen now stays within a few frames of the
-  scroll). The 1280 and 960 sets of C1, C2b and C3 repeat files 46/61/76 (24→15fps extraction);
+  scroll). The 1280 and 960 sets of C2b and C3 repeat files 46/61/76 (24→15fps extraction);
   `ASSETS.<clip>.dupes` skips them. A clip with nothing loaded yet stands in with its neighbouring
   clip's frame, never an unrelated still.
 - **Mobile edge-to-edge (2026-11-05):** the pinned stage and canvas are `100lvh` (largest viewport,

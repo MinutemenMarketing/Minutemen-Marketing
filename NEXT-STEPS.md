@@ -226,6 +226,16 @@ touch on fast and slow 4G clean. Firefox still can't run on this machine.
   wall, and the field morphs into K2's layout around 4s. C1 was then not generated. Details and task
   ID in CLAUDE.md; contact sheets in `qa/shots/c2v3-*.jpg` (git-ignored).
 
+- **C1 is now code (0 credits):** a scroll-driven push-in on the K1 painting itself (high-res detail
+  layer, so it stays sharp at ~2.3× on desktop), then a painted-smoke band drifts right to left in two
+  depths and K1 crossfades to K2 under it. No AI footage, so no figure fading in and no background
+  smoke. Beat 1 timing unchanged; the first wheel click moves the frame as much as before (measured
+  7.21 vs 7.24). Fully covered by smoke for ~2% of the scroll (about two wheel clicks). Figure/background
+  parallax was left out: K1 has no clean figure mask, and a cutout would cost credits or leave halos.
+  The 276 old C1 frame files are gone from `public/hero/v1`. Live: full hero pass clean (WebKit swipe
+  shows its usual scripted-scroll opacity jumps) and the collision check 56/56. Sheets:
+  `qa/shots/pushin-desktop.jpg`, `smoke-desktop.jpg`, `pushin-smoke-phone.jpg`.
+
 ## Open items (waiting on Noah)
 
 2. **Terms of Service text** → create `terms/index.html`, add it to `PAGES` in `vite.config.js`, set
@@ -234,6 +244,5 @@ touch on fast and slow 4G clean. Firefox still can't run on this machine.
 4. **Real client testimonials** (name, business, town, and permission to publish). LAUNCH.md step 4
    has the two request texts.
 5. **Noah's LinkedIn URL** → `founders.noah.linkedin` in `src/site-config.js`.
-6. **C1:** the K2-from-K1 rebuild failed in C2 (see above). Options: keep the current push-in
-   (it has the known pop-in and background smoke), or a bigger rebuild where C2/C2b/C3 also change so
-   no clip has to pull the man out of the rank.
+6. **C1:** resolved in code (see above). Worth one look on a real phone and laptop: the smoke wipe
+   is the only part of the hero no AI model or Noah has seen in motion yet.
