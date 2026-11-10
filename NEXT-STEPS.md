@@ -1,6 +1,6 @@
 # Next steps — minutemenmarketing.com
 
-Updated 2026-11-08, end of session. `CLAUDE.md` is the contract (hero spec, rules, every
+Updated 2026-11-10. `CLAUDE.md` is the contract (hero spec, rules, every
 approved asset with its Runway task ID); `DESIGN.md` is the approved four-page design. Read both first.
 
 **Runway credits: 1,280** (2026-11-08 late: smoke removal 60 within Noah's 150-credit cap; K1 edit 80 within Noah's 120-credit cap; earlier: 95 within Noah's 200-credit approval — C1 regeneration 94,
@@ -14,7 +14,31 @@ Playwright QA scripts (cross-browser run, mobile alignment audit, full hero pass
 
 ---
 
-## Done
+## Done 2026-11-10 (mobile and screen sizes)
+
+- **Phone hero, full-bleed smart pan (Noah's second call that day):** always full-screen, no bars;
+  the cover crop follows the soldier, pans along the musket to the muzzle as he fires, keeps the
+  ball and trail in view, then centres on the globe. Beat 1 sits high and fades out sooner. Sheets:
+  `qa/shots/2026-11-10-hero-390-fullbleed.jpg`, `qa/shots/2026-11-10-hero-430-fullbleed.jpg`
+  (before = the morning's zoomed-out band, after = full-bleed).
+- **Services on phones:** the hover-drawn accent showed as a floating segment (the "broken line"); on
+  touch and narrow screens it is the full top rule. Long words wrap inside the cards.
+- **Portfolio on phones:** phone-shaped windows (9:19.5) with each site's real mobile layout, unscaled.
+- **Beauty & Wellness double hero:** ours. Our loading screenshot showed through the live iframe on
+  overscroll; it is now hidden once the site is live. No change to the Beauty site.
+- **Screen matrix** (`qa/screen-matrix.mjs`): 15 sizes x 7 pages. It found one real bug (844x390:
+  beat 3 ran off screen into the progress line), fixed. Contact sheet:
+  `qa/shots/2026-11-10-screen-matrix.jpg`.
+
+## Open
+
+- Privacy Policy is a draft: Noah to review.
+- Testimonials and Noah's LinkedIn: waiting on Noah.
+- Phone hero: the ball is out of the crop for ~0.5% of the scroll right after the shot (C2b frames
+  ~6-15), because the source footage hides it in smoke and then at its right edge. Only a reframed
+  clip would change that (Runway credits, Noah's call).
+
+## Done (earlier)
 
 **Hero**
 - Runs start to finish on the approved footage and plays for everyone; reduced motion only drops the

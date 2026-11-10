@@ -270,6 +270,29 @@ Windows "Animation effects" off makes Chrome report reduced motion, which is why
 the still version.
 Note: the Claude desktop browser pane reports reduced motion — QA the motion path in a real browser.
 
+### QA scripts (`qa/`, run with Playwright)
+
+- `screen-matrix.mjs [baseUrl] [outDir] [--sizes 390x844,...]` (2026-11-10): every page at 15 sizes
+  (320x568, 360x800, 375x667, 390x844, 412x915, 430x932, 844x390, 768x1024, 820x1180, 1024x1366,
+  1280x720, 1440x900, 1920x1080, 2560x1440, 3440x1440). Fails on horizontal scroll, text off screen,
+  text cropped by its container or sticking out of its box, overlapping text, a hero canvas that does
+  not fill the screen, hero beats touching Skip / Scroll / the progress line, and portfolio windows of
+  the wrong shape. Saves a screenshot set per size for a contact sheet.
+- `hero-pass.mjs [baseUrl] [--collide-only]`: scroll runs (wheel, trackpad, touch, slow 4G) and the
+  collision check (hero text vs controls at every beat, 375-1920px).
+- `mobile-audit.mjs`, `cross-browser.mjs`, `verify-live.mjs`: see `qa/README.md`.
+
+### Portfolio windows (2026-11-10)
+
+Below 768px each client site shows in a phone-shaped window (9:19.5, dark bezel) with the site's real
+mobile layout: `src/portfolio.js` renders the iframe unscaled at the window's own size whenever the
+window is taller than wide, so it is crisp and scrolls inside. Phones load mobile screenshots for the
+loading still (`work-beauty-m-1170.webp`) and the Smiles scroll (`smiles-full-m-780.webp`). Tablets
+and desktops keep the laptop windows (1440x900 scaled). Once a live iframe has loaded, the loading
+screenshot is hidden (`.browser.is-live`): an iframe is transparent where the embedded page does not
+paint, so on iPhone overscroll the screenshot behind showed through as a second hero image in the
+Beauty & Wellness window. That was our bug, not the Beauty site's.
+
 ## The site after the hero
 
 **DESIGN SKILLS:** for everything after the hero (nav, services, process, work, contact, footer),
@@ -337,12 +360,26 @@ the Vite stack and pushes to `main`, both by Noah's explicit choice.
   scroll). The 1280 and 960 sets of C2b and C3 repeat files 46/61/76 (24→15fps extraction);
   `ASSETS.<clip>.dupes` skips them. A clip with nothing loaded yet stands in with its neighbouring
   clip's frame, never an unrelated still.
-- **Phone framing (2026-11-09, decided):** portrait screens show the real painting full-screen (cover
-  crop centred on the soldier, panning to the muzzle and the ball). The old fitted framing with a 3×3
-  "wash" above it shifted with every C2 frame and read as blurry moving clouds. **Noah declined the
-  9:16 Runway video expand** (quoted ≈816–924 credits): in a 9:16 expand the original picture is only a
-  band about a third of the screen tall, so the soldier would be smaller than in the cover crop and
-  everything above and below him newly invented. The static-K1-sky test option was removed.
+- **Phone framing (2026-11-10, Noah, decided): full-bleed smart pan.** Portrait screens (phones,
+  portrait tablets) always show the painting full-screen: a cover crop, never bars, a gradient fill or
+  anything above or below the image. The crop's centre follows the action like a camera operator,
+  set per scene in `CHOREO.phone` (image x, 0-1): the push-in ends and holds on the soldier
+  (`hold` 0.4, musket as far as the crop allows); over C2 it pans along the musket to the muzzle as
+  he fires, then rides with the ball (`c2` keys); over C2b it keeps the ball and its trail in view
+  with a little room ahead (`c2b` keys); C3 and the globe stay centred on the globe. Clip keys are
+  [clip time, x] joined by one monotone cubic curve (`track()` in `stage.js`), so the camera never
+  stops at a key, and each hand-off starts where the last scene ended. Wider screens see more of the
+  frame and keep their fixed points. A 390px phone sees about 26% of the painting's width, so there
+  are two moments the crop cannot hold the ball: in the source footage it is hidden in the smoke
+  (C2b frames ~6-12) and sits on the frame's right edge (~f15). Beat 1 sits high (`--hud-t`) and
+  fades out at 4% instead of 9% on portrait (`beats[1].outPortrait`); beat 2 sits below the ball and
+  beat 3 below the globe. History: the 2026-11-10 morning pass framed each scene as a zoomed-out band
+  on a static dark gradient; Noah found it too zoomed out with bars and replaced it with this. The
+  9:16 Runway expand stays declined (2026-11-09: ~816-924 credits, and the original picture would be
+  only a band a third of the screen tall).
+- **Short landscape phones (2026-11-10):** under 560px tall, `circleTarget` makes the globe 42% of
+  the height and sets it at 42% from the top, and beat 3 uses smaller type, so it fits between the
+  globe and the progress line.
 - **Mobile edge-to-edge (2026-11-05):** the pinned stage and canvas are `100lvh` (largest viewport,
   `100vh` fallback) on a navy ground, so collapsing/expanding the browser bar never shows a strip.
   Bottom-anchored controls lift by `--bar` (`100lvh - 100svh`) plus the safe-area inset;

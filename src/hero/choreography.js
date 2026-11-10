@@ -42,14 +42,16 @@ export const CHOREO = {
   // - fade: K1 -> K2 crossfade, both drawn at the matched place;
   // - wipe/smoke: a light painted-smoke band (strength `smoke`) drifts across, densest mid-crossfade,
   //   to soften the small differences in his face and musket.
-  // Portrait screens (phones, portrait tablets), 2026-11-10: each scene's frame. vw = share of the
-  // image width shown (zoomed out), maxH = most of the screen height the image may take, cy = where
-  // its centre sits (fraction of screen height), fx = the image point kept central. The band is
-  // feathered into a static dark gradient above and below; beat 1 sits in the top space.
+  // Portrait screens (phones, portrait tablets), 2026-11-10 (second pass, Noah): the painting always
+  // fills the screen (cover crop, no bars) and the crop follows the action like a camera operator.
+  // Each value is the image x (0-1) the crop centres on, as far as the crop allows; the clip tracks
+  // are [clip time, x] keys joined by one smooth curve (no stop at each key). Measured on the frames:
+  // his head ~0.37, muzzle 0.65, flash 0.72, ball 0.80 -> 0.91 over C2; in C2b the ball is at 0.91
+  // (f16), 0.57 (f24), 0.50 (f32 on). A 390x844 phone sees about 26% of the width.
   phone: {
-    k1: { vw: 0.62, maxH: 0.5, cy: 0.64, fx: 0.63 }, // the opening battlefield, beat 1 above it
-    soldier: { vw: 0.56, maxH: 0.56, cy: 0.52, fx: 0.47, fxFire: 0.74 }, // hold + firing: musket, flash, ball
-    bullet: { vw: 0.62, maxH: 0.56, cy: 0.48, fx: 0.5 }, // C2b: the ball and its trail with context
+    hold: 0.4, // end of the push-in and the hold: on the soldier, the musket as far as the crop allows
+    c2: [[0, 0.4], [0.1, 0.4], [0.42, 0.71], [0.66, 0.78], [1, 0.82]], // along the musket to the muzzle as he fires, then with the ball
+    c2b: [[0, 0.82], [0.07, 0.87], [0.17, 0.87], [0.26, 0.6], [0.36, 0.53], [1, 0.5]], // the ball and trail in view, a little room ahead
     globeW: 0.72, // the globe circle at most this share of the screen width (whole globe + margin)
   },
   pushIn: { push: 0.74, start: 0.84, end: 0.15, fade: [0.72, 0.9], wipe: [0.58, 1], smoke: 0.5 },
