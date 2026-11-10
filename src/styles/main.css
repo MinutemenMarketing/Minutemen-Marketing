@@ -2382,3 +2382,13 @@ html:not(.motion) .beat--1::before {
   }
 }
 
+/* Once a site is live in its window, its loading screenshot is hidden. It used to stay underneath the
+   iframe, so an overscroll bounce at the top of the embedded site (iPhone) showed our screenshot of
+   the same hero behind it: two hero images (2026-11-10). The window keeps a solid ground. */
+.browser.is-live .browser__shot,
+.browser.is-live .browser__scroll {
+  visibility: hidden;
+}
+.browser__view {
+  background: var(--paper);
+}
