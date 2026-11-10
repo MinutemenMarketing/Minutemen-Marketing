@@ -111,7 +111,7 @@ export function initHero({ scroller, nav, navH, reduced, returning, markSeen }) 
   // first paint stays the page's largest paint (LCP) on fast and slow devices alike.
 
   const mm = gsap.matchMedia();
-  mm.add({ desktop: '(min-width: 768px)', mobile: '(max-width: 767px)' }, (ctx) => {
+  mm.add({ desktop: '(min-width: 768px)', mobile: '(max-width: 767px)', portrait: '(max-aspect-ratio: 1/1)' }, (ctx) => {
     const length = ctx.conditions.desktop ? CHOREO.pin.desktop : CHOREO.pin.mobile;
     const state = { p: 0 };
     const tl = gsap.timeline({
@@ -146,7 +146,7 @@ export function initHero({ scroller, nav, navH, reduced, returning, markSeen }) 
 
     // Each beat: its words rise into place with a slight stagger; the whole line fades out.
     const b = CHOREO.beats;
-    tl.to('[data-beat="1"]', { ...HIDDEN, duration: fade }, b[1].out);
+    tl.to('[data-beat="1"]', { ...HIDDEN, duration: fade }, ctx.conditions.portrait ? b[1].outPortrait : b[1].out);
     for (const n of [2, 3]) {
       const el = `[data-beat="${n}"]`;
       const ws = words(n);

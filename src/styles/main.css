@@ -2307,3 +2307,25 @@ html:not(.motion) .beat--1::before {
   font-size: 0.875rem;
   color: var(--ink-2);
 }
+
+/* Portrait screens (2026-11-10): the hero painting sits as a band on a dark backdrop. Beat 1 sits in
+   the top space, light on dark; the Scroll cue reads on the dark bottom space. */
+@media (max-aspect-ratio: 1/1) {
+  .motion .beat--1 {
+    top: var(--hud-t);
+    color: var(--on-navy);
+  }
+  .motion .beat--1::before,
+  .motion .beat--2::before {
+    background: radial-gradient(closest-side, rgba(2, 18, 40, 0.55), rgba(2, 18, 40, 0.2) 55%, transparent);
+  }
+  .motion .beat--2 {
+    color: var(--on-navy);
+  }
+  .motion .hero__cue {
+    color: var(--on-navy);
+  }
+  .motion .hero__cue::after {
+    background: linear-gradient(var(--on-navy), transparent);
+  }
+}

@@ -12,9 +12,6 @@ const lerp = (a, b, t) => a + (b - a) * t;
 const PAPER = '#F7F4EC';
 const NAVY = [3, 34, 73];
 const PAPER_RGB = [247, 244, 236];
-// On portrait screens C2 drifts from the soldier toward this point so muzzle and ball stay visible.
-// Weighted toward the ball: on a 375px phone the visible slice is only ~26% of the frame wide.
-const NARROW_FLIGHT_X = FOCUS.c2Muzzle.x * 0.4 + FOCUS.c2Ball.x * 0.6;
 
 // Piecewise-linear map through [[in, out], …] points.
 function remap(points, t) {
@@ -203,12 +200,14 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
   // framing exactly (f 1, FOCUS.k1K2Frame), zooming toward him. On portrait screens that end rect is
   // the fitted one, with the same soft wash above as the hold. K2 crossfades in drawn at the same
   // matched place (k2a), so the two read as one picture moving together.
-  function k1Rect(f, fit) {
+  function k1Rect(f, fit, fit0) {
     const img = a.k1;
     const A = img.naturalWidth / img.naturalHeight;
     const M = FOCUS.k1K2Frame;
-    const s0 = heldRect(img, FOCUS.k1Soldier.x, FOCUS.k1Soldier.y, 0);
-    const r2 = heldRect(a.k2 || img, FOCUS.k2Soldier.x, FOCUS.k2Soldier.y, fit);
+    const PH = CHOREO.phone;
+    // Phones: the opening and the hold use their own zoomed-out frames (CHOREO.phone).
+    const s0 = fit0 ? phoneRect(img, PH.k1.fx, FOCUS.k1Soldier.y, fit0) : heldRect(img, FOCUS.k1Soldier.x, FOCUS.k1Soldier.y, 0);
+    const r2 = fit ? phoneRect(a.k2 || img, PH.soldier.fx, FOCUS.k2Soldier.y, fit) : heldRect(a.k2 || img, FOCUS.k2Soldier.x, FOCUS.k2Soldier.y, 0);
     const ew = r2.w / M.w;
     const e = { x: r2.x - M.x0 * ew, y: r2.y - (M.y0 * ew) / A, w: ew };
     const W = Math.exp(lerp(Math.log(s0.w), Math.log(e.w), f));
@@ -235,10 +234,10 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     c.drawImage(img, sx, sy, ((x1 - x0) / dw) * iw, ((y1 - y0) / dh) * ih, x0, y0, x1 - x0, y1 - y0);
   }
   const covers = (r) => r.x <= 0.5 && r.y <= 0.5 && r.x + r.w >= w - 0.5 && r.y + r.h >= h - 0.5;
-  function k1Cam(f, k2a, fit) {
+  function k1Cam(f, k2a, fit, fit0) {
     const img = a.k1;
     if (!img) return;
-    const r = k1Rect(f, fit);
+    const r = k1Rect(f, fit, fit0);
     const D = ASSETS.k1Detail;
     // The K1 still, then the high-resolution detail layer over it at the same place (its left and
     // top edges are feathered, so the two read as one picture).
@@ -255,7 +254,7 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
       const v = { x: lerp(r.x, r2.x, kk), y: lerp(r.y, r2.y, kk), w: lerp(r.w, r2.w, kk), h: lerp(r.h, r2.h, kk) };
       if (covers(v)) drawK1(ctx);
       else {
-        wash(img, 1);
+        backdrop(1);
         const clipped = (c) => {
           c.save();
           c.beginPath();
@@ -264,7 +263,7 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
           drawK1(c);
           c.restore();
         };
-        feathered(clipped, v.x, v.y, v.w, v.h, 0.1, 1);
+        feathered(clipped, v.x, v.y, v.w, v.h, FEATHER, 1);
       }
     }
     if (k2a > 0 && a.k2) {
@@ -273,8 +272,8 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
         drawVisible(ctx, a.k2, r2.x, r2.y, r2.w, r2.h);
         ctx.globalAlpha = 1;
       } else {
-        wash(a.k2, k2a);
-        feathered(a.k2, r2.x, r2.y, r2.w, r2.h, 0.1, k2a);
+        backdrop(k2a);
+        feathered(a.k2, r2.x, r2.y, r2.w, r2.h, FEATHER, k2a);
       }
     }
   }
@@ -337,6 +336,39 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     const k = ease(fit);
     return { x: lerp(cx, fx0, k), y: lerp(cy, fy0, k), w: lerp(cw, fw, k), h: lerp(chh, fh, k) };
   }
+  // Phones and portrait tablets (2026-11-10): each scene shows the painting zoomed OUT as a band, at
+  // the frame CHOREO.phone gives it, on a static dark backdrop. `fit` is [vw, maxH, cy, k]: the share
+  // of the image width to show, the most screen height the image may take, where its centre sits
+  // (fraction of screen height), and k = how far from the cover crop (0) to that band (1).
+  function phoneRect(img, fx, fy, fit) {
+    const c = heldRect(img, fx, fy, 0);
+    if (!fit) return c;
+    const [vw, maxH, cy, k] = fit;
+    const iw = img.naturalWidth || img.width;
+    const ih = img.naturalHeight || img.height;
+    const A = iw / ih;
+    const W = Math.min(w / vw, maxH * h * A);
+    const H = W / A;
+    const x = W >= w ? Math.min(0, Math.max(w - W, w / 2 - fx * W)) : (w - W) / 2;
+    const y = cy * h - H / 2;
+    return { x: lerp(c.x, x, k), y: lerp(c.y, y, k), w: lerp(c.w, W, k), h: lerp(c.h, H, k) };
+  }
+  // The space above and below the band: one dark painted gradient, the same on every frame (the old
+  // fill was the current frame blurred, which shifted with every frame). The band's top and bottom
+  // edges are feathered into it.
+  const FEATHER = 0.16;
+  function backdrop(alpha) {
+    if (alpha <= 0) return;
+    const g = ctx.createLinearGradient(0, 0, 0, h);
+    g.addColorStop(0, '#06142a');
+    g.addColorStop(0.45, '#1b2840');
+    g.addColorStop(0.62, '#202b3e');
+    g.addColorStop(1, '#0a1526');
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+    ctx.globalAlpha = 1;
+  }
   // The space around a fitted frame: only the sky and treeline (top 45% of the image), averaged to
   // 3x3 and stretched back up: a smooth misty wash with no ghost of the figure in it. Two steps
   // (image -> 48x27 -> 3x3) so the colours are averaged, not point-sampled.
@@ -359,9 +391,10 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
   function framed(img, alpha, fx, fy, z, fit) {
     if (!img || alpha <= 0) return;
     if (!fit) return cover(img, alpha, fx, fy, z);
-    const r = heldRect(img, fx, fy, fit);
-    wash(img, alpha);
-    feathered(img, r.x, r.y, r.w, r.h, 0.1, alpha);
+    const r = phoneRect(img, fx, fy, fit);
+    if (covers(r)) return cover(img, alpha, fx, fy, z);
+    backdrop(alpha);
+    feathered(img, r.x, r.y, r.w, r.h, FEATHER, alpha);
   }
 
   // A small, soft copy of the globe scene with the globe itself painted out (sky and clouds only),
@@ -416,19 +449,26 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
   // Each clip opens on the previous clip's last frame and dissolves over its first few frames.
   function layers() {
     const ops = [];
-    const narrow = w / h < 1;
-    // Phones show the painting full-screen (cover) in every scene, never a fitted frame with a fill
-    // above it (Noah, 2026-11-09: kept over a 9:16 Runway expand). The fitted path stays in heldRect()
-    // / framed() but is switched off here.
-    const fitAt = () => 0;
-    const k1 = ['img', 'k1', 1, FOCUS.k1Soldier.x, FOCUS.k1Soldier.y, 1];
-    const c2Fx = (t) => (narrow ? lerp(FOCUS.k2Soldier.x, NARROW_FLIGHT_X, ease(t)) : FOCUS.k2Soldier.x);
+    // Portrait screens (phones, portrait tablets): every scene has its own zoomed-out frame from
+    // CHOREO.phone, as a feathered band on a static dark backdrop (2026-11-10; the full-screen cover
+    // crop showed about a quarter of the painting's width and cut off the musket, flash and ball).
+    const portrait = w / h < 1;
+    const PH = CHOREO.phone;
+    const pf = (fr, k = 1) => (portrait ? [fr.vw, fr.maxH, fr.cy, k] : 0);
+    const mix = (a0, b0, t) => [lerp(a0.vw, b0.vw, t), lerp(a0.maxH, b0.maxH, t), lerp(a0.cy, b0.cy, t)];
+    const k1 = portrait ? ['k1cam', 0, 0, pf(PH.soldier), pf(PH.k1)] : ['img', 'k1', 1, FOCUS.k1Soldier.x, FOCUS.k1Soldier.y, 1];
+    const sx = portrait ? PH.soldier.fx : FOCUS.k2Soldier.x;
+    // C2: on portrait screens the frame pans from the soldier to the muzzle and the ball as he fires.
+    const c2Fx = (t) => (portrait ? lerp(PH.soldier.fx, PH.soldier.fxFire, ease(t)) : FOCUS.k2Soldier.x);
     // C2b opens on C2's crop (so the join dissolve lines up) and drifts to the ball as the camera swings.
     const swing = (t) => ease(clamp01(t / 0.25));
-    const c2bFx = (t) => lerp(c2Fx(1), FOCUS.c2bBall.x, swing(t));
+    const c2bFx = (t) => lerp(c2Fx(1), portrait ? PH.bullet.fx : FOCUS.c2bBall.x, swing(t));
     const c2bFy = (t) => lerp(FOCUS.k2Soldier.y, FOCUS.c2bBall.y, swing(t));
-    // K2 as the hold and C2's opening frame draw it: framed, fitted on portrait screens.
-    const c1Last = () => ['still', 'k2', 1, FOCUS.k2Soldier.x, FOCUS.k2Soldier.y, 1, fitAt(1)];
+    // C2b on portrait: from the soldier's frame to the bullet's, then (last 18%) out to full screen, so
+    // C3's clouds start full-screen without a jump.
+    const c2bFit = (t) => (portrait ? [...mix(PH.soldier, PH.bullet, swing(t)), 1 - ease(clamp01((t - 0.82) / 0.18))] : 0);
+    // K2 as the hold and C2's opening frame draw it.
+    const c1Last = () => ['still', 'k2', 1, sx, FOCUS.k2Soldier.y, 1, pf(PH.soldier)];
     const globeFrame = () => (ASSETS.c4 ? ['globe', 'c4', 1, 1] : ['globe', 'k4', 1, 1]);
 
     if (p < S.c1[0]) {
@@ -442,7 +482,7 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
       const [m0, m1] = [P.start, P.end];
       const f = (m0 + m1 - 2) * q ** 3 + (3 - 2 * m0 - m1) * q ** 2 + m0 * q;
       const x = ease(local(P.fade, t)); // K1 -> K2, same man in the same place
-      ops.push(x < 1 ? ['k1cam', f, x, fitAt(1)] : c1Last());
+      ops.push(x < 1 ? ['k1cam', f, x, pf(PH.soldier), pf(PH.k1)] : c1Last());
       const u = local(P.wipe, t); // light smoke drifting across, densest mid-crossfade
       if (u > 0 && u < 1) ops.push(['smoke', u, P.smoke]);
     } else if (p < S.c2[0]) {
@@ -452,12 +492,12 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
       const t = local(S.c2, p);
       const d = dissolve('c2', t);
       if (d < 1) ops.push(c1Last());
-      ops.push(['seq', 'c2', t, d, c2Fx(t), FOCUS.k2Soldier.y, 1, fitAt(1)]);
+      ops.push(['seq', 'c2', t, d, c2Fx(t), FOCUS.k2Soldier.y, 1, pf(PH.soldier)]);
     } else if (p < S.c3[0]) {
       const t = local(S.c2b, p);
       const d = dissolve('c2b', t);
-      if (d < 1) ops.push(['seq', 'c2', 1, 1, c2Fx(1), FOCUS.k2Soldier.y, 1, fitAt(1)]);
-      ops.push(['seq', 'c2b', t, d, c2bFx(t), c2bFy(t), 1, fitAt(1 - swing(t))]);
+      if (d < 1) ops.push(['seq', 'c2', 1, 1, c2Fx(1), FOCUS.k2Soldier.y, 1, pf(PH.soldier)]);
+      ops.push(['seq', 'c2b', t, d, c2bFx(t), c2bFy(t), 1, c2bFit(t)]);
     } else if (p < S.k4Hold[0]) {
       const t = local(S.c3, p);
       if (ASSETS.c3) {
@@ -508,7 +548,7 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
         ctx.fillStyle = PAPER;
         ctx.fillRect(0, 0, w, h);
       } else if (kind === 'k1cam') {
-        k1Cam(rest[0], rest[1], rest[2]);
+        k1Cam(rest[0], rest[1], rest[2], rest[3]);
       } else if (kind === 'smoke') {
         smoke(rest[0], rest[1]);
       } else if (kind === 'still') {

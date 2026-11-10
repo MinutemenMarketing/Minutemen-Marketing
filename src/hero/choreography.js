@@ -42,6 +42,16 @@ export const CHOREO = {
   // - fade: K1 -> K2 crossfade, both drawn at the matched place;
   // - wipe/smoke: a light painted-smoke band (strength `smoke`) drifts across, densest mid-crossfade,
   //   to soften the small differences in his face and musket.
+  // Portrait screens (phones, portrait tablets), 2026-11-10: each scene's frame. vw = share of the
+  // image width shown (zoomed out), maxH = most of the screen height the image may take, cy = where
+  // its centre sits (fraction of screen height), fx = the image point kept central. The band is
+  // feathered into a static dark gradient above and below; beat 1 sits in the top space.
+  phone: {
+    k1: { vw: 0.62, maxH: 0.5, cy: 0.64, fx: 0.63 }, // the opening battlefield, beat 1 above it
+    soldier: { vw: 0.56, maxH: 0.56, cy: 0.52, fx: 0.47, fxFire: 0.74 }, // hold + firing: musket, flash, ball
+    bullet: { vw: 0.62, maxH: 0.56, cy: 0.48, fx: 0.5 }, // C2b: the ball and its trail with context
+    globeW: 0.72, // the globe circle at most this share of the screen width (whole globe + margin)
+  },
   pushIn: { push: 0.74, start: 0.84, end: 0.15, fade: [0.72, 0.9], wipe: [0.58, 1], smoke: 0.5 },
 
   // C3 remap: its middle (about 2.2–4.4s of 8s, 0.274–0.547) is almost all white cloud, so the
@@ -58,7 +68,7 @@ export const CHOREO = {
   // Each beat is fully visible from `in + textFade` to `out` (Noah: beats 1–2 at least 8%, beat 3 at
   // least 12% and fading only as the globe turns navy).
   beats: {
-    1: { in: 'load', out: 9 }, // "Minutemen Marketing. Ready at a minute's notice." — 0–9% (9%)
+    1: { in: 'load', out: 9, outPortrait: 4 }, // "Minutemen Marketing. Ready at a minute's notice." — 0–9% (9%); portrait screens 0–4% (it sits in the top space, then gets out of the push-in's way)
     2: { in: 43, out: 55 }, // "Response time as fast as a bullet." — 46–55% (9%), over C2b
     3: { in: 69, out: 85 }, // "With the right website…" — 72–85% (13%), out as toBrand begins
   },
@@ -114,6 +124,6 @@ export const FOCUS = {
 // Shared circle target (CLAUDE.md): centred, diameter = 50% of frame height,
 // capped on narrow screens so the globe and ring never crop.
 export const circleTarget = (w, h) => {
-  const d = Math.min(h * 0.5, w * 0.82);
+  const d = Math.min(h * 0.5, w * CHOREO.phone.globeW);
   return { x: w / 2, y: h / 2, d };
 };
