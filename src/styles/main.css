@@ -2392,3 +2392,11 @@ html:not(.motion) .beat--1::before {
 .browser__view {
   background: var(--paper);
 }
+
+/* Short landscape screens (phone on its side): beat 3 in two lines below the smaller, higher globe. */
+@media (max-height: 560px) and (orientation: landscape) {
+  .motion .beat--3 .beat__title {
+    max-width: 34ch;
+    font-size: clamp(1.125rem, 2.6vw, 1.625rem);
+  }
+}

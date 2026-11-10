@@ -124,6 +124,9 @@ export const FOCUS = {
 // Shared circle target (CLAUDE.md): centred, diameter = 50% of frame height,
 // capped on narrow screens so the globe and ring never crop.
 export const circleTarget = (w, h) => {
-  const d = Math.min(h * 0.5, w * CHOREO.phone.globeW);
-  return { x: w / 2, y: h / 2, d };
+  // Short landscape screens (a phone on its side, 2026-11-10): a little smaller and higher, so beat 3
+  // fits below the globe above the progress line.
+  const short = h < 560 && w > h;
+  const d = Math.min(h * (short ? 0.42 : 0.5), w * CHOREO.phone.globeW);
+  return { x: w / 2, y: short ? h * 0.42 : h / 2, d };
 };
