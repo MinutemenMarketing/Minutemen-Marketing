@@ -14,6 +14,7 @@ const PAGES = {
   portfolio: { file: 'portfolio/index.html', path: '/portfolio' },
   contact: { file: 'contact/index.html', path: '/contact' },
   terms: { file: 'terms/index.html', path: '/terms' },
+  privacy: { file: 'privacy/index.html', path: '/privacy' },
   notFound: { file: '404.html', path: '/404' }, // Vercel serves it for unknown addresses
 };
 
@@ -155,7 +156,7 @@ function pages() {
         let out = html
           .replace('<!-- @head -->', head)
           .replace('<!-- @nav -->', mark(read('nav')))
-          .replace('<!-- @footer -->', mark(read('footer')).replace('<!-- @footer-contact -->', footerContactHtml()).replace('<!-- @terms -->', SITE.terms ? ' · <a href="/terms">Terms of Service</a>' : ''))
+          .replace('<!-- @footer -->', mark(read('footer')).replace('<!-- @footer-contact -->', footerContactHtml()).replace('<!-- @terms -->', (SITE.terms ? ' · <a href="/terms">Terms of Service</a>' : '') + ' · <a href="/privacy">Privacy Policy</a>'))
           .replace('<dl class="details" data-details-list></dl>', `<dl class="details" data-details-list>${detailsHtml()}</dl>`);
         out = out.replace(/<!-- @direct -->/g, directHtml());
         out = splitWordsHtml(out)

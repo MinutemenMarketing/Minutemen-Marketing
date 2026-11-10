@@ -2230,14 +2230,16 @@ html:not(.motion) .beat--1::before {
 }
 .legal__toc ol {
   display: grid;
-  gap: 2px;
+  gap: 0;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 .legal__toc a {
-  display: block;
-  padding: 7px 0;
+  display: flex;
+  align-items: center;
+  min-height: 44px; /* tap target */
+  padding: 4px 0;
   font: 400 0.9375rem/1.35 var(--sans);
   color: var(--ink);
   text-decoration: none;
@@ -2280,4 +2282,27 @@ html:not(.motion) .beat--1::before {
   .legal__body {
     font-size: 1rem;
   }
+}
+
+/* Privacy: one column, no contents list. */
+@media (min-width: 1024px) {
+  .legal--single {
+    grid-template-columns: minmax(0, 46rem);
+  }
+}
+.legal__body ul {
+  display: grid;
+  gap: 0.3em;
+  margin: 0;
+  padding-left: 1.2em;
+}
+.legal__body a,
+.form__privacy a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.form__privacy {
+  grid-column: 1 / -1;
+  font-size: 0.875rem;
+  color: var(--ink-2);
 }
