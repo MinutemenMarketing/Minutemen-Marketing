@@ -38,7 +38,7 @@ check('Globe line text', home.beat3 === 'With the right marketing, you can reach
 check('Globe line: only the phrase bold', home.strong === 'reach an audience around the world.' && +home.wReg < 600 && +home.wBold >= 700, `regular ${home.wReg}, bold ${home.wBold}`);
 check('Home title', home.title === 'Minutemen Marketing', home.title);
 const want = [
-  ['Website Design & Development', 'A custom site built to fit your brand. Our websites are mobile friendly and include maintenance and updates whenever you need.'],
+  ['Website Design & Development', 'A custom site built to fit your brand. Our websites are mobile friendly and include ongoing maintenance and updates.'],
   ['Social Media Management', 'We will create and manage content that keeps your channels active and optimizes reach.'],
   ['Search Engine Optimization (SEO)', 'Helps customers find you when they search for what you offer.'],
   ['Generative Engine Optimization (GEO)', 'Content structured so AI search tools understand what you do and surface it in answers.'],
