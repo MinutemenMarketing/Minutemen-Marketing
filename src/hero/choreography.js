@@ -42,9 +42,6 @@ export const CHOREO = {
   // - fade: K1 -> K2 crossfade, both drawn at the matched place;
   // - wipe/smoke: a light painted-smoke band (strength `smoke`) drifts across, densest mid-crossfade,
   //   to soften the small differences in his face and musket.
-  // Phones: 'cover' (the real painting full-screen, centred on the soldier and the action; the far end
-  // of the musket may crop) or 'sky' (his whole figure fitted, a static K1 sky above). 2026-11-09.
-  phoneFill: 'cover',
   pushIn: { push: 0.74, start: 0.84, end: 0.15, fade: [0.72, 0.9], wipe: [0.58, 1], smoke: 0.5 },
 
   // C3 remap: its middle (about 2.2–4.4s of 8s, 0.274–0.547) is almost all white cloud, so the
@@ -93,7 +90,6 @@ export const ASSETS = {
 // Where things sit inside each still, as fractions of the image (measured from the files).
 export const FOCUS = {
   k1Soldier: { x: 0.63, y: 0.5 }, // featured soldier in k1-v3 (the opening framing centres on him)
-  k1Sky: { x0: 0.38, x1: 0.9, y0: 0, y1: 0.3 }, // K1's sky and treeline, for the phone 'sky' fill
   k1Man: { x: 0.634, y: 0.6 }, // his centre in k1-v3: the point the push-in zooms toward
   // The region of k1-v3 that is K2's whole frame: the same man at the same place and size. Fitted
   // 2026-11-08 by a scale + offset search (normalised cross-correlation on his head and torso, 0.62):

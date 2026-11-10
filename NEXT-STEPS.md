@@ -299,7 +299,14 @@ touch on fast and slow 4G clean. Firefox still can't run on this machine.
   to the muzzle and the ball. A static K1-sky alternative (`?fill=sky`) was compared at 390px and
   looked worse (soft, upscaled sky with a seam). Sheet: `qa/shots/phone-fill-compare.jpg`.
 
-### Quote, not spent: true 9:16 phone versions (Runway video expand, 28 credits per source second)
+### Declined 2026-11-09: true 9:16 phone versions (Runway video expand)
+
+**Decision (Noah): keep the cover crop, no credits spent.** Reason: a 9:16 expand turns the 16:9
+picture into a band about a third of the screen tall, so the soldier would be smaller than in today's
+cover crop, with everything above and below him newly painted. The quote stays below for reference.
+The `?fill=sky` comparison option was test code and is removed.
+
+#### The quote (28 credits per source second)
 
 | Asset | Length | Credits |
 |---|---|---|

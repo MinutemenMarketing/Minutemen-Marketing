@@ -340,26 +340,7 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
   // The space around a fitted frame: only the sky and treeline (top 45% of the image), averaged to
   // 3x3 and stretched back up: a smooth misty wash with no ghost of the figure in it. Two steps
   // (image -> 48x27 -> 3x3) so the colours are averaged, not point-sampled.
-  // Phones (2026-11-09): 'cover' fills the screen with the real painting (no fitted frame, so no fill);
-  // 'sky' keeps the fitted frame with a static, sharp crop of K1's sky above it. The old fill was the
-  // wash below: the top of the current frame averaged to 3x3 and stretched, which shifted with every
-  // C2 frame and read as blurry moving clouds.
-  const fillMode = new URLSearchParams(location.search).get('fill') || CHOREO.phoneFill;
-  function k1SkyFill(alpha) {
-    const img = a.k1;
-    if (!img) return;
-    const iw = img.naturalWidth;
-    const ih = img.naturalHeight;
-    const S = FOCUS.k1Sky; // sky above the line and the treeline, around the soldier
-    const sw = (S.x1 - S.x0) * iw;
-    const sh = (S.y1 - S.y0) * ih;
-    const sc = Math.max(w / sw, h / sh);
-    ctx.globalAlpha = alpha;
-    ctx.drawImage(img, S.x0 * iw, S.y0 * ih, sw, sh, (w - sw * sc) / 2, 0, sw * sc, sh * sc);
-    ctx.globalAlpha = 1;
-  }
   function wash(img, alpha) {
-    if (fillMode === 'sky') return k1SkyFill(alpha);
     const iw = img.naturalWidth || img.width;
     const ih = img.naturalHeight || img.height;
     const mx = midCopy.getContext('2d');
@@ -436,11 +417,10 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
   function layers() {
     const ops = [];
     const narrow = w / h < 1;
-    // Portrait / narrow screens: fit his whole figure and musket from late in the push-in through
-    // the shot (0 = normal full-screen crop, 1 = fit). Landscape screens never need it.
-    const portrait = w / h < 1.3;
-    // 'cover': phones see the painting full-screen (no fitted frame); 'sky': fitted, static sky above.
-    const fitAt = (v) => (portrait && fillMode !== 'cover' ? v : 0);
+    // Phones show the painting full-screen (cover) in every scene, never a fitted frame with a fill
+    // above it (Noah, 2026-11-09: kept over a 9:16 Runway expand). The fitted path stays in heldRect()
+    // / framed() but is switched off here.
+    const fitAt = () => 0;
     const k1 = ['img', 'k1', 1, FOCUS.k1Soldier.x, FOCUS.k1Soldier.y, 1];
     const c2Fx = (t) => (narrow ? lerp(FOCUS.k2Soldier.x, NARROW_FLIGHT_X, ease(t)) : FOCUS.k2Soldier.x);
     // C2b opens on C2's crop (so the join dissolve lines up) and drifts to the ball as the camera swings.
