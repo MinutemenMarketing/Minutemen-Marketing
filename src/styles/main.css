@@ -2295,6 +2295,7 @@ html:not(.motion) .beat--1::before {
   gap: 0.3em;
   margin: 0;
   padding-left: 1.2em;
+  list-style: disc;
 }
 .legal__body a,
 .form__privacy a {

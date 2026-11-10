@@ -328,10 +328,18 @@ phone tier in `choreography.js` with its own FOCUS coordinates. Trade-off: in a 
 original 16:9 picture becomes a band about a third of the screen tall, so the soldier is smaller than
 in today's cover crop; everything above and below him is newly painted.
 
+- **Terms:** `/terms` built from the Hosting, Maintenance & Support Terms PDF (title, effective date,
+  contents I–XXI + Client Acknowledgment, Download PDF; text checked word for word with pdf.js: 2,099
+  words, 0 differences). Footer 'Terms of Service' link on. PDF at `public/legal/`.
+- **Service card:** Website Design & Development now says 'include ongoing maintenance and updates.'
+- **Privacy policy draft** at `/privacy` (footer link beside Terms; a note under the Contact form).
+- Both pages in the sitemap; checked at 1440 and 375px (no horizontal scroll, 44px tap targets,
+  contents links land under the nav); Contact form still zero layout shift.
+
 ## Open items (waiting on Noah)
 
-1. **Terms of Service text** → create `terms/index.html`, add it to `PAGES` in `vite.config.js`, set
-   `terms: true` in `src/site-config.js`.
+1. **Review the Privacy policy draft** at /privacy; once approved, remove 'Draft' from its date line
+   (`privacy/index.html`).
 2. **Real client testimonials** (name, business, town, and permission to publish). LAUNCH.md step 4
    has the two request texts.
 3. **Noah's LinkedIn URL** → `founders.noah.linkedin` in `src/site-config.js`.
