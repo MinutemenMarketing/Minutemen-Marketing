@@ -7,9 +7,8 @@ export const SITE = {
   otherEmail: '', // TODO(client)
   phone: '(631) 882-8022', // shown as written; links as tel:+16318828022
   instagram: 'https://www.instagram.com/minutemenmarketing/', // footer and Contact
-  // Terms of Service: false until Noah sends the text. Set true (and add terms/index.html + the page
-  // to PAGES in vite.config.js) to show the footer link to /terms.
-  terms: false, // TODO(client): Terms of Service text
+  // Terms (/terms, from public/legal/…terms.pdf, 2026-11-09): shows the footer link.
+  terms: true,
   linkedin: 'https://www.linkedin.com/company/minutemen-marketing', // company page (footer, Contact)
   // Founder LinkedIn profiles: a small icon link on each founder card; empty = hidden.
   founders: {

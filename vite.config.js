@@ -13,6 +13,7 @@ const PAGES = {
   about: { file: 'about/index.html', path: '/about' },
   portfolio: { file: 'portfolio/index.html', path: '/portfolio' },
   contact: { file: 'contact/index.html', path: '/contact' },
+  terms: { file: 'terms/index.html', path: '/terms' },
   notFound: { file: '404.html', path: '/404' }, // Vercel serves it for unknown addresses
 };
 
