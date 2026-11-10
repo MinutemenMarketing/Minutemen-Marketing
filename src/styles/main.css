@@ -2329,3 +2329,18 @@ html:not(.motion) .beat--1::before {
     background: linear-gradient(var(--on-navy), transparent);
   }
 }
+
+/* Service cards on phones and touch screens (2026-11-10): the hover-drawn ink rule showed as a short
+   segment floating on the card's top edge (no hover to draw it across), which read as a broken line.
+   There it is simply the full top rule. Long words wrap inside the card instead of pushing out. */
+@media (hover: none), (max-width: 767px) {
+  .card::before,
+  .card:hover::before {
+    transform: none;
+  }
+}
+.card__h,
+.card p {
+  overflow-wrap: break-word;
+  min-width: 0;
+}
