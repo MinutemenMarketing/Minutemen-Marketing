@@ -56,7 +56,9 @@ function mount(win) {
   // high-density screens) keep the 1440px desktop view scaled to fit.
   const fit = () => {
     const W = view.clientWidth;
-    const native = W >= MIN_NATIVE;
+    // Phones show a phone-shaped window (taller than wide): the site renders there unscaled at the
+    // window's own size, which is its real mobile layout at full crispness (2026-11-10).
+    const native = W >= MIN_NATIVE || view.clientHeight > view.clientWidth;
     frame.width = native ? W : DESKTOP.w;
     frame.height = native ? view.clientHeight : DESKTOP.h;
     view.classList.toggle('is-native', native);
