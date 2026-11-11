@@ -3,7 +3,7 @@
 // Checks per size and page: no horizontal scroll; no text cropped by its container or pushed off
 // screen; no two text blocks overlapping; on Home the hero canvas fills the screen and the hero text
 // stays clear of the Skip button, Scroll cue and progress line at four points; on Portfolio the
-// windows have the right shape (phone 9:19.5 below 768px, laptop 16:10 above). Saves screenshots for a
+// windows have the right shape (phone 9:16 below 768px, laptop 16:10 above). Saves screenshots for a
 // contact sheet (hero, soldier, services, about, portfolio window, contact) per size.
 import { chromium } from 'playwright';
 import fs from 'node:fs';
@@ -128,7 +128,7 @@ for (const [w, h] of SIZES) {
       await win.scrollIntoViewIfNeeded();
       await p.waitForTimeout(5000);
       const shape = await p.evaluate(() => [...document.querySelectorAll('.browser__view')].map((v) => +(v.clientHeight / v.clientWidth).toFixed(3)));
-      const want = w < 768 ? 19.5 / 9 : 900 / 1440;
+      const want = w < 768 ? 16 / 9 : 900 / 1440;
       if (shape.some((r) => Math.abs(r - want) > 0.02)) lines.push(`FAIL portfolio window shape ${shape.join(', ')} (want ${want.toFixed(3)})`);
       await p.screenshot({ path: `${OUT}/${tag}-5-portfolio.png` });
     }

@@ -282,16 +282,23 @@ Note: the Claude desktop browser pane reports reduced motion — QA the motion p
   collision check (hero text vs controls at every beat, 375-1920px).
 - `mobile-audit.mjs`, `cross-browser.mjs`, `verify-live.mjs`: see `qa/README.md`.
 
-### Portfolio windows (2026-11-10)
+### Portfolio windows (phones 2026-11-11)
 
-Below 768px each client site shows in a phone-shaped window (9:19.5, dark bezel) with the site's real
-mobile layout: `src/portfolio.js` renders the iframe unscaled at the window's own size whenever the
-window is taller than wide, so it is crisp and scrolls inside. Phones load mobile screenshots for the
+Below 768px each client site shows in a small phone-shaped window (9:16, 6px dark bezel, rounded
+corners), scrollable inside. The client name, the window and "Open Live Website" fit on one screen
+together (Noah, 2026-11-11): the window's screen is at most 62% of the small viewport (`svh`) less
+its bar and bezel, and never taller than what is left after the nav, that project's name block and
+button (`--chrome-h`, measured by `src/portfolio.js`). On phones the brief (what they needed / what
+we built) moves below the button (CSS `order`). The iframe renders the site's mobile layout at the
+window's own width, unscaled, but never narrower than 320px: below that the Beauty site's text runs
+off the side, so a narrower window shows the 320px layout scaled down (phones are 2-3x density, and
+Chrome re-rasterises the scaled frame, so it stays sharp; checked at 3x). In practice the 9:16 window
+is 140-305px wide on phones, so phones see the 320px layout. Phones load mobile screenshots for the
 loading still (`work-beauty-m-1170.webp`) and the Smiles scroll (`smiles-full-m-780.webp`). Tablets
-and desktops keep the laptop windows (1440x900 scaled). Once a live iframe has loaded, the loading
-screenshot is hidden (`.browser.is-live`): an iframe is transparent where the embedded page does not
-paint, so on iPhone overscroll the screenshot behind showed through as a second hero image in the
-Beauty & Wellness window. That was our bug, not the Beauty site's.
+and desktops keep the laptop windows (1440x900 scaled; unscaled at 1024px+). Once a live iframe has
+loaded, the loading screenshot is hidden (`.browser.is-live`): an iframe is transparent where the
+embedded page does not paint, so on iPhone overscroll the screenshot behind showed through as a
+second hero image in the Beauty & Wellness window (2026-11-10, our bug, not the Beauty site's).
 
 ## The site after the hero
 

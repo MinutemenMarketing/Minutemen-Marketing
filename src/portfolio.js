@@ -8,9 +8,24 @@ const FRAME_TIMEOUT = 15000;
 // exactly what a desktop visitor sees (Noah, 2026-11-08), on every screen size.
 const DESKTOP = { w: 1440, h: 900 };
 const MIN_NATIVE = 1024;
+// Phone windows render the site at the window's own width (its real mobile layout), but never
+// narrower than the narrowest real phone: below 320px the client sites' text runs off the side.
+const MIN_PHONE = 320;
 
 export function initFrames(windows) {
   if (!windows.length) return;
+  // Phones: the window is sized (in CSS) so the client name, the window and "Open Live Website" fit
+  // on one screen; this measures the name block and the button of each project for that sum.
+  const chrome = () => {
+    for (const w of windows) {
+      const li = w.closest('.project');
+      const head = li?.querySelector('.project__head');
+      const btn = li?.querySelector(':scope > .link-out');
+      if (head && btn) li.style.setProperty('--chrome-h', Math.ceil(head.offsetHeight + btn.offsetHeight) + 'px');
+    }
+  };
+  chrome();
+  window.addEventListener('resize', chrome);
   const io = new IntersectionObserver(
     (entries) => {
       for (const en of entries) {
@@ -58,10 +73,24 @@ function mount(win) {
     const W = view.clientWidth;
     // Phones show a phone-shaped window (taller than wide): the site renders there unscaled at the
     // window's own size, which is its real mobile layout at full crispness (2026-11-10).
-    const native = W >= MIN_NATIVE || view.clientHeight > view.clientWidth;
+    const H = view.clientHeight;
+    const phone = H > W;
+    if (phone && W < MIN_PHONE) {
+      // A window narrower than a phone: the 320px phone layout, scaled down to fit.
+      frame.width = MIN_PHONE;
+      frame.height = Math.round((H * MIN_PHONE) / W);
+      view.classList.remove('is-native');
+      view.style.setProperty('--frame-w', MIN_PHONE + 'px');
+      view.style.setProperty('--frame-h', frame.height + 'px');
+      view.style.setProperty('--frame-scale', String(W / MIN_PHONE));
+      return;
+    }
+    const native = W >= MIN_NATIVE || phone;
     frame.width = native ? W : DESKTOP.w;
-    frame.height = native ? view.clientHeight : DESKTOP.h;
+    frame.height = native ? H : DESKTOP.h;
     view.classList.toggle('is-native', native);
+    view.style.removeProperty('--frame-w');
+    view.style.removeProperty('--frame-h');
     view.style.setProperty('--frame-scale', native ? '1' : String(W / DESKTOP.w));
   };
   new ResizeObserver(fit).observe(view);

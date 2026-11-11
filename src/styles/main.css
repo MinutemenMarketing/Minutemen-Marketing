@@ -1425,8 +1425,8 @@ html:not(.motion) .beat--1::before {
   position: absolute;
   top: 0;
   left: 0;
-  width: 1440px;
-  height: 900px;
+  width: var(--frame-w, 1440px);
+  height: var(--frame-h, 900px);
   transform: scale(var(--frame-scale, 1));
   transform-origin: 0 0;
   border: 0;
@@ -2331,21 +2331,41 @@ html:not(.motion) .beat--1::before {
   min-width: 0;
 }
 
-/* Portfolio on phones (2026-11-10): each site in a phone-shaped window (about 9:19.5) showing its real
-   mobile layout, unscaled (src/portfolio.js renders the iframe at the window's own size). Tablets and
-   desktops keep the laptop windows. */
+/* Portfolio on phones (2026-11-11): each site in a small phone-shaped window (9:16) showing its real
+   mobile layout at the window's own width, unscaled (src/portfolio.js). The client name, the window
+   and "Open Live Website" fit on one screen together: the window's screen is at most 62% of the
+   small viewport (browser bar showing) less its bezel, and never taller than what is left after the
+   nav, the name and the button. The brief (what they needed / what we built) follows the button on
+   phones. Tablets and desktops keep the laptop windows. */
 @media (max-width: 767px) {
+  .project {
+    gap: 16px;
+  }
   .project .browser {
-    width: min(100%, 340px);
+    order: 1;
+  }
+  .project > .link-out {
+    order: 2;
+  }
+  .project .brief {
+    order: 3;
+    margin-top: 16px;
+  }
+  .project .browser {
+    /* The screen's height: at most 62% of the small viewport less the 26px bar and 6px bezel, and
+       never more than what is left of the screen after the nav, this project's name and button
+       (--chrome-h, measured by src/portfolio.js), the two 16px gaps, the bar, bezel and 16px air. */
+    --screen-h: min(62svh - 38px, 100svh - var(--nav-h) - var(--chrome-h, 150px) - 86px);
+    width: min(100%, 340px, calc(var(--screen-h) * 9 / 16 + 12px));
     justify-self: center;
-    border: 9px solid #0d1626;
-    border-radius: 36px;
+    border: 6px solid #0d1626;
+    border-radius: 26px;
     background: #0d1626;
-    box-shadow: 0 18px 40px -24px rgba(3, 34, 73, 0.55);
+    box-shadow: 0 14px 32px -22px rgba(3, 34, 73, 0.55);
   }
   .project .browser__bar {
-    height: 30px;
-    padding: 0 12px;
+    height: 26px;
+    padding: 0 10px;
     border-bottom: 0;
     background: #0d1626;
   }
@@ -2353,15 +2373,15 @@ html:not(.motion) .beat--1::before {
     display: none;
   }
   .project .browser__url {
-    max-width: 78%;
-    padding: 3px 10px;
+    max-width: 86%;
+    padding: 2px 8px;
     background: rgba(247, 244, 236, 0.1);
     color: #c9d2e0;
-    font-size: 0.75rem;
+    font-size: 0.6875rem;
   }
   .project .browser__view {
-    aspect-ratio: 9 / 19.5;
-    border-radius: 0 0 27px 27px;
+    aspect-ratio: 9 / 16;
+    border-radius: 0 0 20px 20px;
   }
   .project .browser__shot {
     object-position: top center;
