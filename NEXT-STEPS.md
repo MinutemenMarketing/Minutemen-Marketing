@@ -1,9 +1,9 @@
 # Next steps — minutemenmarketing.com
 
-Updated 2026-11-11. `CLAUDE.md` is the contract (hero spec, rules, every
+Updated 2026-11-12. `CLAUDE.md` is the contract (hero spec, rules, every
 approved asset with its Runway task ID); `DESIGN.md` is the approved four-page design. Read both first.
 
-**Runway credits: 1,280** (2026-11-08 late: smoke removal 60 within Noah's 150-credit cap; K1 edit 80 within Noah's 120-credit cap; earlier: 95 within Noah's 200-credit approval — C1 regeneration 94,
+**Runway credits: 1,200** (2026-11-12: phone plates 80 within Noah's 200-credit cap; 2026-11-08 late: smoke removal 60 within Noah's 150-credit cap; K1 edit 80 within Noah's 120-credit cap; earlier: 95 within Noah's 200-credit approval — C1 regeneration 94,
 background removal 1; then 72 within the 250-credit C1 rebuild approval — C2 v3, failed). Rule unchanged: quote the cost and wait for Noah's OK before every
 generation.
 
@@ -13,6 +13,22 @@ it, `?herofail` / `?herofail=script` show the load-failure still version.
 Playwright QA scripts (cross-browser run, mobile alignment audit, full hero pass) are in `qa/`.
 
 ---
+
+## Done 2026-11-12
+
+- **Opening no longer pink:** the edited K1 had drifted magenta (Lab a* 14.1 vs 5-7 in the rest);
+  regraded per brightness band to K2/k1-cool (`scripts/k1-regrade.cjs`): opening frame, push-in,
+  reduced-motion still and share image. Sheet: `qa/shots/2026-11-12-k1-grade.jpg`.
+- **Phone hero, full-screen and zoomed out:** tall painted plates for K1, the C2 background and K4
+  (80 credits); battlefield, push-in, hold, firing and globe draw zoomed out over them; C2b and C3
+  keep the panning crop; zoom hand-offs measured smooth (no step above the live baseline). Sheets:
+  `qa/shots/2026-11-12-hero-390-plates.jpg`, `qa/shots/2026-11-12-hero-430-plates.jpg`.
+- **Glitch after the hero:** the progress line now fades out before the hero ends, and the nav comes
+  back while the logo settles, so nothing crosses the Services heading or its shot line.
+- **Skip intro:** top-left on desktop (logo's margin), top-right on phones and tablets.
+- **Portfolio copy:** Noah's text for both projects ("costumers" fixed to "customers"); checked live:
+  both sites link their Square booking page, and both contact forms post to Web3Forms (Beauty on
+  contact.html, Smiles on the homepage).
 
 ## Done 2026-11-11
 
@@ -42,9 +58,7 @@ Playwright QA scripts (cross-browser run, mobile alignment audit, full hero pass
 
 - Privacy Policy is a draft: Noah to review.
 - Testimonials and Noah's LinkedIn: waiting on Noah.
-- Phone hero: the ball is out of the crop for ~0.5% of the scroll right after the shot (C2b frames
-  ~6-15), because the source footage hides it in smoke and then at its right edge. Only a reframed
-  clip would change that (Runway credits, Noah's call).
+- Phone hero: early in C2b (frames ~6-15, ~0.5% of the scroll) the ball is hidden in the source footage's smoke and then sits on its right edge; only a reframed clip would change that.
 
 ## Done (earlier)
 

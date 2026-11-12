@@ -90,6 +90,10 @@ continuing.** Never lock or hijack the scroll. Every percentage lives in one con
 - **Smoothness:** Lenis `lerp ≈ 0.08`; ScrollTrigger `scrub: 0.35` (was 1: stacked on Lenis it added a
   second ~1s catch-up, so the first wheel click felt dead); draw on `requestAnimationFrame`
   **only when the frame or scene state changes**; preload frames with a minimal progress indicator.
+- **Hero exit (2026-11-12):** the progress line fades out over 96-99.5% (`CHOREO.trailOut`); at full
+  width it used to ride up the page with the unpinned stage onto the Services shot line as that drew.
+  The nav comes back at 96% (`CHOREO.navBack`), while the logo settles on paper, so its 450ms fade is
+  done before Services slides under it. The Services shot line draws once (traced, no re-trigger).
 - **Text fades:** opacity + 16px rise + slight blur-to-sharp, about **3% of the scroll** each. The
   words are hidden by a `tl.set` at the moment their line switches on; without it a ScrollTrigger
   refresh left them at full opacity and the line flashed on, off, on (fixed 2026-11-08).
@@ -114,7 +118,12 @@ interface elements or borders.
 
 - **`reference/start.png` rule:** if that file exists, use it as K1 (or as K1's style reference) instead
   of generating a new battlefield. As of 2026-11-04 it does not exist; K1 below was generated.
-- **APPROVED opening still (current, 2026-11-08 late): `assets/keyframes/k1-v3.png`** = k1-v2 with the
+- **Opening still served since 2026-11-12: `assets/keyframes/k1-v4.png`** = k1-v3 regraded cool
+  (0 credits, `scripts/k1-regrade.cjs`). Root cause of the pink: each Nano Banana Pro edit of K1 pushed it
+  toward magenta (Lab a* 7.6 in k1-cool, 11.0 in k1-v2, 14.1 in k1-v3, vs 5-7 in K2 and C2). The script
+  shifts a* to K2 and b* to k1-cool per brightness band, brightness untouched. Served as `k1v4-*`,
+  detail `k1dv4-*`, share image `og-v4.jpg`. Any future K1 edit: re-run it and check a* against K2.
+- **APPROVED opening still (2026-11-08 late): `assets/keyframes/k1-v3.png`** = k1-v2 with the
   musket smoke puffs along the firing line removed (Nano Banana Pro, task `f4c41b0e-e9aa-4d6c-b8d3-bb10f1121692`,
   40 credits). Same geometry as k1-v2 (refit: scale 1.85, NCC 0.635, `FOCUS.k1K2Frame` unchanged). Served as
   `k1v3-1920/-1280.webp`, detail `k1dv3-*`, share image `og-v3.jpg`.
@@ -247,8 +256,9 @@ The copy says "bullet" by Noah's choice; the artwork still shows a round lead mu
 
 ### Hero controls and returning visitors (2026-11-08)
 
-Only **Skip intro**, flush in the top-right corner: centred in the nav's band, its right edge on the nav's
-content edge (the gutter on phones, the 1240px column on wide screens), below the notch. Inside the
+Only **Skip intro**, centred in the nav's band, below the notch. **Desktop (1024px+, Noah 2026-11-12): top-LEFT**,
+its left edge on the nav's content edge (the logo's margin). **Phones and tablets: top-right**, its right
+edge on the nav's content edge (the gutter). Inside the
 hero the nav stays hidden after the first scroll (it returns at the very top, after the hero and on
 keyboard focus); while it shows, Skip waits just under it, and a change of place is a quick fade, never
 a slide. (2026-11-09: Skip used to slide 72px with the nav on every change of scroll direction, which
@@ -367,23 +377,28 @@ the Vite stack and pushes to `main`, both by Noah's explicit choice.
   scroll). The 1280 and 960 sets of C2b and C3 repeat files 46/61/76 (24→15fps extraction);
   `ASSETS.<clip>.dupes` skips them. A clip with nothing loaded yet stands in with its neighbouring
   clip's frame, never an unrelated still.
-- **Phone framing (2026-11-10, Noah, decided): full-bleed smart pan.** Portrait screens (phones,
-  portrait tablets) always show the painting full-screen: a cover crop, never bars, a gradient fill or
-  anything above or below the image. The crop's centre follows the action like a camera operator,
-  set per scene in `CHOREO.phone` (image x, 0-1): the push-in ends and holds on the soldier
-  (`hold` 0.4, musket as far as the crop allows); over C2 it pans along the musket to the muzzle as
-  he fires, then rides with the ball (`c2` keys); over C2b it keeps the ball and its trail in view
-  with a little room ahead (`c2b` keys); C3 and the globe stay centred on the globe. Clip keys are
-  [clip time, x] joined by one monotone cubic curve (`track()` in `stage.js`), so the camera never
-  stops at a key, and each hand-off starts where the last scene ended. Wider screens see more of the
-  frame and keep their fixed points. A 390px phone sees about 26% of the painting's width, so there
-  are two moments the crop cannot hold the ball: in the source footage it is hidden in the smoke
-  (C2b frames ~6-12) and sits on the frame's right edge (~f15). Beat 1 sits high (`--hud-t`) and
-  fades out at 4% instead of 9% on portrait (`beats[1].outPortrait`); beat 2 sits below the ball and
-  beat 3 below the globe. History: the 2026-11-10 morning pass framed each scene as a zoomed-out band
-  on a static dark gradient; Noah found it too zoomed out with bars and replaced it with this. The
-  9:16 Runway expand stays declined (2026-11-09: ~816-924 credits, and the original picture would be
-  only a band a third of the screen tall).
+- **Phone framing (2026-11-12, Noah, decided): zoomed out over tall painted plates, always
+  full-screen.** The cover crop showed only ~26% of the painting's width on a phone. C2 (firing) and C4
+  (globe) have locked cameras and the push-in is drawn from K1, so those scenes are drawn zoomed OUT over
+  static tall plates: the same paintings outpainted with sky above and ground below (Nano Banana Pro,
+  Noah approved up to 200 credits, **80 spent**: K1 `238780f0-…`, C2 background (the K2 hold)
+  `24ba7e05-…` rejected (it repeated the treeline above the band) and `33d1abbc-…` used, K4
+  `84bd01f0-…`; raw plates in `assets/plates/`). `scripts/plate-fit.cjs` finds the original frame
+  inside each plate (NCC 0.97+, fit in `ASSETS.plates`); `scripts/plate-prep.cjs` colour-matches the
+  plate to the frame and matches the seams (sampling a few rows in from the frame edge, which carries a
+  light compression line; `bridge-top` for K4's smooth sky), and writes `m/plate-*-v1.webp`.
+  On portrait screens (`CHOREO.phone`, views { f = share of the frame width on screen, x = centre }):
+  the battlefield (f 0.62), the push-in from it to the hold (f 0.52, hat to boots and the whole musket),
+  C2 zooming out to f 0.62 as he fires (body, musket, flash and ball), then easing into the cover crop
+  on the ball over its last quarter so C2b starts without a jump; C2b and C3 (moving cameras) keep the
+  cover crop that pans with the action; C3 settles onto the globe over the K4 plate; the globe and
+  brand globe (the plate's duotone) sit over it with the whole globe in view. The frame's edges
+  feather into the plate (`PLATE_FEATHER`). A view never zooms out further than its plate can fill
+  the screen, and without a plate (not loaded) it falls back to the cover crop. Portrait screens load
+  K1's plate with K1 itself, so the opening never jumps. Landscape screens are unchanged. Beat 1 sits
+  high and fades out at 4% on portrait. History: 2026-11-10 morning, zoomed-out band on a dark
+  gradient (rejected: bars); 2026-11-10 evening, full-bleed cover crop with a smart pan (rejected: too
+  zoomed in). The 9:16 Runway video expand stays declined.
 - **Short landscape phones (2026-11-10):** under 560px tall, `circleTarget` makes the globe 42% of
   the height and sets it at 42% from the top, and beat 3 uses smaller type, so it fits between the
   globe and the progress line.
