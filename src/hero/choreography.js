@@ -79,7 +79,7 @@ export const CHOREO = {
 // Assets. Swap a placeholder for the real thing by editing this block only.
 export const ASSETS = {
   base: '/hero/v1',
-  k1: 'k1v3', // + '-1920.webp' / '-1280.webp': k1-v3.png (K2's soldier in the line, no musket smoke)
+  k1: 'k1v4', // + '-1920.webp' / '-1280.webp': k1-v4.png (k1-v3 regraded cool, 2026-11-12: scripts/k1-regrade.cjs)
   k2: 'k2v2', // k2.png with the C2 clean plate on the background line (scripts/fix-k2-background.cjs)
   k4: 'k4v2', // approved K4 (v2, ball shrunk)
   logo: '/brand/logo-stacked.svg', // stacked logo (mark over MINUTEMEN MARKETING), traced vector
@@ -88,7 +88,7 @@ export const ASSETS = {
   // extraction artefact; the 1920 set has none), skipped so the scrub never stalls on them.
   // K1 at high resolution for the code push-in (scripts/k1-detail.cjs): the right/lower part of
   // k1-cool.png, feathered at its left and top edges, drawn over the K1 still. -1920 / -1280 / -m.
-  k1Detail: { name: 'k1dv3', x0: 0.3, y0: 0.12, x1: 1, y1: 1 },
+  k1Detail: { name: 'k1dv4', x0: 0.3, y0: 0.12, x1: 1, y1: 1 },
   // C2: every frame repaired (2026-11-08): the background line comes from a clean plate (no gunsmoke
   // puffs or muzzle flashes on the soldiers behind him), see scripts/fix-c2-background-flashes.cjs.
   c2: { dir: 'c2', count: 78, pattern: 'f_%04d-fix1.webp' },
