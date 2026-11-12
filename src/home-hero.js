@@ -81,6 +81,7 @@ export function initHero({ scroller, nav, navH, reduced, returning, markSeen }) 
   // Scroll cue fades after the first move; the trail line tracks progress through the hero.
   const cue = $('.hero__cue');
   const trail = $('.hero__trail span');
+  const trailLine = $('.hero__trail');
 
   // Skip: jump straight past the hero to the first section, with the hero settled on its last
   // frame (no fast-forward through the story), and move focus there.
@@ -135,7 +136,10 @@ export function initHero({ scroller, nav, navH, reduced, returning, markSeen }) 
         duration: 100,
         onUpdate: () => {
           stage.set(state.p);
+          // The progress line fades out over the last stretch (2026-11-12): kept at full width, it
+          // rode up the page with the unpinned stage and sat on the Services shot line as it drew.
           gsap.set(trail, { scaleX: state.p / 100 });
+          gsap.set(trailLine, { autoAlpha: 1 - Math.min(1, Math.max(0, (state.p - CHOREO.trailOut[0]) / (CHOREO.trailOut[1] - CHOREO.trailOut[0]))) });
           if (state.p > 0.4) cue.classList.add('is-gone');
           skip.classList.toggle('is-gone', state.p > 95);
           if (state.p > 95) markSeen();
@@ -185,7 +189,10 @@ export function initHero({ scroller, nav, navH, reduced, returning, markSeen }) 
   };
   scroller.on((y) => {
     const pin = ScrollTrigger.getById('hero');
-    const inHero = pin && y > 24 && y < pin.end - 1;
+    // The nav comes back while the logo settles on paper (CHOREO.navBack), so its fade has finished
+    // before Services slides under it; coming back at the very end showed the heading through the
+    // half-faded nav (2026-11-12).
+    const inHero = pin && y > 24 && y < pin.start + ((pin.end - pin.start) * CHOREO.navBack) / 100;
     // Inside the hero the nav stays out of the way (it comes back at the very top, after the hero and
     // on keyboard focus); flipping it on every change of scroll direction made the top of the hero
     // jump on phones (2026-11-09).

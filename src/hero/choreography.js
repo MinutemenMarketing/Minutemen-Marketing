@@ -3,6 +3,8 @@
 
 export const CHOREO = {
   pin: { desktop: 1000, mobile: 650 }, // pinned length in vh
+  trailOut: [96, 99.5], // the progress line fades out over this stretch of the scroll (%)
+  navBack: 96, // the nav comes back from this point of the hero (%), while the logo settles on paper
   // Scrub smoothing in seconds. Lenis already smooths the wheel; a long scrub on top of it adds a
   // second catch-up, so the first wheel click felt dead (2026-11-08: 1 → 0.35).
   scrub: 0.35,
