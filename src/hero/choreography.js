@@ -44,15 +44,22 @@ export const CHOREO = {
   // - fade: K1 -> K2 crossfade, both drawn at the matched place;
   // - wipe/smoke: a light painted-smoke band (strength `smoke`) drifts across, densest mid-crossfade,
   //   to soften the small differences in his face and musket.
-  // Portrait screens (phones, portrait tablets), 2026-11-10 (second pass, Noah): the painting always
-  // fills the screen (cover crop, no bars) and the crop follows the action like a camera operator.
-  // Each value is the image x (0-1) the crop centres on, as far as the crop allows; the clip tracks
-  // are [clip time, x] keys joined by one smooth curve (no stop at each key). Measured on the frames:
-  // his head ~0.37, muzzle 0.65, flash 0.72, ball 0.80 -> 0.91 over C2; in C2b the ball is at 0.91
-  // (f16), 0.57 (f24), 0.50 (f32 on). A 390x844 phone sees about 26% of the width.
+  // Portrait screens (phones, portrait tablets), 2026-11-12 (Noah): always full-screen, never bars.
+  // The locked-camera scenes (the K1 battlefield and push-in, the K2 hold and C2's shot, the globe)
+  // are drawn zoomed OUT over tall painted plates (ASSETS.plates: the same painting outpainted with
+  // sky above and ground below, static because those cameras don't move); the moving-camera clips
+  // (C2b, C3) keep the cover crop that pans with the action. A view is { f, x }: f = the share of the
+  // frame's width on screen (0 = the cover crop; larger = zoomed out, capped where the plate still
+  // fills the screen), x = the image x the view centres on. C2's last stretch eases from its zoomed-
+  // out view into the cover crop on the ball, so C2b starts without a jump. Clip tracks are
+  // [clip time, value] keys joined by one smooth curve. Measured on the frames: his back ~0.26,
+  // muzzle 0.65, flash 0.72, ball 0.80 -> 0.91 over C2; in C2b the ball is at 0.91 (f16), 0.57 (f24),
+  // 0.50 (f32 on).
   phone: {
-    hold: 0.4, // end of the push-in and the hold: on the soldier, the musket as far as the crop allows
-    c2: [[0, 0.4], [0.1, 0.4], [0.42, 0.71], [0.66, 0.78], [1, 0.82]], // along the musket to the muzzle as he fires, then with the ball
+    open: { f: 0.62, x: 0.56 }, // the battlefield: the line of men, him in it
+    hold: { f: 0.52, x: 0.47 }, // end of the push-in and the hold: hat to boots, the whole musket
+    c2f: [[0, 0.52], [0.1, 0.52], [0.42, 0.62], [0.74, 0.62], [1, 0]], // zooms out as he fires, then in on the ball
+    c2x: [[0, 0.47], [0.1, 0.47], [0.42, 0.55], [0.74, 0.6], [1, 0.82]], // body, musket, flash and ball in view
     c2b: [[0, 0.82], [0.07, 0.87], [0.17, 0.87], [0.26, 0.6], [0.36, 0.53], [1, 0.5]], // the ball and trail in view, a little room ahead
     globeW: 0.72, // the globe circle at most this share of the screen width (whole globe + margin)
   },
@@ -91,6 +98,13 @@ export const ASSETS = {
   // K1 at high resolution for the code push-in (scripts/k1-detail.cjs): the right/lower part of
   // k1-cool.png, feathered at its left and top edges, drawn over the K1 still. -1920 / -1280 / -m.
   k1Detail: { name: 'k1dv4', x0: 0.3, y0: 0.12, x1: 1, y1: 1 },
+  // Tall phone plates (2026-11-12, Nano Banana Pro outpaints, scripts/plate-fit.cjs + plate-prep.cjs):
+  // m/<name>.webp; `fit` = where the original 16:9 frame sits inside the plate (fractions of it).
+  plates: {
+    k1: { name: 'plate-k1-v1', fit: { x0: 0, y0: 0.2918, w: 1.004, h: 0.418 } }, // K1 + push-in
+    c2: { name: 'plate-c2-v1', fit: { x0: 0, y0: 0.2918, w: 1.003, h: 0.4176 } }, // K2 hold + C2
+    k4: { name: 'plate-k4-v1', fit: { x0: 0, y0: 0.2918, w: 1.004, h: 0.418 } }, // C3 settle, C4, brand globe
+  },
   // C2: every frame repaired (2026-11-08): the background line comes from a clean plate (no gunsmoke
   // puffs or muzzle flashes on the soldiers behind him), see scripts/fix-c2-background-flashes.cjs.
   c2: { dir: 'c2', count: 78, pattern: 'f_%04d-fix1.webp' },

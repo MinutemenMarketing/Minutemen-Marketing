@@ -129,6 +129,7 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
   // everyone else the 1280px set. Stills follow the same tier so every join matches.
   const phone = window.innerWidth < 768;
   const saveData = navigator.connection?.saveData;
+  const tall = window.innerWidth < window.innerHeight; // portrait screens load the tall plates
   const hd = !phone && !saveData && (window.innerWidth >= 1440 || (window.innerWidth >= 1024 && window.devicePixelRatio >= 2));
   const size = () => (hd ? 1920 : 1280);
   const still = (name) => `${ASSETS.base}/${name}-${size()}.webp`;
@@ -180,14 +181,23 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
   // frame. Fill behind it with a heavily blurred copy of the same scene, and erase the sharp
   // image's edges softly into it — the way film letterboxing is filled — so no edge ever shows.
   const edgeLayer = document.createElement('canvas');
-  function globeScene(img, blurred, scale) {
+  function globeScene(img, blurred, scale, plate) {
     if (!img) return;
-    cover(blurred, 1, 0.5, 0.5, 1);
     const iw = img.naturalWidth || img.width;
     const ih = img.naturalHeight || img.height;
     const t = circleTarget(w, h);
     const sc = (t.d * scale) / (FOCUS.k4Globe.d * ih);
-    feathered(img, t.x - FOCUS.k4Globe.x * iw * sc, t.y - FOCUS.k4Globe.y * ih * sc, iw * sc, ih * sc, 0.22);
+    const r = { x: t.x - FOCUS.k4Globe.x * iw * sc, y: t.y - FOCUS.k4Globe.y * ih * sc, w: iw * sc, h: ih * sc };
+    // Portrait screens: the tall painted plate around it (2026-11-12), not the blurred copy.
+    if (plate && w / h < 1) {
+      const fit = ASSETS.plates.k4.fit;
+      const pw = r.w / fit.w;
+      const ph = (pw * plate.height) / plate.width;
+      drawVisible(ctx, plate, r.x - fit.x0 * pw, r.y - fit.y0 * ph, pw, ph);
+      return feathered(img, r.x, r.y, r.w, r.h, PLATE_FEATHER);
+    }
+    cover(blurred, 1, 0.5, 0.5, 1);
+    feathered(img, r.x, r.y, r.w, r.h, 0.22);
   }
 
   // Draw img at (x0, y0, dw, dh) with any edge that falls inside the frame softly erased, so it
@@ -227,12 +237,14 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
   // rect that travels from K1's opening cover framing (f 0) to the K1 region that matches K2's hold
   // framing exactly (f 1, FOCUS.k1K2Frame, K2 cover-cropped around image x fx2), zooming toward him.
   // K2 crossfades in drawn at the same matched place (k2a), so the two read as one picture moving.
-  function k1Rect(f, fx2) {
+  function k1Rect(f, fx2, portrait) {
     const img = a.k1;
     const A = img.naturalWidth / img.naturalHeight;
     const M = FOCUS.k1K2Frame;
-    const s0 = heldRect(img, FOCUS.k1Soldier.x, FOCUS.k1Soldier.y);
-    const r2 = heldRect(a.k2 || img, fx2, FOCUS.k2Soldier.y);
+    const PH = CHOREO.phone;
+    // Portrait: from the battlefield view on K1's plate to the hold view on K2's (CHOREO.phone).
+    const s0 = portrait ? viewRect(img, PH.open.f, PH.open.x, 'k1') : heldRect(img, FOCUS.k1Soldier.x, FOCUS.k1Soldier.y);
+    const r2 = portrait ? viewRect(a.k2 || img, PH.hold.f, PH.hold.x, 'c2') : heldRect(a.k2 || img, fx2, FOCUS.k2Soldier.y);
     const ew = r2.w / M.w;
     const e = { x: r2.x - M.x0 * ew, y: r2.y - (M.y0 * ew) / A, w: ew };
     const W = Math.exp(lerp(Math.log(s0.w), Math.log(e.w), f));
@@ -258,22 +270,30 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     const sy = ((y0 - dy) / dh) * ih;
     c.drawImage(img, sx, sy, ((x1 - x0) / dw) * iw, ((y1 - y0) / dh) * ih, x0, y0, x1 - x0, y1 - y0);
   }
-  function k1Cam(f, k2a, fx2) {
+  function k1Cam(f, k2a, fx2, portrait) {
     const img = a.k1;
     if (!img) return;
-    const r = k1Rect(f, fx2);
+    const r = k1Rect(f, fx2, portrait);
     const D = ASSETS.k1Detail;
     // The K1 still, then the high-resolution detail layer over it at the same place (its left and
-    // top edges are feathered, so the two read as one picture).
+    // top edges are feathered, so the two read as one picture). On portrait screens over K1's plate.
+    const drawK1 = (c) => {
+      drawVisible(c, img, r.x, r.y, r.w, r.h);
+      if (a.k1d && r.zoom > 1.02) drawVisible(c, a.k1d, r.x + D.x0 * r.w, r.y + D.y0 * r.h, (D.x1 - D.x0) * r.w, (D.y1 - D.y0) * r.h);
+    };
     if (k2a < 1) {
-      drawVisible(ctx, img, r.x, r.y, r.w, r.h);
-      if (a.k1d && r.zoom > 1.02) drawVisible(ctx, a.k1d, r.x + D.x0 * r.w, r.y + D.y0 * r.h, (D.x1 - D.x0) * r.w, (D.y1 - D.y0) * r.h);
+      if (portrait) plated(drawK1, r, 'k1');
+      else drawK1(ctx);
     }
     if (k2a > 0 && a.k2) {
       const M = FOCUS.k1K2Frame;
-      ctx.globalAlpha = k2a;
-      drawVisible(ctx, a.k2, r.x + M.x0 * r.w, r.y + M.y0 * r.h, r.w * M.w, r.h * M.h);
-      ctx.globalAlpha = 1;
+      const r2 = { x: r.x + M.x0 * r.w, y: r.y + M.y0 * r.h, w: r.w * M.w, h: r.h * M.h };
+      if (portrait) group(k2a, () => plated(a.k2, r2, 'c2', 1, CHOREO.phone.hold.x));
+      else {
+        ctx.globalAlpha = k2a;
+        drawVisible(ctx, a.k2, r2.x, r2.y, r2.w, r2.h);
+        ctx.globalAlpha = 1;
+      }
     }
   }
 
@@ -315,6 +335,46 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     const cw = iw * sc;
     const ch = ih * sc;
     return { x: Math.min(0, Math.max(w - cw, w / 2 - fx * cw)), y: Math.min(0, Math.max(h - ch, h / 2 - fy * ch)), w: cw, h: ch };
+  }
+
+  // Portrait views over tall plates (CHOREO.phone). viewRect: where a 16:9 frame lands for view
+  // { f, x } (f 0 = cover); zoomed out no further than the plate can still fill the screen.
+  const PLATE_FEATHER = 0.12;
+  function viewRect(img, f, fx, plateKey) {
+    const iw = img.naturalWidth || img.width;
+    const ih = img.naturalHeight || img.height;
+    const cf = (w * ih) / (iw * h); // the share of the width the cover crop shows
+    const fit = ASSETS.plates[plateKey]?.fit;
+    const m = fit ? Math.min(fit.y0, 1 - fit.y0 - fit.h) / fit.h : 0; // plate above/below, in frame heights
+    const fMax = a['p' + plateKey] ? cf * (1 + 2 * m) * 0.97 : cf;
+    const ff = Math.min(1, Math.max(cf, Math.min(f || cf, fMax)));
+    const fw = w / ff;
+    const fh = (fw * ih) / iw;
+    const x = Math.min(0, Math.max(w - fw, w / 2 - fx * fw));
+    const y = fh >= h ? Math.min(0, Math.max(h - fh, (h - fh) / 2)) : (h - fh) / 2;
+    return { x, y, w: fw, h: fh };
+  }
+  const covers = (r) => r.x <= 0.5 && r.y <= 0.5 && r.x + r.w >= w - 0.5 && r.y + r.h >= h - 0.5;
+  // Draw a frame (image, or a draw function) at rect r over its plate; the frame's edges feather
+  // into the plate. Without the plate (not loaded yet) it falls back to the plain cover crop.
+  function plated(img, r, plateKey, alpha = 1, fx = 0.5) {
+    if (!img || alpha <= 0) return;
+    if (covers(r)) {
+      ctx.globalAlpha = alpha;
+      if (typeof img === 'function') img(ctx);
+      else drawVisible(ctx, img, r.x, r.y, r.w, r.h);
+      ctx.globalAlpha = 1;
+      return;
+    }
+    const P = a['p' + plateKey];
+    if (!P) return typeof img === 'function' ? img(ctx) : cover(img, alpha, fx, 0.5, 1);
+    const fit = ASSETS.plates[plateKey].fit;
+    const pw = r.w / fit.w;
+    const ph = (pw * P.naturalHeight) / P.naturalWidth;
+    ctx.globalAlpha = alpha;
+    drawVisible(ctx, P, r.x - fit.x0 * pw, r.y - fit.y0 * ph, pw, ph);
+    ctx.globalAlpha = 1;
+    feathered(img, r.x, r.y, r.w, r.h, PLATE_FEATHER, alpha);
   }
 
   // A small, soft copy of the globe scene with the globe itself painted out (sky and clouds only),
@@ -369,21 +429,21 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
   // Each clip opens on the previous clip's last frame and dissolves over its first few frames.
   function layers() {
     const ops = [];
-    // Portrait screens (phones, portrait tablets): the painting fills the screen (cover crop) and the
-    // crop's centre follows the action (CHOREO.phone, 2026-11-10). Wider screens see most of the
-    // frame, so they keep fixed points.
+    // Portrait screens (phones, portrait tablets), 2026-11-12: always full-screen. The locked-camera
+    // scenes are zoomed-out views over tall painted plates (CHOREO.phone, ASSETS.plates); the moving
+    // clips (C2b, C3) keep the cover crop that pans with the action. Wider screens keep fixed points.
     const portrait = w / h < 1;
     const PH = CHOREO.phone;
-    const k1 = ['img', 'k1', 1, FOCUS.k1Soldier.x, FOCUS.k1Soldier.y, 1];
-    const sx = portrait ? PH.hold : FOCUS.k2Soldier.x;
-    // C2: on portrait screens the crop pans along the musket to the muzzle as he fires, then rides
-    // with the ball. C2b opens on C2's crop (so the join dissolve lines up) and follows the ball.
-    const c2Fx = (t) => (portrait ? track(PH.c2, t) : FOCUS.k2Soldier.x);
+    const k1 = portrait ? ['view', 'k1', 1, PH.open.f, PH.open.x, 'k1'] : ['img', 'k1', 1, FOCUS.k1Soldier.x, FOCUS.k1Soldier.y, 1];
+    const sx = FOCUS.k2Soldier.x;
+    // C2 on portrait: zooms out as he fires so body, musket, flash and ball are all on screen, then
+    // eases into the cover crop on the ball, where C2b picks up. C2b follows the ball.
+    const c2View = (t) => ['vseq', 'c2', t, 1, track(PH.c2f, t), track(PH.c2x, t), 'c2'];
     const swing = (t) => ease(clamp01(t / 0.25));
-    const c2bFx = (t) => (portrait ? track(PH.c2b, t) : lerp(c2Fx(1), FOCUS.c2bBall.x, swing(t)));
+    const c2bFx = (t) => (portrait ? track(PH.c2b, t) : lerp(FOCUS.k2Soldier.x, FOCUS.c2bBall.x, swing(t)));
     const c2bFy = (t) => lerp(FOCUS.k2Soldier.y, FOCUS.c2bBall.y, swing(t));
     // K2 as the hold and C2's opening frame draw it.
-    const c1Last = () => ['img', 'k2', 1, sx, FOCUS.k2Soldier.y, 1];
+    const c1Last = () => (portrait ? ['view', 'k2', 1, PH.hold.f, PH.hold.x, 'c2'] : ['img', 'k2', 1, sx, FOCUS.k2Soldier.y, 1]);
     const globeFrame = () => (ASSETS.c4 ? ['globe', 'c4', 1, 1] : ['globe', 'k4', 1, 1]);
 
     if (p < S.c1[0]) {
@@ -397,7 +457,7 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
       const [m0, m1] = [P.start, P.end];
       const f = (m0 + m1 - 2) * q ** 3 + (3 - 2 * m0 - m1) * q ** 2 + m0 * q;
       const x = ease(local(P.fade, t)); // K1 -> K2, same man in the same place
-      ops.push(x < 1 ? ['k1cam', f, x, sx] : c1Last());
+      ops.push(x < 1 ? ['k1cam', f, x, sx, portrait ? 1 : 0] : c1Last());
       const u = local(P.wipe, t); // light smoke drifting across, densest mid-crossfade
       if (u > 0 && u < 1) ops.push(['smoke', u, P.smoke]);
     } else if (p < S.c2[0]) {
@@ -407,11 +467,11 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
       const t = local(S.c2, p);
       const d = dissolve('c2', t);
       if (d < 1) ops.push(c1Last());
-      ops.push(['seq', 'c2', t, d, c2Fx(t), FOCUS.k2Soldier.y, 1]);
+      ops.push(portrait ? [...c2View(t).slice(0, 3), d, ...c2View(t).slice(4)] : ['seq', 'c2', t, d, sx, FOCUS.k2Soldier.y, 1]);
     } else if (p < S.c3[0]) {
       const t = local(S.c2b, p);
       const d = dissolve('c2b', t);
-      if (d < 1) ops.push(['seq', 'c2', 1, 1, c2Fx(1), FOCUS.k2Soldier.y, 1]);
+      if (d < 1) ops.push(portrait ? c2View(1) : ['seq', 'c2', 1, 1, sx, FOCUS.k2Soldier.y, 1]);
       ops.push(['seq', 'c2b', t, d, c2bFx(t), c2bFy(t), 1]);
     } else if (p < S.k4Hold[0]) {
       const t = local(S.c3, p);
@@ -463,7 +523,7 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
         ctx.fillStyle = PAPER;
         ctx.fillRect(0, 0, w, h);
       } else if (kind === 'k1cam') {
-        k1Cam(rest[0], rest[1], rest[2]);
+        k1Cam(rest[0], rest[1], rest[2], rest[3]);
       } else if (kind === 'smoke') {
         smoke(rest[0], rest[1]);
       } else if (kind === 'img') {
@@ -472,6 +532,11 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
       } else if (kind === 'seq') {
         const [name, t, alpha, fx, fy, z = 1] = rest;
         cover(frame(name, t), alpha, fx, fy, z);
+      } else if (kind === 'view' || kind === 'vseq') {
+        // Portrait: a still (view) or clip frame (vseq) at view { f, x } over its plate.
+        const [name, t, alpha, f, fx, plateKey] = kind === 'view' ? [rest[0], 0, ...rest.slice(1)] : rest;
+        const img = kind === 'view' ? a[name] : frame(name, t);
+        if (img) plated(img, viewRect(img, f, fx, plateKey), plateKey, alpha, fx);
       } else if (kind === 'globe') {
         // Build the whole globe layer (sky + globe + feathered edges) at full strength, then fade it
         // as one piece — fading the parts separately leaves a seam at the image edge.
@@ -481,7 +546,7 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
         group(alpha, () => {
           ctx.fillStyle = name === 'duo' ? `rgb(${NAVY})` : skyFill;
           ctx.fillRect(0, 0, w, h);
-          globeScene(img, blurred, scale);
+          globeScene(img, blurred, scale, name === 'duo' ? a.duoPlate : a.pk4);
         });
       } else if (kind === 'disc') {
         // The brand globe alone, clipped to the shared circle (no sky), for the hand-off to the logo.
@@ -515,7 +580,7 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
           group(alpha, () => {
             ctx.fillStyle = skyFill;
             ctx.fillRect(0, 0, w, h);
-            globeScene(img, a.k4Blur, scale);
+            globeScene(img, a.k4Blur, scale, a.pk4);
           });
         }
       } else if (kind === 'logo') {
@@ -552,6 +617,7 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
       a.k4Blur = blurredSky(img, skyFill);
       a.duoBlur = blurredSky(a.duo, `rgb(${NAVY})`);
     }
+    if (key === 'pk4' && img) a.duoPlate = duotone(img);
     // The stacked logo is a vector: rasterize it once, large enough to stay sharp on retina.
     a[key] = key === 'logo' && img ? rasterize(img, 2400) : img;
   }
@@ -575,6 +641,11 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     // swiped straight into C1 showed frames 10–19 behind, then a jump when they landed).
     const add = (key, src, at, step = 4) => jobs.push({ key, src, at, lead: step === 4 ? 0 : step === 2 ? 3 : 6 });
     add('k1', still(ASSETS.k1), 0);
+    if (tall) {
+      const P = (k) => `${ASSETS.base}/m/${ASSETS.plates[k].name}.webp`;
+      add('pc2', P('c2'), S.c1[0] + 8);
+      add('pk4', P('k4'), S.c3[0] + 2);
+    }
     // C1 is the K1 painting itself: its detail layer next, then K2 (under the smoke at ~21%).
     add('k1d', `${ASSETS.base}/${ASSETS.k1Detail.name}-${phone ? 'm' : size()}.webp`, S.c1[0]);
     add('k2', still(ASSETS.k2), S.c1[0] + 8);
@@ -620,8 +691,11 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     const initial = jobs.filter((j) => j.at <= AHEAD).length;
     let initialDone = 0;
     const k1Job = jobs.splice(0, 1)[0];
-    const k1 = await loadImage(k1Job.src); // the opening frame first, alone
+    // The opening frame first (on portrait screens with its plate, so the opening is never a crop
+    // that then jumps to the zoomed-out view).
+    const [k1, pk1] = await Promise.all([loadImage(k1Job.src), tall ? loadImage(`${ASSETS.base}/m/${ASSETS.plates.k1.name}.webp`) : null]);
     if (!k1) return onFail();
+    if (pk1) onStill('pk1', pk1);
     onStill('k1', k1);
     let initialFailed = 0;
     onProgress(++initialDone / initial, true);
