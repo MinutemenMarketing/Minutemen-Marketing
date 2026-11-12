@@ -689,6 +689,14 @@ html:not(.motion) .beat--1::before {
 .hero__controls.is-up {
   top: calc(var(--safe-t) + (var(--nav-h) - 44px) / 2);
 }
+/* Desktop (2026-11-12, Noah): Skip sits top-LEFT, on the nav's left content edge (the same margin as
+   the logo); phones and tablets keep it top-right. */
+@media (min-width: 1024px) {
+  .hero__controls {
+    right: auto;
+    left: max(calc(var(--gutter) + var(--safe-l)), calc((100% - var(--shell)) / 2));
+  }
+}
 /* Changing place: a quick fade out and back in, never a slide across the hero. */
 .hero__controls.is-hop,
 .hero__controls.is-hop:hover,
