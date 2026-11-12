@@ -2,7 +2,7 @@
 // progress trail, skip control, and the nav fading out while you scroll down through it.
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { CHOREO } from './hero/choreography.js';
+import { CHOREO, logoEndBottom } from './hero/choreography.js';
 import { createStage } from './hero/stage.js';
 
 const $ = (s, el = document) => el.querySelector(s);
@@ -110,6 +110,25 @@ export function initHero({ scroller, nav, navH, reduced, returning, markSeen }) 
   // The words are not pre-hidden: they paint with the page under the opaque preloader, and the
   // entrance (fromTo in lift) sets them hidden the moment the preloader starts to fade. That way their
   // first paint stays the page's largest paint (LCP) on fast and slow devices alike.
+
+  // Phones (2026-11-12): the first section starts at the settled logo's bottom edge instead of a full
+  // stage height below the stage top, so Services follows the logo with the normal section gap (it
+  // used to leave about a third of a screen of empty paper). #main stacks above the stage (main.css),
+  // so it slides up over the empty paper under the logo during the last ~5% of the pin and never
+  // reaches the logo. Measured before every ScrollTrigger refresh, from the same large-viewport
+  // height the stage is sized to.
+  const stageEl = $('.hero__stage');
+  const probe = document.createElement('div');
+  probe.style.cssText = 'position:fixed;top:0;left:0;width:0;height:100vh;height:100lvh;visibility:hidden;pointer-events:none';
+  document.body.append(probe);
+  const phoneMq = window.matchMedia('(max-width: 767px)');
+  const pullMain = () => {
+    const sh = probe.getBoundingClientRect().height;
+    const pull = phoneMq.matches ? Math.max(0, Math.round(sh - logoEndBottom(stageEl.clientWidth || window.innerWidth, sh))) : 0;
+    document.documentElement.style.setProperty('--hero-pull', `${pull}px`);
+  };
+  pullMain();
+  ScrollTrigger.addEventListener('refreshInit', pullMain);
 
   const mm = gsap.matchMedia();
   mm.add({ desktop: '(min-width: 768px)', mobile: '(max-width: 767px)', portrait: '(max-aspect-ratio: 1/1)' }, (ctx) => {

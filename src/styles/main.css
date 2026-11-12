@@ -534,6 +534,18 @@ html:not(.motion) .beat--1::before {
   overflow: hidden;
   background: var(--navy-deep);
 }
+/* The page after the hero always paints above the hero stage, so nothing from the hero can sit on
+   top of Services, whatever the pin does (2026-11-12). Phones pull it up to the settled logo. */
+.motion #main {
+  position: relative;
+  z-index: 1;
+  background: var(--paper);
+}
+@media (max-width: 767px) {
+  .motion #main {
+    margin-top: calc(-1 * var(--hero-pull, 0px));
+  }
+}
 .motion .hero__canvas {
   display: block;
   position: absolute;

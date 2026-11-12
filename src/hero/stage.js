@@ -505,7 +505,7 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
       ops.push(['paper'], ['disc', disc], ['globe', 'duo', 1 - sky, 1], ['logo', logo, 1]);
     } else {
       const t = sine(local(S.toSite, p));
-      ops.push(['paper'], ['logo', 1, lerp(1, 0.78, t)]);
+      ops.push(['paper'], ['logo', 1, lerp(1, CHOREO.logoEnd, t)]);
     }
     return ops;
   }

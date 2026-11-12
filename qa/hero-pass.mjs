@@ -21,7 +21,7 @@ const runs = [
   ['Android S9+ swipe', chromium, { ...devices['Galaxy S9+'] }, 'touch', false],
   ['Android S9+ swipe, slow 4G', chromium, { ...devices['Galaxy S9+'] }, 'touch', true],
 ];
-for (const [name, bt, opts, how, slow, channel] of COLLIDE_ONLY ? [] : runs) {
+for (const [name, bt, opts, how, slow, channel] of COLLIDE_ONLY ? [] : runs.filter((r) => process.env.ONLY ? new RegExp(process.env.ONLY).test(r[0]) : true)) {
   const b = await bt.launch(channel ? { channel } : {}); const ctx = await b.newContext(opts); const p = await ctx.newPage();
   const errors = []; p.on('pageerror', (e) => errors.push(e.message)); p.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
   const frames17 = []; p.on('request', (r) => /c2b\/f_0017/.test(r.url()) && frames17.push(r.url().split('/').pop()));
@@ -37,7 +37,10 @@ for (const [name, bt, opts, how, slow, channel] of COLLIDE_ONLY ? [] : runs) {
     if (how === 'wheel') { await p.mouse.move(W / 2, 400); await p.mouse.wheel(0, dir * 100); await p.waitForTimeout(fast ? 40 : 180); }
     else if (how === 'trackpad') { await p.mouse.move(W / 2, 400); for (let k = 0; k < 6; k++) { await p.mouse.wheel(0, dir * (fast ? 24 : 7)); await p.waitForTimeout(16); } await p.waitForTimeout(fast ? 20 : 120); }
     else if (how === 'touch') { await touch(dir * (fast ? 300 : 110)); await p.waitForTimeout(fast ? 60 : 220); }
-    else { await p.evaluate(([d]) => scrollBy(0, d), [dir * (fast ? 260 : 90)]); await p.waitForTimeout(fast ? 50 : 200); }
+    // iPhone (2026-11-12): a fling scrolls every frame with iOS momentum decay (0.998/ms), as Safari
+    // does. The old step teleported 260px at a time; emulated WebKit on Windows draws only ~6 frames a
+    // second, so a whole 3% text fade fell between two frames and read as a "missed beat" or a jump.
+    else { await p.evaluate(([v]) => new Promise((res) => { let last = performance.now(); const f = (t) => { const dt = t - last; last = t; scrollBy(0, (v * dt) / 1000); v *= Math.pow(0.998, dt); if (Math.abs(v) > 40) requestAnimationFrame(f); else res(); }; requestAnimationFrame(f); }), [dir * (fast ? 3000 : 900)]); await p.waitForTimeout(fast ? 60 : 200); }
   };
   const t0 = Date.now(); const y = () => p.evaluate(() => scrollY);
   // slowly to the globe's end, quickly to past the hero, then back up to the top
@@ -50,9 +53,11 @@ for (const [name, bt, opts, how, slow, channel] of COLLIDE_ONLY ? [] : runs) {
   // A beat "episode" = rising from < 0.05 to > 0.6. Count episodes per direction of travel.
   const episodes = (k) => { let n = 0, low = true; for (const r of s) { if (low && r[k] > 0.6) { n++; low = false; } else if (!low && r[k] < 0.05) low = true; } return n; };
   // Flash check: effective opacity of a beat jumping by > 0.5 in one frame.
-  const jumps = (k) => s.filter((r, i) => i && Math.abs(r[k] - s[i - 1][k]) > 0.5).length;
+  // A jump = a beat's opacity changing by > 0.5 while the page moved < 60px (a 3% fade needs ~82px
+  // for that much change on a phone), so it measures the page, not how often the browser draws.
+  const jumps = (k) => s.filter((r, i) => i && Math.abs(r[k] - s[i - 1][k]) > 0.5 && Math.abs(r[3] - s[i - 1][3]) < 60).length;
   const maxP = Math.max(...s.map((r) => r[0]));
-  console.log(`${name.padEnd(28)} reached p${maxP.toFixed(0)} | beat2 shown ${episodes(1)}x, beat3 shown ${episodes(2)}x (2 = down + up) | 1-frame opacity jumps: ${jumps(1) + jumps(2)} | f_0017 files: ${[...new Set(frames17)].join(',') || 'none'} | errors: ${errors.length ? errors.join(' / ').slice(0, 160) : 0} | ${((Date.now() - t0) / 1000).toFixed(0)}s`);
+  console.log(`${name.padEnd(28)} reached p${maxP.toFixed(0)} | beat2 shown ${episodes(1)}x, beat3 shown ${episodes(2)}x (2 = down + up) | opacity jumps (<60px of scroll): ${jumps(1) + jumps(2)} | f_0017 files: ${[...new Set(frames17)].join(',') || 'none'} | errors: ${errors.length ? errors.join(' / ').slice(0, 160) : 0} | ${((Date.now() - t0) / 1000).toFixed(0)}s`);
   await b.close();
 }
 

@@ -94,6 +94,20 @@ continuing.** Never lock or hijack the scroll. Every percentage lives in one con
   width it used to ride up the page with the unpinned stage onto the Services shot line as that drew.
   The nav comes back at 96% (`CHOREO.navBack`), while the logo settles on paper, so its 450ms fade is
   done before Services slides under it. The Services shot line draws once (traced, no re-trigger).
+- **Hero end on phones (2026-11-12, Noah's iPhone screenshot):** the hero stage is an opaque,
+  positioned layer earlier in the page, so wherever it overlapped Services it painted over the
+  eyebrow and the heading (the shot line, itself positioned, still showed on top). On Noah's iPhone
+  the stage ended ~134px (about one Safari toolbar) lower than the space ScrollTrigger reserved for
+  it; WebKit emulation never reproduces that offset (stage and spacer always agree there, and
+  ScrollTrigger keeps the stage at its measured px height after unpinning), so the fix does not
+  depend on it: `.motion #main` (paper, `z-index: 1`) always paints above the stage. Below 768px
+  #main is also pulled up by `--hero-pull` (stage height minus the settled logo's bottom edge,
+  `logoEndBottom()` in choreography.js, measured at every ScrollTrigger refresh), so Services follows
+  the logo with the normal section gap instead of a third of a screen of paper; it slides over that
+  empty paper during the last ~5% of the pin and never reaches the logo. The end logo is
+  `CHOREO.logoEnd` (0.78) of the circle: about 67% of the screen width on phones. Desktop unchanged.
+  Check: `qa/ios-end.mjs <base> 390x844 134` (stage forced 134px taller; Services eyebrow and heading must be
+  top-most at every position, 90% of the pin to past it, down and up).
 - **Text fades:** opacity + 16px rise + slight blur-to-sharp, about **3% of the scroll** each. The
   words are hidden by a `tl.set` at the moment their line switches on; without it a ScrollTrigger
   refresh left them at full opacity and the line flashed on, off, on (fixed 2026-11-08).
@@ -288,8 +302,11 @@ Note: the Claude desktop browser pane reports reduced motion — QA the motion p
   text cropped by its container or sticking out of its box, overlapping text, a hero canvas that does
   not fill the screen, hero beats touching Skip / Scroll / the progress line, and portfolio windows of
   the wrong shape. Saves a screenshot set per size for a contact sheet.
-- `hero-pass.mjs [baseUrl] [--collide-only]`: scroll runs (wheel, trackpad, touch, slow 4G) and the
-  collision check (hero text vs controls at every beat, 375-1920px).
+- `hero-pass.mjs [baseUrl] [--collide-only]` (`ONLY=iPhone` env runs one scroll run): scroll runs
+  (wheel, trackpad, touch, slow 4G) and the collision check (hero text vs controls at every beat,
+  375-1920px). The iPhone run flings frame by frame with iOS momentum (2026-11-12); a jump is > 0.5
+  opacity within < 60px of scroll. Emulated WebKit on Windows draws ~6 frames a second, so the old
+  260px-step swipe and per-frame jump count reported missed beats and jumps that were frame gaps.
 - `mobile-audit.mjs`, `cross-browser.mjs`, `verify-live.mjs`: see `qa/README.md`.
 
 ### Portfolio windows (phones 2026-11-11)

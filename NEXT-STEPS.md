@@ -29,6 +29,15 @@ Playwright QA scripts (cross-browser run, mobile alignment audit, full hero pass
 - **Portfolio copy:** Noah's text for both projects ("costumers" fixed to "customers"); checked live:
   both sites link their Square booking page, and both contact forms post to Web3Forms (Beauty on
   contact.html, Smiles on the homepage).
+- **Hero to Services on iPhone:** Services now always paints above the hero stage, so the end logo
+  can't cover the heading; on phones Services follows the logo with the normal section gap (logo
+  ~67% of the screen width). Checked in iPhone WebKit at 375/390/430, address bar expanded and
+  collapsed, with the stage forced 134px taller as on Noah's phone: nothing covered, down or up.
+  Sheet: `qa/shots/2026-11-12-hero-end-iphone.jpg`. Give it one scroll on a real iPhone.
+- **iPhone fast swipe:** not a site bug. Emulated WebKit on Windows draws one frame per ~170ms, so
+  the old test's 260px jumps skipped whole text fades between frames. With real-shaped flings
+  (1,500-5,000px/s) both beats show going down and back up, with no opacity jumps;
+  `qa/hero-pass.mjs` now swipes that way.
 
 ## Done 2026-11-11
 

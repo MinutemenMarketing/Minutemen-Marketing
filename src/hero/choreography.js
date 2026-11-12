@@ -4,6 +4,7 @@
 export const CHOREO = {
   pin: { desktop: 1000, mobile: 650 }, // pinned length in vh
   trailOut: [96, 99.5], // the progress line fades out over this stretch of the scroll (%)
+  logoEnd: 0.78, // the logo's ring settles at this share of the shared circle (toSite)
   navBack: 96, // the nav comes back from this point of the hero (%), while the logo settles on paper
   // Scrub smoothing in seconds. Lenis already smooths the wheel; a long scrub on top of it adds a
   // second catch-up, so the first wheel click felt dead (2026-11-08: 1 → 0.35).
@@ -141,6 +142,15 @@ export const FOCUS = {
 
 // Shared circle target (CLAUDE.md): centred, diameter = 50% of frame height,
 // capped on narrow screens so the globe and ring never crop.
+// Where the settled end logo's bottom edge sits on a stage of w × h (the stacked SVG is 981 × 1023.83,
+// its ring at FOCUS.logoRing). Phones pull the first section up to it (home-hero.js, 2026-11-12).
+export const logoEndBottom = (w, h) => {
+  const t = circleTarget(w, h);
+  const r = FOCUS.logoRing;
+  const iw = (t.d * CHOREO.logoEnd) / r.d;
+  return t.y + (1 - r.y) * iw * (1023.83 / 981);
+};
+
 export const circleTarget = (w, h) => {
   // Short landscape screens (a phone on its side, 2026-11-10): a little smaller and higher, so beat 3
   // fits below the globe above the progress line.
