@@ -37,18 +37,25 @@ const SRC = ROOT + 'assets/drafts/ball-gen.png';
   for (let y = Math.floor(cy - r * 0.8); y < cy + r * 0.8; y++) for (let x = Math.floor(cx - r * 0.8); x < cx + r * 0.8; x++) if (Math.hypot(x - cx, y - cy) < r * 0.8) { for (let c = 0; c < 3; c++) sm[c] += data[(y * W + x) * 3 + c]; sn++; }
   const gain = [0, 1, 2].map((c) => fm[c] / fn / (sm[c] / sn));
   console.log('footage mean', fm.map((v) => (v / fn).toFixed(0)).join(','), 'sprite mean', sm.map((v) => (v / sn).toFixed(0)).join(','), 'gain', gain.map((v) => v.toFixed(3)).join(','));
-  const S = Math.ceil(r * 2) + 4, out = Buffer.alloc(S * S * 4);
+  // v2 (2026-11-14, Ethan: the edge looked cut out). A soft painterly edge: alpha eases over the outer
+  // 2.2% of the radius, and colour there is taken from just inside the rim, so the old grey ground can
+  // never show as a light fringe. Sizes: 1600 (desktop: the ball reaches ~1,300 device px, so the
+  // 1024 v1 was upscaled), 640 (phones: at most ~570 device px).
+  const S = Math.ceil(r * 2) + 2, out = Buffer.alloc(S * S * 4);
+  const R0 = r * 0.978;
   for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
-    const sx = cx - S / 2 + x + 0.5, sy = cy - S / 2 + y + 0.5;
+    let sx = cx - S / 2 + x + 0.5, sy = cy - S / 2 + y + 0.5;
     const d = Math.hypot(sx - cx, sy - cy);
-    const a = Math.max(0, Math.min(1, (r - d) / 1.5 + 0.5));
+    const u = Math.min(1, Math.max(0, (r - d) / (r - R0)));
+    const a = u * u * (3 - 2 * u);
+    if (d > R0) { const k = R0 / d; sx = cx + (sx - cx) * k; sy = cy + (sy - cy) * k; }
     const xi = Math.min(W - 1, Math.max(0, Math.round(sx - 0.5))), yi = Math.min(H - 1, Math.max(0, Math.round(sy - 0.5)));
     const o = (y * S + x) * 4;
     for (let c = 0; c < 3; c++) out[o + c] = Math.max(0, Math.min(255, Math.round(data[(yi * W + xi) * 3 + c] * gain[c])));
     out[o + 3] = Math.round(a * 255);
   }
   const img = sharp(out, { raw: { width: S, height: S, channels: 4 } });
-  await img.clone().resize(1024, 1024).webp({ quality: 88, alphaQuality: 100 }).toFile(ROOT + 'public/hero/v1/ball-v1.webp');
-  await img.clone().resize(512, 512).webp({ quality: 88, alphaQuality: 100 }).toFile(ROOT + 'public/hero/v1/ball-v1-512.webp');
-  console.log('wrote ball-v1.webp, ball-v1-512.webp');
+  for (const [px, name] of [[1600, 'ball-v2-1600'], [640, 'ball-v2-640'], [64, 'ball-v2-soft']]) // soft: drawn large = a blurred ball (C3 hand-off)
+    await img.clone().resize(px, px, { kernel: 'lanczos3' }).webp({ quality: 90, alphaQuality: 100 }).toFile(ROOT + 'public/hero/v1/' + name + '.webp');
+  console.log('wrote ball-v2-1600, ball-v2-640, ball-v2-soft');
 })();

@@ -2,7 +2,7 @@
 // (0–100). Paints only on requestAnimationFrame and only when the computed layers change.
 import { CHOREO, ASSETS, FOCUS, circleTarget } from './choreography.js';
 import { SMOKE, smokePixels } from './smoke.js';
-import { BALL_TRACK } from './ball-track.js';
+import { BALL_TRACK, BALL_TRACK_C3 } from './ball-track.js';
 
 const S = CHOREO.scenes;
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
@@ -169,38 +169,70 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     return r; // where the image landed (C2b's ball is placed on it)
   }
 
-  // C2b's musket ball (2026-11-13): the footage ball is removed from frames BALL_TRACK.first on, and
-  // this draws the painted sprite on the tracked path over the frame that was just drawn into `r`.
-  // Portrait screens limit its size (CHOREO.ballMax of the screen width).
-  function drawBall(i, r, alpha) {
-    const n = i + 1;
-    const k = n - BALL_TRACK.first;
-    if (k < 0 || k >= BALL_TRACK.frames.length || alpha <= 0) return;
-    const [bx, by, br] = BALL_TRACK.frames[k];
-    const cx = r.x + bx * r.w;
-    const cy = r.y + by * r.h;
-    let d = 2 * br * r.h;
-    if (w < h) {
-      const cap = CHOREO.ballMax * w;
-      const soft = d / Math.pow(1 + Math.pow(d / cap, 6), 1 / 6);
-      const e = clamp01((n - 80) / 12);
-      d = lerp(soft, d, e * e * (3 - 2 * e)); // back to the footage size by the last frame (C3 match)
-    }
-    ctx.globalAlpha = alpha;
-    ctx.imageSmoothingQuality = 'high'; // the 1024px sprite is drawn far smaller on phones
-    if (a.ball) ctx.drawImage(a.ball, cx - d / 2, cy - d / 2, d, d);
-    else {
-      // the sprite has not arrived yet: a plain lead sphere, so the frame is never without its ball
-      const g = ctx.createRadialGradient(cx - d * 0.18, cy - d * 0.2, d * 0.04, cx, cy, d / 2);
-      g.addColorStop(0, '#77746e');
-      g.addColorStop(0.6, '#45433f');
-      g.addColorStop(1, '#262523');
-      ctx.fillStyle = g;
-      ctx.beginPath();
-      ctx.arc(cx, cy, d / 2, 0, Math.PI * 2);
-      ctx.fill();
-    }
+  // The musket ball (2026-11-13, reworked 2026-11-14). C2b's frames 17-92 have the footage ball
+  // removed (a clean plate); this draws the painted sprite on the tracked path instead, on the rect the
+  // frame was just drawn into. Portrait screens limit its size (CHOREO.ballMax of the screen width).
+  // At the end it rides on C3's own footage ball through the dissolve and fades into it (see 'c3').
+  const trackAt = (T, n) => {
+    const k = clamp01((n - T.first) / (T.frames.length - 1)) * (T.frames.length - 1);
+    const k0 = Math.floor(k), k1 = Math.min(T.frames.length - 1, k0 + 1), u = k - k0;
+    return [0, 1, 2].map((c) => lerp(T.frames[k0][c], T.frames[k1][c], u));
+  };
+  // C2b frame number (1-based, fractional) for scroll position t, kept on the frame actually shown
+  function c2bFrame(t, img) {
+    const list = played('c2b');
+    const f = clamp01(t) * (list.length - 1);
+    const i0 = Math.floor(f), i1 = Math.min(list.length - 1, i0 + 1);
+    const n = lerp(list[i0], list[i1], f - i0) + 1;
+    const shown = img._i + 1;
+    return Math.floor(n) === shown ? n : shown; // a stand-in frame: stay on what is shown
+  }
+  function ballSize(d, n) {
+    if (w >= h) return d;
+    const cap = CHOREO.ballMax * w;
+    const soft = d / Math.pow(1 + Math.pow(d / cap, 6), 1 / 6);
+    const e = clamp01((n - 80) / 12);
+    return lerp(soft, d, e * e * (3 - 2 * e)); // back to the footage size by C2b's last frame (C3 match)
+  }
+  // soft: 0 = crisp sprite, 1 = the blurred one (matching C3's footage ball). blur: motion blur length in
+  // px along (ux, uy).
+  function paintBall(cx, cy, d, alpha, soft = 0, blur = 0, ux = 1, uy = 0) {
+    if (alpha <= 0 || d <= 0) return;
+    ctx.imageSmoothingQuality = 'high';
+    // motion blur = the sprite stretched along its direction of travel (soft edge, no ghost copies)
+    const ang = Math.atan2(uy, ux), sx = (d + blur) / d;
+    const draw = (sprite, al) => {
+      if (al <= 0) return;
+      ctx.globalAlpha = al;
+      ctx.save();
+      ctx.translate(cx, cy);
+      if (blur > 0.5) { ctx.rotate(ang); ctx.scale(sx, 1); ctx.rotate(-ang); }
+      if (sprite) ctx.drawImage(sprite, -d / 2, -d / 2, d, d);
+      else {
+        // the sprite has not arrived yet: a plain lead sphere, so the frame is never without its ball
+        const g = ctx.createRadialGradient(-d * 0.18, -d * 0.2, d * 0.04, 0, 0, d / 2);
+        g.addColorStop(0, '#77746e');
+        g.addColorStop(0.6, '#45433f');
+        g.addColorStop(1, '#262523');
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(0, 0, d / 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    };
+    draw(a.ball, alpha * (1 - soft));
+    if (soft > 0) draw(a.ballSoft || a.ball, alpha * soft);
     ctx.globalAlpha = 1;
+  }
+  function drawBall(n, r, alpha) {
+    if (n < BALL_TRACK.first) return;
+    const [bx, by, br] = trackAt(BALL_TRACK, n);
+    const [nx, ny] = trackAt(BALL_TRACK, n + 1);
+    const cx = r.x + bx * r.w, cy = r.y + by * r.h;
+    const vx = (nx - bx) * r.w, vy = (ny - by) * r.h, v = Math.hypot(vx, vy);
+    const d = ballSize(2 * br * r.h, n);
+    paintBall(cx, cy, d, alpha, 0, Math.min(v * 0.15, d * 0.08), v ? vx / v : 1, v ? vy / v : 0); // a slight smear, never an oval
   }
 
   // Draw an image so a known circle inside it (cx, cy as image fractions, d as a fraction of image
@@ -518,9 +550,8 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
         const ct = remap(CHOREO.c3Remap, t);
         const frameT = clamp01(ct);
         const d = dissolve('c3', frameT);
-        // C3 crops around its globe, so its ball lands ~55px from C2b's: the sprite under the dissolve
-        // fades out as C3 fades in, so the two balls never show as a double (2026-11-13)
-        if (d < 1) ops.push(['seq', 'c2b', 1, 1, c2bFx(1), c2bFy(1), 1, 1 - d]);
+        // The sprite rides on C3's ball through the dissolve (see 'c3'); C2b's layer draws none (2026-11-14)
+        if (d < 1) ops.push(['seq', 'c2b', 1, 1, c2bFx(1), c2bFy(1), 1, 0]); // its ball is drawn by 'c3' (hand-off)
         ops.push(['c3', frameT, d, lerp(1, 0, sine(local(CHOREO.c3Settle, t)))]);
       } else {
         // Placeholder: rise from the last C2b frame and dissolve into the globe.
@@ -572,7 +603,7 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
         const [name, t, alpha, fx, fy, z = 1, ballAlpha = alpha] = rest;
         const img = frame(name, t);
         const r = cover(img, alpha, fx, fy, z);
-        if (r && img._clip === 'c2b') drawBall(img._i, r, ballAlpha);
+        if (r && img._clip === 'c2b') drawBall(c2bFrame(t, img), r, ballAlpha);
       } else if (kind === 'view' || kind === 'vseq') {
         // Portrait: a still (view) or clip frame (vseq) at view { f, x } over its plate.
         const [name, t, alpha, f, fx, plateKey] = kind === 'view' ? [rest[0], 0, ...rest.slice(1)] : rest;
@@ -623,6 +654,26 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
             ctx.fillRect(0, 0, w, h);
             globeScene(img, a.k4Blur, scale, a.pk4);
           });
+          // The ball hand-off (2026-11-14): the sprite sits exactly on C3's own footage ball (tracked) and
+          // fades into it over C3's frames 10-24 while it softens to the footage's blur, so it never pops,
+          // shifts or doubles.
+          const T = img._clip === 'c3' ? BALL_TRACK_C3 : img._clip === 'c2b' ? BALL_TRACK : null;
+          const n = img._i + 1;
+          if (T && n >= T.first && n <= T.first + T.frames.length - 1) {
+            const c = circleTarget(w, h);
+            const sc = (c.d * scale) / (g.d * ih);
+            const r3 = { x: c.x - g.x * iw * sc, y: c.y - g.y * ih * sc, w: iw * sc, h: ih * sc };
+            const [bx, by, br] = trackAt(T, n);
+            let cx = r3.x + bx * r3.w, cy = r3.y + by * r3.h, d = 2 * br * r3.h;
+            const isC3 = T === BALL_TRACK_C3;
+            const fade = isC3 ? clamp01((n - 10) / 14) : 0;
+            const fs = fade * fade * (3 - 2 * fade);
+            const soft = isC3 ? clamp01((n - 6) / 8) : 0;
+            d *= lerp(1.06, 1, fs); // a touch larger while opaque: covers the footage ball's soft rim
+            // Under the dissolve the sprite already sits on C3's ball: C2b's last frame under it has no ball
+            // (C3's frame 1 is C2b's last frame, so the two places agree to a few px).
+            paintBall(cx, cy, d, 1 - fs, soft * soft * (3 - 2 * soft));
+          }
         }
       } else if (kind === 'logo') {
         // Navy ink on a transparent ground (multiply keeps it looking printed on the paper).
@@ -692,7 +743,8 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     add('k2', still(ASSETS.k2), S.c1[0] + 8);
     add('k4', still(ASSETS.k4), S.c3[0] + 2);
     add('logo', ASSETS.logo, S.toLogo[0] - 6);
-    add('ball', `${ASSETS.base}/${ASSETS.ball}${phone ? '-512' : ''}.webp`, S.c2b[0] - 4);
+    add('ball', `${ASSETS.base}/${ASSETS.ball}-${phone ? '640' : '1600'}.webp`, S.c2b[0] - 4);
+    add('ballSoft', `${ASSETS.base}/${ASSETS.ball}-soft.webp`, S.c2b[0] - 4);
     for (const name of Object.keys(SEG)) {
       const s = ASSETS[name];
       if (!s) continue;
