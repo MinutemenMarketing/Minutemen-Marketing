@@ -669,7 +669,9 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
             const fade = isC3 ? clamp01((n - 10) / 14) : 0;
             const fs = fade * fade * (3 - 2 * fade);
             const soft = isC3 ? clamp01((n - 6) / 8) : 0;
-            d *= lerp(1.06, 1, fs); // a touch larger while opaque: covers the footage ball's soft rim
+            // a touch larger while opaque, to cover the footage ball's soft rim: eased in over C3's first frames
+            // (from C2b's exact size) and out again as it fades, so the size never steps
+            d *= 1 + 0.06 * (isC3 ? clamp01((n - 1) / 4) : 0) * (1 - fs);
             // Under the dissolve the sprite already sits on C3's ball: C2b's last frame under it has no ball
             // (C3's frame 1 is C2b's last frame, so the two places agree to a few px).
             paintBall(cx, cy, d, 1 - fs, soft * soft * (3 - 2 * soft));
