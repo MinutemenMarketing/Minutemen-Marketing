@@ -341,14 +341,59 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
   // The layer is cached (2026-11-14): while assets arrive the canvas repaints with the same geometry, and
   // rebuilding a full-screen layer each time was ~80ms of main-thread work at load on a phone.
   let featherKey = '';
+  // Only the top and/or bottom edge inside the screen (the usual case on phones: the painting is wider
+  // than the screen): draw its middle straight onto the canvas and feather just the two edge strips through
+  // small strip canvases. Same pixels as the full-layer path, a fraction of the work (2026-11-14,
+  // Lighthouse: each full-layer pass cost ~20ms on a throttled phone).
+  const stripLayer = document.createElement('canvas');
+  function featheredStrips(img, x0, y0, dw, dh, frac, alpha) {
+    const f = Math.min(dw, dh) * frac;
+    const top = y0 > 0, bottom = y0 + dh < h;
+    const s = canvas.width / w;
+    const draw = (c) => (typeof img === 'function' ? img(c) : c.drawImage(img, x0, y0, dw, dh));
+    // the middle, clipped to between the feather zones
+    const my0 = top ? y0 + f : -1, my1 = bottom ? y0 + dh - f : h + 1;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.beginPath();
+    ctx.rect(-1, my0, w + 2, my1 - my0);
+    ctx.clip();
+    draw(ctx);
+    ctx.restore();
+    // each feathered strip: drawn into a strip-sized canvas, erased with the same gradient, composited
+    for (const [on, sy, fromY, toY] of [[top, y0, y0, y0 + f], [bottom, y0 + dh - f, y0 + dh, y0 + dh - f]]) {
+      if (!on) continue;
+      const sh = Math.ceil(f * s) + 2;
+      if (stripLayer.width !== canvas.width || stripLayer.height < sh) { stripLayer.width = canvas.width; stripLayer.height = sh; }
+      const e = stripLayer.getContext('2d');
+      e.setTransform(1, 0, 0, 1, 0, 0);
+      e.clearRect(0, 0, stripLayer.width, stripLayer.height);
+      const dy = Math.round(sy * s);
+      e.setTransform(s, 0, 0, s, 0, -dy);
+      draw(e);
+      e.globalCompositeOperation = 'destination-out';
+      const g = e.createLinearGradient(0, fromY, 0, toY);
+      g.addColorStop(0, 'rgba(0,0,0,1)');
+      g.addColorStop(1, 'rgba(0,0,0,0)');
+      e.fillStyle = g;
+      e.fillRect(x0, sy, dw, f);
+      e.globalCompositeOperation = 'source-over';
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.globalAlpha = alpha;
+      ctx.drawImage(stripLayer, 0, 0, stripLayer.width, sh, 0, dy, stripLayer.width, sh);
+      ctx.restore();
+    }
+  }
   function feathered(img, x0, y0, dw, dh, frac, alpha = 1) {
+    if (x0 <= 0 && x0 + dw >= w && (y0 > 0 || y0 + dh < h)) return featheredStrips(img, x0, y0, dw, dh, frac, alpha);
     if (edgeLayer.width !== canvas.width || edgeLayer.height !== canvas.height) {
       edgeLayer.width = canvas.width;
       edgeLayer.height = canvas.height;
       featherKey = '';
     }
-    const key = typeof img === 'function' ? '' : [img.src || img._id || '', x0, y0, dw, dh, frac, w, h].join('|');
-    if (key && key === featherKey) {
+    const key = [typeof img === 'function' ? img._key || '' : img.src || img._id || '', x0, y0, dw, dh, frac, w, h].join('|');
+    if (!key.startsWith('|') && key === featherKey) {
       ctx.save();
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.globalAlpha = alpha;
@@ -431,6 +476,7 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
       drawVisible(c, img, r.x, r.y, r.w, r.h);
       if (a.k1d && r.zoom > 1.02) drawVisible(c, a.k1d, r.x + D.x0 * r.w, r.y + D.y0 * r.h, (D.x1 - D.x0) * r.w, (D.y1 - D.y0) * r.h);
     };
+    drawK1._key = 'k1' + (a.k1d && r.zoom > 1.02 ? '+d' : ''); // lets feathered() reuse its layer
     if (k2a < 1) {
       if (portrait) plated(drawK1, r, 'k1');
       else drawK1(ctx);
