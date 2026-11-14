@@ -108,6 +108,18 @@ continuing.** Never lock or hijack the scroll. Every percentage lives in one con
   `CHOREO.logoEnd` (0.78) of the circle: about 67% of the screen width on phones. Desktop unchanged.
   Check: `qa/ios-end.mjs <base> 390x844 134` (stage forced 134px taller; Services eyebrow and heading must be
   top-most at every position, 90% of the pin to past it, down and up).
+- **Load performance (2026-11-14):** Lighthouse mobile TBT went from ~30ms to 130-240ms with the phone
+  plates (`968b4e2`, found by building every few commits since Nov 8 and running Lighthouse on each):
+  every frame the loader fetched reset the paint key, and each repaint composites the plate with feathered
+  edges. Now the paint key includes the file each sequence layer actually shows, so a loaded frame
+  repaints only when it is on screen; the feathered layer is cached while its geometry is unchanged;
+  images decode off the main thread before their first draw; on phones only the top/bottom edge strips
+  are feathered through small canvases (pixel-compared against the old path). Nothing looks different.
+  Result (2026-11-14): live 90-91 x5, steady (was 79-93); local 91-95 vs Nov 8's 96. What still costs
+  points: two ~160-180ms tasks in main.js (ScrollTrigger setup forcing a full-page layout, as on Nov 8)
+  and the opening's first paint over the phone plate (~80-120ms, the zoomed-out phone view since Nov 12).
+- **Scroll cue on phones (2026-11-14, Noah):** white "Scroll" over a small chevron that bobs gently
+  (`cue-bob`, off with reduced motion), both with a soft navy shadow; fades after the first scroll.
 - **Text fades:** opacity + 16px rise + slight blur-to-sharp, about **3% of the scroll** each. The
   words are hidden by a `tl.set` at the moment their line switches on; without it a ScrollTrigger
   refresh left them at full opacity and the line flashed on, off, on (fixed 2026-11-08).
@@ -242,7 +254,18 @@ interface elements or borders.
     of the footage ball, so it never pops, shifts or doubles. C3's first frames ease in
     (`CHOREO.c3Remap`): its camera stops tracking there and the ball shoots right, which at full speed
     straight after the tracked C2b shot read as a jump.
-  Sheets: `qa/shots/2026-11-14-ball-*.jpg`.
+  - **Polish (2026-11-14, Noah):** the ball is always a perfect circle (the 8% stretch used as motion
+    blur is gone). It flies with a soft painterly trail behind it (`paintTrail`: stacked tapered layers
+    plus faint curved strokes, always on its left since in the scene it flies screen-right, length set
+    by its on-screen speed, easing away over C2b frames 84-92) and a hint of spin: `ball-v3-shade-*`
+    (heavy blur: the lighting, fixed) with `ball-v3-tex-*` (the brushwork) rotated over it with
+    'overlay', 0.3 rad per footage frame, continued into C3. In C3 the sprite glides on a fractional
+    frame (the fractional position must round to the frame `frame()` shows, or it steps), and for C3
+    frames 1-10 a soft ring in the colour sampled just outside the ball hides the footage ball's rim.
+  - **Barn (frames ~33-39), not fixed:** a second Aleph run on frames 30-42 (ball-free input, task
+    `734b6be0-bde2-4286-81ec-ee1f5e423e73`, 60 credits incl. keyframe, `assets/drafts/c2b-aleph-barn.mp4`)
+    painted a bright blue shed and buildings that stay put while the camera pans, so it isn't used.
+  Sheets: `qa/shots/2026-11-14-ball-*.jpg`, `qa/shots/2026-11-14-bullet-seq-*.jpg`.
 - **APPROVED C4 (orbit): `assets/clips/c4-orbit.mp4`** (task `dbb25ecc-895f-4f88-baeb-03cc158fd6a4`),
   start = end = `k4.png`. Ball passes cleanly behind the globe. Frames `public/hero/v1/c4/` (15fps,
   91), played through `CHOREO.c4Remap` so the hidden stretch (≈2.2–3.8s) takes ~0.7% of the scroll;

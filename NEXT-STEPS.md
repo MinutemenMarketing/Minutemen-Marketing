@@ -3,7 +3,7 @@
 Updated 2026-11-14. `CLAUDE.md` is the contract (hero spec, rules, every
 approved asset with its Runway task ID); `DESIGN.md` is the approved four-page design. Read both first.
 
-**Runway credits: 1,016** (2026-11-14: Aleph clean plate 144 within Noah's ~145; 2026-11-13: K1 musket edit 20 + ball sprite 20 = 40 within Noah's 150-credit cap; 2026-11-12: phone plates 80 within Noah's 200-credit cap; 2026-11-08 late: smoke removal 60 within Noah's 150-credit cap; K1 edit 80 within Noah's 120-credit cap; earlier: 95 within Noah's 200-credit approval — C1 regeneration 94,
+**Runway credits: 956** (2026-11-14 later: Aleph barn repaint 60 within Noah's 70, not used; 2026-11-14: Aleph clean plate 144 within Noah's ~145; 2026-11-13: K1 musket edit 20 + ball sprite 20 = 40 within Noah's 150-credit cap; 2026-11-12: phone plates 80 within Noah's 200-credit cap; 2026-11-08 late: smoke removal 60 within Noah's 150-credit cap; K1 edit 80 within Noah's 120-credit cap; earlier: 95 within Noah's 200-credit approval — C1 regeneration 94,
 background removal 1; then 72 within the 250-credit C1 rebuild approval — C2 v3, failed). Rule unchanged: quote the cost and wait for Noah's OK before every
 generation.
 
@@ -21,6 +21,15 @@ Playwright QA scripts (cross-browser run, mobile alignment audit, full hero pass
   edge, a slight motion blur and full resolution on every screen; at the end it rides on C3's own
   ball and fades into it (no pop or double), and C3's first frames ease in. Known leftover: a few
   frames (~33-39) show the barn stretched inside the cleared area.
+
+- **Bullet polish:** always a perfect circle; a soft painterly trail and a hint of spin; no size step or
+  rim at the hand-off into C3. The barn re-run (60 credits) came back with a bright blue shed and
+  buildings that don't follow the pan, so frames ~33-39 keep the stretched barn.
+- **Phones:** white "Scroll" cue with a bobbing chevron and soft shadow.
+- **Home:** Meet the Founders goes to the top of About.
+- **Lighthouse:** the drop came from the phone plates (Nov 12): every background frame load repainted the
+  whole hero. Fixed without changing the look; live now a steady 90-91 (was 79-93), not yet 94+. The
+  rest: main.js setup (~160-180ms tasks, as on Nov 8) and the phone opening's first paint over its plate.
 
 ## Done 2026-11-13
 
