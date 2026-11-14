@@ -92,7 +92,8 @@ function detailsHtml() {
   if (SITE.otherEmail) add('Also', SITE.otherEmail, `mailto:${SITE.otherEmail}`);
   if (SITE.phone) add('Phone', SITE.phone, telHref(SITE.phone));
   if (SITE.instagram) add('Instagram', '@' + SITE.instagram.replace(/\/$/, '').split('/').pop(), SITE.instagram, true);
-  if (SITE.linkedin) add('LinkedIn', 'LinkedIn', SITE.linkedin, true);
+  // The handle from the company URL, written like Instagram's (Noah 2026-11-13: @minutemen-marketing).
+  if (SITE.linkedin) add('LinkedIn', '@' + SITE.linkedin.replace(/\/$/, '').split('/').pop(), SITE.linkedin, true);
   for (const o of SITE.other || []) if (o?.url) add(o.label || 'Link', o.label || o.url, o.url, true);
   return rows.join('');
 }
