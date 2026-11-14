@@ -701,12 +701,15 @@ html:not(.motion) .beat--1::before {
 .hero__controls.is-up {
   top: calc(var(--safe-t) + (var(--nav-h) - 44px) / 2);
 }
-/* Desktop (2026-11-12, Noah): Skip sits top-LEFT, on the nav's left content edge (the same margin as
-   the logo); phones and tablets keep it top-right. */
+/* Desktop (2026-11-13, Noah): Skip sits in the hero's own top-right corner, 32px in from the viewport
+   edge at every width (not on the 1240px nav column, which left it adrift at 2560-3440px), 16px under
+   the nav while the nav shows and centred in the nav's band once it fades. It never shares space with
+   the nav's links: under them while they show, in their band only once they are gone. Phones and
+   tablets keep the nav-edge placement above. (2026-11-12 it was top-left, under the logo.) */
 @media (min-width: 1024px) {
   .hero__controls {
-    right: auto;
-    left: max(calc(var(--gutter) + var(--safe-l)), calc((100% - var(--shell)) / 2));
+    top: calc(var(--nav-h) + 16px);
+    right: calc(32px + var(--safe-r));
   }
 }
 /* Changing place: a quick fade out and back in, never a slide across the hero. */
