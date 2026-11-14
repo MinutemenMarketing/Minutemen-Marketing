@@ -41,6 +41,9 @@ const SRC = ROOT + 'assets/drafts/ball-gen.png';
   // 2.2% of the radius, and colour there is taken from just inside the rim, so the old grey ground can
   // never show as a light fringe. Sizes: 1600 (desktop: the ball reaches ~1,300 device px, so the
   // 1024 v1 was upscaled), 640 (phones: at most ~570 device px).
+  // v3 (2026-11-14): the edge band takes its colour from a blurred copy, so the outward clamp no longer
+  // draws hair-like radial streaks (seen at 400% on desktop)
+  const BL = await sharp(SRC).removeAlpha().blur(6).raw().toBuffer();
   const S = Math.ceil(r * 2) + 2, out = Buffer.alloc(S * S * 4);
   const R0 = r * 0.978;
   for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
@@ -51,11 +54,12 @@ const SRC = ROOT + 'assets/drafts/ball-gen.png';
     if (d > R0) { const k = R0 / d; sx = cx + (sx - cx) * k; sy = cy + (sy - cy) * k; }
     const xi = Math.min(W - 1, Math.max(0, Math.round(sx - 0.5))), yi = Math.min(H - 1, Math.max(0, Math.round(sy - 0.5)));
     const o = (y * S + x) * 4;
-    for (let c = 0; c < 3; c++) out[o + c] = Math.max(0, Math.min(255, Math.round(data[(yi * W + xi) * 3 + c] * gain[c])));
+    const wb = Math.min(1, Math.max(0, (d - R0 * 0.985) / (r * 0.02))); // 0 inside, 1 in the edge band
+    for (let c = 0; c < 3; c++) { const i = (yi * W + xi) * 3 + c; out[o + c] = Math.max(0, Math.min(255, Math.round((data[i] * (1 - wb) + BL[i] * wb) * gain[c]))); }
     out[o + 3] = Math.round(a * 255);
   }
   const img = sharp(out, { raw: { width: S, height: S, channels: 4 } });
-  for (const [px, name] of [[1600, 'ball-v2-1600'], [640, 'ball-v2-640'], [64, 'ball-v2-soft']]) // soft: drawn large = a blurred ball (C3 hand-off)
+  for (const [px, name] of [[1600, 'ball-v3-1600'], [640, 'ball-v3-640'], [64, 'ball-v3-soft']]) // soft: drawn large = a blurred ball (C3 hand-off)
     await img.clone().resize(px, px, { kernel: 'lanczos3' }).webp({ quality: 90, alphaQuality: 100 }).toFile(ROOT + 'public/hero/v1/' + name + '.webp');
-  console.log('wrote ball-v2-1600, ball-v2-640, ball-v2-soft');
+  console.log('wrote ball-v3-1600, ball-v3-640, ball-v3-soft');
 })();

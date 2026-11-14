@@ -104,7 +104,7 @@ export const ASSETS = {
   k4: 'k4v2', // approved K4 (v2, ball shrunk)
   // The C2b musket ball (2026-11-13): a painted lead sphere with alpha, drawn by the stage over the
   // ball-free C2b frames (scripts/ball-sprite.cjs; -512 on phones).
-  ball: 'ball-v2', // -1600 (desktop), -640 (phones), -soft (64px: drawn large it is a blurred ball, for the C3 hand-off)
+  ball: 'ball-v3', // -1600 (desktop), -640 (phones), -soft (64px: drawn large it is a blurred ball, for the C3 hand-off)
   logo: '/brand/logo-stacked.svg', // stacked logo (mark over MINUTEMEN MARKETING), traced vector
   // `fix`: frame files replaced after a repair, saved under a new name because /hero/v1 is cached
   // as immutable. `dupes`: files that repeat the previous frame in the 1280 and 960 sets (a 24→15fps

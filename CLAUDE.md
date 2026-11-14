@@ -206,20 +206,43 @@ interface elements or borders.
   `scripts/fix-c2b-frame17.cjs` and served as `f_0017-fix1.webp` (`ASSETS.c2b.fix`), because
   `/hero/v1` is cached as immutable: never overwrite a file there, add a new name.
   (C2b v2, task `130bef5a-…`, was matte but egg-shaped and huge — not used.)
-- **C2b ball = a sprite since 2026-11-13 (Noah: blurry, and on phones it filled the screen).** Root
-  causes: the extraction repaint drew the ball at each set's resolution with a soft edge, and phones load
-  the 960 set, whose pixels the cover crop draws ~4.7 device pixels wide; in the footage its radius
-  reaches 0.30 of the frame height, which a phone's cover crop puts at ~1.3x the screen width.
-  `scripts/c2b-ball.cjs` tracks it in the hd frames (`src/hero/ball-track.js`, frames 17-92) and removes
-  it from those frames in all three sets (`-ball1`, each row rebuilt from the shifted texture beside it,
-  feathered rim). `scripts/ball-sprite.cjs` cuts out a painted lead ball (Nano Banana Pro, footage ball
-  as reference, task `748cfbeb-a091-4460-a085-2b53f23ad887`, 20 credits) toned to the footage ball:
-  `ball-v1.webp` (1024) / `ball-v1-512.webp` (phones). `stage.js` `drawBall` draws it on the frame's
-  own rect at the tracked centre and size; on portrait screens a soft limit of `CHOREO.ballMax` (0.44)
-  of the screen width, easing back to the footage size over frames 80-92 so C3 (ball in its footage)
-  picks up at the same size. Under the C2b-to-C3 dissolve the sprite fades with 1 - dissolve: C3 crops
-  around its globe, so its ball lands ~55px away (that offset predates the sprite). Frames 1-16 keep the
-  footage ball (a few pixels in the smoke). Sheet: `qa/shots/2026-11-13-ball-before-after.jpg`.
+- **C2b ball = a painted sprite over a clean plate (2026-11-13, reworked 2026-11-14 after Ethan's review).**
+  Why a sprite: in the footage the ball's radius reaches 0.30 of the frame height (a phone's cover crop
+  put it at ~1.3x the screen width), and the extraction repaint drew it soft at each set's resolution.
+  - **Clean plate (`-ball2`, frames 17-92, all three sets).** The 2026-11-13 removal (`-ball1`) rebuilt
+    each row from the strip beside it; it did not follow the camera, so it smeared and swam (Ethan's
+    screenshot). A motion-following fill from neighbouring frames isn't reliable here (the field moves
+    240px+ per frame and is mostly blur). Aleph 2.0 (Noah approved ~145 credits; task
+    `1676f23d-208d-4a20-b4c3-47c0ee7a1b80`, 140 + 4 keyframe = **144 credits**; source = hd frames
+    17-92 encoded at 15fps in Edge, `assets/drafts/c2b-aleph-clean.mp4` is its output) kept every frame
+    in place (76 frames, played at 24fps) and painted the real background through the ball, but left it
+    as a darkened glass disc. `scripts/c2b-cleanplate.cjs` recovers it: per-row gains (left and right
+    separately) from the painting just outside the disc, clamped to that row's own range and
+    saturation, a 7-row vertical median (Aleph's glass "horizon" line), and the thin annulus of glass
+    rim + footage halo rebuilt per row between real pixels. Each set keeps its own pixels outside the
+    disc (frame 17 in the 1280/960 sets takes the hd frame whole: their 2026-11-08 rebuild put the
+    ball 0.016 further right). Known leftover: frames ~33-39 show the barn horizontally stretched
+    inside the disc (reads as motion blur; Aleph drew it magnified).
+  - **Track** (`src/hero/ball-track.js`): hd detection; frames 17-24 measured on the ball near its
+    path (the first pass had interpolated them, so the removal missed a crescent and the sprite sat
+    ~0.05 of the width off); x/y smoothed over 5 frames from 25 on. `BALL_TRACK_C3`: C3's footage
+    ball, frames 1-30.
+  - **Sprite v3** (`scripts/ball-sprite.cjs`; Nano Banana Pro painted lead ball, task `748cfbeb-…`):
+    soft painterly edge over the outer 2.2% of the radius, its colour from inside the rim via a blurred
+    copy (v2 clamped along rays and drew hair-like streaks at 400%; no fringe either way), toned to the
+    footage ball; `ball-v3-1600` (desktop: the ball reaches ~1,300 device px),
+    `-640` (phones), `-soft` (64px: drawn large it is a blurred ball). `stage.js` draws it on the
+    frame's own rect at a continuous sub-frame position (no stepping or wobble), stretched slightly
+    along its direction of travel for motion blur (at most 8%), with the canvas grain over it. Portrait
+    screens: soft limit `CHOREO.ballMax` (0.44) of the width, easing back to the footage size over
+    frames 80-92.
+  - **Hand-off to C3:** C3 frame 1 is C2b's last frame. From the start of the dissolve the sprite sits
+    exactly on C3's tracked footage ball (C2b's last frame under it has no ball), 6% larger to cover
+    its soft rim; over C3 frames 6-14 it blends to the soft sprite and over 10-24 it fades out on top
+    of the footage ball, so it never pops, shifts or doubles. C3's first frames ease in
+    (`CHOREO.c3Remap`): its camera stops tracking there and the ball shoots right, which at full speed
+    straight after the tracked C2b shot read as a jump.
+  Sheets: `qa/shots/2026-11-14-ball-*.jpg`.
 - **APPROVED C4 (orbit): `assets/clips/c4-orbit.mp4`** (task `dbb25ecc-895f-4f88-baeb-03cc158fd6a4`),
   start = end = `k4.png`. Ball passes cleanly behind the globe. Frames `public/hero/v1/c4/` (15fps,
   91), played through `CHOREO.c4Remap` so the hidden stretch (≈2.2–3.8s) takes ~0.7% of the scroll;
