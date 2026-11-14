@@ -1,9 +1,9 @@
 # Next steps — minutemenmarketing.com
 
-Updated 2026-11-12. `CLAUDE.md` is the contract (hero spec, rules, every
+Updated 2026-11-13. `CLAUDE.md` is the contract (hero spec, rules, every
 approved asset with its Runway task ID); `DESIGN.md` is the approved four-page design. Read both first.
 
-**Runway credits: 1,200** (2026-11-12: phone plates 80 within Noah's 200-credit cap; 2026-11-08 late: smoke removal 60 within Noah's 150-credit cap; K1 edit 80 within Noah's 120-credit cap; earlier: 95 within Noah's 200-credit approval — C1 regeneration 94,
+**Runway credits: 1,160** (2026-11-13: K1 musket edit 20 + ball sprite 20 = 40 within Noah's 150-credit cap; 2026-11-12: phone plates 80 within Noah's 200-credit cap; 2026-11-08 late: smoke removal 60 within Noah's 150-credit cap; K1 edit 80 within Noah's 120-credit cap; earlier: 95 within Noah's 200-credit approval — C1 regeneration 94,
 background removal 1; then 72 within the 250-credit C1 rebuild approval — C2 v3, failed). Rule unchanged: quote the cost and wait for Noah's OK before every
 generation.
 
@@ -13,6 +13,18 @@ it, `?herofail` / `?herofail=script` show the load-failure still version.
 Playwright QA scripts (cross-browser run, mobile alignment audit, full hero pass) are in `qa/`.
 
 ---
+
+## Done 2026-11-13
+
+- **Ball on phones:** at most 44% of the screen width (it overflowed a 390px phone), easing back to the
+  footage size before C3, trajectory and smart pan unchanged.
+- **Ball sharpness:** the footage ball is gone from C2b; a crisp painted lead ball is drawn on its
+  tracked path (20 credits). Sheet: `qa/shots/2026-11-13-ball-before-after.jpg`.
+- **Skip intro on desktop:** the hero's top-right corner, 32px in at 1280-3440px, never over the nav.
+- **Same musket:** K1's soldier now holds K2's musket (long steel barrel, ramrod, same lock), muzzle
+  exactly on K2's (20 credits). Sheet: `qa/shots/2026-11-13-musket-handoff.jpg`.
+- **Stray streak removed:** C2 frames 13-22 (all three sets); K2's hold, C2b and the plates had none.
+- **Contact:** LinkedIn's link text is @minutemen-marketing (from the company URL), like Instagram's.
 
 ## Done 2026-11-12
 
@@ -64,6 +76,11 @@ Playwright QA scripts (cross-browser run, mobile alignment audit, full hero pass
   `qa/shots/2026-11-10-screen-matrix.jpg`.
 
 ## Open
+
+- Beauty & Wellness portfolio: the ShopMy sentence is ready but not added, because the ShopMy window is
+  only on that site's `preview` branch, not live: "We added a ShopMy window to their Services page, so
+  visitors can browse the products Dr. Omrani recommends and open her full shop." Add it once
+  beautyandwellnessny.com shows it.
 
 - Privacy Policy is a draft: Noah to review.
 - Testimonials and Noah's LinkedIn: waiting on Noah.

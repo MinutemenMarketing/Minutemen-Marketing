@@ -132,7 +132,18 @@ interface elements or borders.
 
 - **`reference/start.png` rule:** if that file exists, use it as K1 (or as K1's style reference) instead
   of generating a new battlefield. As of 2026-11-04 it does not exist; K1 below was generated.
-- **Opening still served since 2026-11-12: `assets/keyframes/k1-v4.png`** = k1-v3 regraded cool
+- **Opening still served since 2026-11-13: `assets/keyframes/k1-v5.png`** = k1-v4 with K2's musket in the
+  featured soldier's hands. Root cause: K1 showed him with a short fowler-style gun, wood to the muzzle,
+  while K2 and C2 show a long musket with an exposed steel barrel and ramrod whose muzzle sits ~7% further
+  right; the code maps K1 onto K2 exactly, so the change of gun at the push-in was in the paintings. A
+  crop of k1-v4 around him (x 2700, y 1000, 2400 x 1350) was edited by Nano Banana Pro with K2's musket
+  as reference (Noah approved up to 150 credits for this round; task `591aed08-6121-46f1-81a6-34e1580e827a`,
+  20 credits, `assets/drafts/k1-musket-{crop,edit}.png`). `scripts/k1-musket.cjs` registers the edit,
+  shortens the barrel so the muzzle lands exactly on K2's (mapped into K1), colour-matches it and pastes
+  back only what changed (gun, hands, his head, now in K2's profile). Served as `k1v5-*`, detail
+  `k1dv5-*` (`scripts/k1-detail.cjs`), share image `og-v5.jpg` (the same pixel change carried into
+  og-v4's wash). Sheet: `qa/shots/2026-11-13-musket-handoff.jpg`.
+- **Previous opening still (2026-11-12): `assets/keyframes/k1-v4.png`** = k1-v3 regraded cool
   (0 credits, `scripts/k1-regrade.cjs`). Root cause of the pink: each Nano Banana Pro edit of K1 pushed it
   toward magenta (Lab a* 7.6 in k1-cool, 11.0 in k1-v2, 14.1 in k1-v3, vs 5-7 in K2 and C2). The script
   shifts a* to K2 and b* to k1-cool per brightness band, brightness untouched. Served as `k1v4-*`,
@@ -149,6 +160,12 @@ interface elements or borders.
   `4a6c7b43-1c8d-49eb-977d-633ce727fc8c`, 20 credits, `assets/drafts/c2-plate.png`) is blended into the
   background line of every frame in every tier, brightness-matched per frame on the stone wall
   (`scripts/fix-c2-background-flashes.cjs`). The camera is static over C2, so the plate holds.
+- **C2 frames 13-22 are `-fix2` (2026-11-13, Noah: "a flare from thin air"):** before the shot a small
+  warm streak flew through the smoke under his barrel (x 0.42-0.86, y 0.33-0.47), outside the band the
+  2026-11-08 plate repaired. `scripts/fix-c2-streak.cjs` replaces it with the time-interpolation of
+  clean frames 12 and 23 wherever the frame is brighter than that (feathered), in all three sets
+  (`ASSETS.c2.fix`). K2's hold, C2b and the phone plates had none. The smoke puff that rises from
+  his lock before the pan flashes (frames 6-22) is on his musket and stays.
 - **Previous opening still (k1-v2): `assets/keyframes/k1-v2.png`**: `k1-cool.png` edited with
   Nano Banana Pro (K2 as the reference; tasks `bd2dfdf9-…` = variant A, **`17ff2483-6687-45e8-870f-1845cb0a222b` =
   variant B, chosen by Noah**; 80 credits for both, `assets/drafts/k1-edit-{a,b}.png`) so the featured
@@ -189,6 +206,20 @@ interface elements or borders.
   `scripts/fix-c2b-frame17.cjs` and served as `f_0017-fix1.webp` (`ASSETS.c2b.fix`), because
   `/hero/v1` is cached as immutable: never overwrite a file there, add a new name.
   (C2b v2, task `130bef5a-…`, was matte but egg-shaped and huge — not used.)
+- **C2b ball = a sprite since 2026-11-13 (Noah: blurry, and on phones it filled the screen).** Root
+  causes: the extraction repaint drew the ball at each set's resolution with a soft edge, and phones load
+  the 960 set, whose pixels the cover crop draws ~4.7 device pixels wide; in the footage its radius
+  reaches 0.30 of the frame height, which a phone's cover crop puts at ~1.3x the screen width.
+  `scripts/c2b-ball.cjs` tracks it in the hd frames (`src/hero/ball-track.js`, frames 17-92) and removes
+  it from those frames in all three sets (`-ball1`, each row rebuilt from the shifted texture beside it,
+  feathered rim). `scripts/ball-sprite.cjs` cuts out a painted lead ball (Nano Banana Pro, footage ball
+  as reference, task `748cfbeb-a091-4460-a085-2b53f23ad887`, 20 credits) toned to the footage ball:
+  `ball-v1.webp` (1024) / `ball-v1-512.webp` (phones). `stage.js` `drawBall` draws it on the frame's
+  own rect at the tracked centre and size; on portrait screens a soft limit of `CHOREO.ballMax` (0.44)
+  of the screen width, easing back to the footage size over frames 80-92 so C3 (ball in its footage)
+  picks up at the same size. Under the C2b-to-C3 dissolve the sprite fades with 1 - dissolve: C3 crops
+  around its globe, so its ball lands ~55px away (that offset predates the sprite). Frames 1-16 keep the
+  footage ball (a few pixels in the smoke). Sheet: `qa/shots/2026-11-13-ball-before-after.jpg`.
 - **APPROVED C4 (orbit): `assets/clips/c4-orbit.mp4`** (task `dbb25ecc-895f-4f88-baeb-03cc158fd6a4`),
   start = end = `k4.png`. Ball passes cleanly behind the globe. Frames `public/hero/v1/c4/` (15fps,
   91), played through `CHOREO.c4Remap` so the hidden stretch (≈2.2–3.8s) takes ~0.7% of the scroll;
@@ -270,9 +301,12 @@ The copy says "bullet" by Noah's choice; the artwork still shows a round lead mu
 
 ### Hero controls and returning visitors (2026-11-08)
 
-Only **Skip intro**, centred in the nav's band, below the notch. **Desktop (1024px+, Noah 2026-11-12): top-LEFT**,
-its left edge on the nav's content edge (the logo's margin). **Phones and tablets: top-right**, its right
-edge on the nav's content edge (the gutter). Inside the
+Only **Skip intro**, centred in the nav's band, below the notch. **Desktop (1024px+, Noah 2026-11-13): the
+hero's own top-right corner, 32px from the viewport edge at every width** (16px under the nav while it
+shows), not on the 1240px nav column, which left it adrift at 2560-3440px; 2026-11-12 it was top-left
+under the logo. **Phones and tablets: top-right**, its right edge on the nav's content edge (the
+gutter). Check: `qa/skip-check.mjs <base>` (1280-3440px: 32px gap, no overlap with nav links, click
+lands at Services with focus on its heading). Inside the
 hero the nav stays hidden after the first scroll (it returns at the very top, after the hero and on
 keyboard focus); while it shows, Skip waits just under it, and a change of place is a quick fade, never
 a slide. (2026-11-09: Skip used to slide 72px with the nav on every change of scroll direction, which
