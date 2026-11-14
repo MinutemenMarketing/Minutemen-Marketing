@@ -683,6 +683,39 @@ html:not(.motion) .beat--1::before {
 .hero__cue.is-gone {
   opacity: 0;
 }
+/* Phones (Noah 2026-11-14): "Scroll" in white over a small chevron that bobs gently, both with a soft
+   navy shadow so they read on the light parts of the painting. Fades after the first scroll as before. */
+@media (max-width: 767px) {
+  .motion .hero__cue {
+    color: #fff;
+    text-shadow: 0 1px 6px rgba(2, 23, 51, 0.55), 0 0 2px rgba(2, 23, 51, 0.4);
+  }
+  .hero__cue::after {
+    width: 11px;
+    height: 11px;
+    margin: 9px auto 0;
+    background: none;
+    border-right: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    transform: rotate(45deg);
+    filter: drop-shadow(0 1px 3px rgba(2, 23, 51, 0.6));
+    animation: cue-bob 1.8s ease-in-out infinite;
+  }
+}
+@keyframes cue-bob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(45deg);
+  }
+  50% {
+    transform: translateY(5px) rotate(45deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero__cue::after {
+    animation: none;
+  }
+}
 /* The hero's controls (motion toggle + skip): one small group top-right. While the nav shows they
    sit just under it; once it fades out they rise into its space. Half-transparent while the reader
    scrolls, full on hover, focus or touch. They never share space with a beat: every beat starts
