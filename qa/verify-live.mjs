@@ -51,7 +51,7 @@ check('Founders (Home): Ethan first, Noah second, full names', home.founders.joi
 check('Founders intro line', home.lede === 'Ethan Eghbali and Noah Medina started Minutemen Marketing on Long Island. You talk to them directly, from the first call to launch day.');
 check('Schema founder order', home.schema.join('|') === 'Ethan Eghbali|Noah Medina', home.schema.join(', '));
 check('No role lines (Home)', !home.roles);
-check('Opening still is the cleaned K1', /k1v4/.test(home.k1 || ''), home.k1);
+check('Opening still is the cleaned K1', /k1v5/.test(home.k1 || ''), home.k1);
 
 // About
 await go('/about');
