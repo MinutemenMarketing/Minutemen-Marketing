@@ -108,7 +108,9 @@ export const ASSETS = {
   },
   // C2: every frame repaired (2026-11-08): the background line comes from a clean plate (no gunsmoke
   // puffs or muzzle flashes on the soldiers behind him), see scripts/fix-c2-background-flashes.cjs.
-  c2: { dir: 'c2', count: 78, pattern: 'f_%04d-fix1.webp' },
+  // f_0013-f_0022: a warm streak flew through the smoke under his barrel before the shot (2026-11-13,
+  // scripts/fix-c2-streak.cjs); those frames are served as -fix2 in all three sets.
+  c2: { dir: 'c2', count: 78, pattern: 'f_%04d-fix1.webp', fix: Object.fromEntries([13, 14, 15, 16, 17, 18, 19, 20, 21, 22].map((n) => [n, `f_${String(n).padStart(4, '0')}-fix2.webp`])) },
   // f_0017: the matte-ball repaint drew the ball ~6× too big on this one frame (2026-11-08). Rebuilt
   // from f_0016 + f_0018 with one ball at the midpoint size and position, in all three sets.
   c2b: { dir: 'c2b', count: 92, pattern: 'f_%04d.webp', fix: { 17: 'f_0017-fix1.webp' }, dupes: [46, 61, 76] },
