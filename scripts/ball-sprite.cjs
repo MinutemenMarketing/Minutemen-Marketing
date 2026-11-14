@@ -9,7 +9,7 @@
 const sharp = require('sharp');
 const ROOT = 'C:/Claude Code/minute-men-marketing/';
 const SRC = ROOT + 'assets/drafts/ball-gen.png';
-(async () => {
+if (!process.argv.includes('spin')) (async () => {
   const { data, info } = await sharp(SRC).removeAlpha().raw().toBuffer({ resolveWithObject: true });
   const W = info.width, H = info.height;
   // ground = mean of the corners
@@ -62,4 +62,32 @@ const SRC = ROOT + 'assets/drafts/ball-gen.png';
   for (const [px, name] of [[1600, 'ball-v3-1600'], [640, 'ball-v3-640'], [64, 'ball-v3-soft']]) // soft: drawn large = a blurred ball (C3 hand-off)
     await img.clone().resize(px, px, { kernel: 'lanczos3' }).webp({ quality: 90, alphaQuality: 100 }).toFile(ROOT + 'public/hero/v1/' + name + '.webp');
   console.log('wrote ball-v3-1600, ball-v3-640, ball-v3-soft');
+})();
+
+// Spin layers (2026-11-14, Noah: "a hint of spin"): the sprite split into its shading (a heavy blur, so
+// the light stays upper-left) and its brushwork (sprite minus that blur, around mid-grey). The stage
+// draws the shading, then the brushwork rotated with 'overlay', clipped to the ball: the texture turns,
+// the lighting doesn't. Same sizes as the sprite. node ball-sprite.cjs spin
+if (process.argv.includes('spin')) (async () => {
+  const P = 'C:/Claude Code/minute-men-marketing/public/hero/v1/';
+  for (const px of [1600, 640]) {
+    const { data, info } = await sharp(P + `ball-v3-${px}.webp`).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    const W = info.width, H = info.height;
+    const rgb = Buffer.alloc(W * H * 3), al = Buffer.alloc(W * H);
+    for (let i = 0; i < W * H; i++) { for (let c = 0; c < 3; c++) rgb[i * 3 + c] = data[i * 4 + c]; al[i] = data[i * 4 + 3]; }
+    const bl = await sharp(rgb, { raw: { width: W, height: H, channels: 3 } }).blur(Math.max(2, px * 0.012)).raw().toBuffer();
+    const shade = Buffer.alloc(W * H * 4), tex = Buffer.alloc(W * H * 4);
+    for (let i = 0; i < W * H; i++) {
+      for (let c = 0; c < 3; c++) {
+        shade[i * 4 + c] = bl[i * 3 + c];
+        const d = (rgb[i * 3] + rgb[i * 3 + 1] + rgb[i * 3 + 2] - bl[i * 3] - bl[i * 3 + 1] - bl[i * 3 + 2]) / 3;
+        tex[i * 4 + c] = Math.max(0, Math.min(255, Math.round(128 + d * 1.6)));
+      }
+      shade[i * 4 + 3] = al[i];
+      tex[i * 4 + 3] = al[i];
+    }
+    await sharp(shade, { raw: { width: W, height: H, channels: 4 } }).webp({ quality: 90, alphaQuality: 100 }).toFile(P + `ball-v3-shade-${px}.webp`);
+    await sharp(tex, { raw: { width: W, height: H, channels: 4 } }).webp({ quality: 88, alphaQuality: 100 }).toFile(P + `ball-v3-tex-${px}.webp`);
+  }
+  console.log('wrote ball-v3-shade-*, ball-v3-tex-*');
 })();

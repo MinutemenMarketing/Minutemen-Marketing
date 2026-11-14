@@ -56,7 +56,9 @@ const loadImage = (src) =>
   new Promise((resolve) => {
     const img = new Image();
     img.decoding = 'async';
-    img.onload = () => resolve(img);
+    // Decode off the main thread before the first draw (2026-11-14): drawing a not-yet-decoded image
+    // decodes it synchronously, and the phone plates made that a ~150ms long task at load (Lighthouse).
+    img.onload = () => (img.decode ? img.decode().then(() => resolve(img), () => resolve(img)) : resolve(img));
     img.onerror = () => resolve(null); // a missing frame never blocks the hero
     img.src = src;
   });
@@ -179,8 +181,8 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     return [0, 1, 2].map((c) => lerp(T.frames[k0][c], T.frames[k1][c], u));
   };
   // C2b frame number (1-based, fractional) for scroll position t, kept on the frame actually shown
-  function c2bFrame(t, img) {
-    const list = played('c2b');
+  function c2bFrame(t, img, name = 'c2b') {
+    const list = played(name);
     const f = clamp01(t) * (list.length - 1);
     const i0 = Math.floor(f), i1 = Math.min(list.length - 1, i0 + 1);
     const n = lerp(list[i0], list[i1], f - i0) + 1;
@@ -194,45 +196,109 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     const e = clamp01((n - 80) / 12);
     return lerp(soft, d, e * e * (3 - 2 * e)); // back to the footage size by C2b's last frame (C3 match)
   }
-  // soft: 0 = crisp sprite, 1 = the blurred one (matching C3's footage ball). blur: motion blur length in
-  // px along (ux, uy).
-  function paintBall(cx, cy, d, alpha, soft = 0, blur = 0, ux = 1, uy = 0) {
+  // The ball is always a perfect circle (2026-11-14): nothing scales it on one axis. It flies with a
+  // painterly trail behind it (drawn first, never over the ball) and a hint of spin: the shading layer
+  // stays put (light from the upper left) while the brushwork layer turns, at a rate set by its speed.
+  // soft: 0 = crisp, 1 = the blurred sprite (C3's footage ball). spin: radians. trail: { ux, uy, len, a }.
+  function paintBall(cx, cy, d, alpha, soft = 0, spin = 0, trail = null) {
     if (alpha <= 0 || d <= 0) return;
     ctx.imageSmoothingQuality = 'high';
-    // motion blur = the sprite stretched along its direction of travel (soft edge, no ghost copies)
-    const ang = Math.atan2(uy, ux), sx = (d + blur) / d;
-    const draw = (sprite, al) => {
-      if (al <= 0) return;
-      ctx.globalAlpha = al;
-      ctx.save();
-      ctx.translate(cx, cy);
-      if (blur > 0.5) { ctx.rotate(ang); ctx.scale(sx, 1); ctx.rotate(-ang); }
-      if (sprite) ctx.drawImage(sprite, -d / 2, -d / 2, d, d);
+    if (trail && trail.a > 0 && trail.len > 1) paintTrail(cx, cy, d, alpha * trail.a, trail.ux, trail.uy, trail.len);
+    const crisp = alpha * (1 - soft);
+    if (crisp > 0) {
+      ctx.globalAlpha = crisp;
+      if (a.ballShade && a.ballTex) {
+        ctx.drawImage(a.ballShade, cx - d / 2, cy - d / 2, d, d);
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(cx, cy, d / 2 - 0.5, 0, Math.PI * 2);
+        ctx.clip();
+        ctx.translate(cx, cy);
+        ctx.rotate(spin);
+        ctx.globalCompositeOperation = 'overlay';
+        ctx.drawImage(a.ballTex, -d / 2, -d / 2, d, d);
+        ctx.restore();
+      } else if (a.ball) ctx.drawImage(a.ball, cx - d / 2, cy - d / 2, d, d);
       else {
-        // the sprite has not arrived yet: a plain lead sphere, so the frame is never without its ball
-        const g = ctx.createRadialGradient(-d * 0.18, -d * 0.2, d * 0.04, 0, 0, d / 2);
+        // nothing has arrived yet: a plain lead sphere, so the frame is never without its ball
+        const g = ctx.createRadialGradient(cx - d * 0.18, cy - d * 0.2, d * 0.04, cx, cy, d / 2);
         g.addColorStop(0, '#77746e');
         g.addColorStop(0.6, '#45433f');
         g.addColorStop(1, '#262523');
         ctx.fillStyle = g;
         ctx.beginPath();
-        ctx.arc(0, 0, d / 2, 0, Math.PI * 2);
+        ctx.arc(cx, cy, d / 2, 0, Math.PI * 2);
         ctx.fill();
       }
-      ctx.restore();
-    };
-    draw(a.ball, alpha * (1 - soft));
-    if (soft > 0) draw(a.ballSoft || a.ball, alpha * soft);
+    }
+    if (soft > 0) {
+      ctx.globalAlpha = alpha * soft;
+      const sp = a.ballSoft || a.ball;
+      if (sp) ctx.drawImage(sp, cx - d / 2, cy - d / 2, d, d);
+    }
     ctx.globalAlpha = 1;
+  }
+  // A soft, tapered streak of disturbed air behind the ball plus a few thin brush strokes in it, pointing
+  // back along its flight (ux, uy = direction of travel). Pale and low-contrast: a painted motion
+  // trail, not a smear.
+  const SPIN = 0.3; // radians per footage frame
+  const TRAIL_STROKES = [[-0.32, 0.9, 0.5], [-0.12, 1, 0.75], [0.06, 0.82, 0.6], [0.24, 0.95, 0.45], [0.38, 0.7, 0.35]];
+  function paintTrail(cx, cy, d, alpha, ux, uy, len) {
+    const r = d / 2;
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(Math.atan2(uy, ux));
+    // body: four stacked tapered layers, each narrower and fainter, so its edges fall off softly (one
+    // layer had a hard straight edge)
+    for (const [wk, ak] of [[1, 0.22], [0.78, 0.26], [0.56, 0.3], [0.34, 0.34]]) {
+      const g = ctx.createLinearGradient(0, 0, -len - r, 0);
+      g.addColorStop(0, 'rgba(230, 232, 240, 0.9)');
+      g.addColorStop(0.5, 'rgba(222, 225, 235, 0.4)');
+      g.addColorStop(1, 'rgba(222, 225, 235, 0)');
+      ctx.globalAlpha = alpha * ak;
+      ctx.fillStyle = g;
+      const hw = r * 0.95 * wk;
+      ctx.beginPath();
+      ctx.moveTo(r * 0.2, -hw);
+      ctx.bezierCurveTo(-len * 0.4, -hw * 0.9, -len * 0.8, -hw * 0.35, -len - r, 0);
+      ctx.bezierCurveTo(-len * 0.8, hw * 0.35, -len * 0.4, hw * 0.9, r * 0.2, hw);
+      ctx.closePath();
+      ctx.fill();
+    }
+    // soft brush strokes inside it: wide, faint, slightly curved, uneven lengths (painted air, not lines)
+    ctx.lineCap = 'round';
+    for (const [o, l, al] of TRAIL_STROKES) {
+      const end = -r - len * l;
+      const sg = ctx.createLinearGradient(-r * 0.3, 0, end, 0);
+      sg.addColorStop(0, 'rgba(238, 239, 245, 0.32)');
+      sg.addColorStop(0.6, 'rgba(232, 234, 242, 0.12)');
+      sg.addColorStop(1, 'rgba(232, 234, 242, 0)');
+      ctx.strokeStyle = sg;
+      ctx.globalAlpha = alpha * al;
+      ctx.lineWidth = Math.max(1.5, d * (0.06 + 0.05 * al));
+      ctx.beginPath();
+      ctx.moveTo(-r * 0.3, o * r * 1.3);
+      ctx.quadraticCurveTo(end * 0.5, o * r * (1 + 0.25 * Math.sign(o || 1)), end, o * r * 0.5);
+      ctx.stroke();
+    }
+    ctx.restore();
   }
   function drawBall(n, r, alpha) {
     if (n < BALL_TRACK.first) return;
     const [bx, by, br] = trackAt(BALL_TRACK, n);
-    const [nx, ny] = trackAt(BALL_TRACK, n + 1);
     const cx = r.x + bx * r.w, cy = r.y + by * r.h;
-    const vx = (nx - bx) * r.w, vy = (ny - by) * r.h, v = Math.hypot(vx, vy);
     const d = ballSize(2 * br * r.h, n);
-    paintBall(cx, cy, d, alpha, 0, Math.min(v * 0.15, d * 0.08), v ? vx / v : 1, v ? vy / v : 0); // a slight smear, never an oval
+    // Flight: in the scene it always flies screen-right (early on the camera pans faster than it, so on
+    // screen it drifts left, but the trail still belongs behind it, on its left); a small tilt follows its
+    // vertical motion, and the trail lengthens with its on-screen speed.
+    const [nx, ny] = trackAt(BALL_TRACK, n + 1);
+    const vx = (nx - bx) * r.w, vy = (ny - by) * r.h;
+    const tilt = Math.max(-0.3, Math.min(0.3, vy / d));
+    const ul = Math.hypot(1, tilt);
+    const speed = Math.min(1, 0.35 + Math.hypot(vx, vy) / d);
+    const fadeOut = 1 - clamp01((n - 84) / 8); // the trail eases away before C3's own smoke trail
+    const spin = n * SPIN; // one steady rate, continued in C3, so the texture never jumps
+    paintBall(cx, cy, d, alpha, 0, spin, { ux: 1 / ul, uy: tilt / ul, len: d * (0.35 + 0.6 * speed), a: 0.55 * fadeOut });
   }
 
   // Draw an image so a known circle inside it (cx, cy as image fractions, d as a fraction of image
@@ -271,11 +337,25 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
 
   // Draw img at (x0, y0, dw, dh) with any edge that falls inside the frame softly erased, so it
   // melts into whatever was drawn underneath.
+  // The layer is cached (2026-11-14): while assets arrive the canvas repaints with the same geometry, and
+  // rebuilding a full-screen layer each time was ~80ms of main-thread work at load on a phone.
+  let featherKey = '';
   function feathered(img, x0, y0, dw, dh, frac, alpha = 1) {
     if (edgeLayer.width !== canvas.width || edgeLayer.height !== canvas.height) {
       edgeLayer.width = canvas.width;
       edgeLayer.height = canvas.height;
+      featherKey = '';
     }
+    const key = typeof img === 'function' ? '' : [img.src || img._id || '', x0, y0, dw, dh, frac, w, h].join('|');
+    if (key && key === featherKey) {
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.globalAlpha = alpha;
+      ctx.drawImage(edgeLayer, 0, 0);
+      ctx.restore();
+      return;
+    }
+    featherKey = key;
     const e = edgeLayer.getContext('2d');
     e.setTransform(ctx.getTransform());
     e.clearRect(0, 0, w, h);
@@ -584,7 +664,17 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     queued = false;
     if (!w || !h) return;
     const ops = layers();
-    const key = JSON.stringify(ops.map((o) => o.map((v) => (typeof v === 'number' ? +v.toFixed(4) : v))));
+    // The key includes which file each sequence layer actually shows (2026-11-14). A loaded frame used to
+    // force a full repaint even when it was nowhere near the screen; with the phone plates each repaint is
+    // costly, and the loader fetching dozens of frames ahead at load added ~150ms of blocking time
+    // (Lighthouse). Now a new frame repaints only if it changes what is drawn.
+    const shown = ops.map(([kind, name, t, , c4t]) => {
+      if (kind === 'seq' || kind === 'vseq') return frame(name, t)?._i ?? '-';
+      if (kind === 'c3') return frame('c3', name)?._i ?? '-';
+      if (kind === 'globe' && name === 'c4') return frame('c4', c4t ?? 1)?._i ?? '-';
+      return '';
+    });
+    const key = JSON.stringify(ops.map((o) => o.map((v) => (typeof v === 'number' ? +v.toFixed(4) : v)))) + shown.join(',');
     if (key === lastKey) return; // nothing changed — skip the paint
     lastKey = key;
     ctx.clearRect(0, 0, w, h);
@@ -658,7 +748,9 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
           // fades into it over C3's frames 10-24 while it softens to the footage's blur, so it never pops,
           // shifts or doubles.
           const T = img._clip === 'c3' ? BALL_TRACK_C3 : img._clip === 'c2b' ? BALL_TRACK : null;
-          const n = img._i + 1;
+          // fractional frame on C3 (2026-11-14): the sprite glides between footage frames instead of stepping
+          // with them (C3's first frames are far apart in scroll); the cover ring hides the footage ball
+          const n = T === BALL_TRACK_C3 ? c2bFrame(t, img, 'c3') : img._i + 1;
           if (T && n >= T.first && n <= T.first + T.frames.length - 1) {
             const c = circleTarget(w, h);
             const sc = (c.d * scale) / (g.d * ih);
@@ -674,7 +766,37 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
             d *= 1 + 0.06 * (isC3 ? clamp01((n - 1) / 4) : 0) * (1 - fs);
             // Under the dissolve the sprite already sits on C3's ball: C2b's last frame under it has no ball
             // (C3's frame 1 is C2b's last frame, so the two places agree to a few px).
-            paintBall(cx, cy, d, 1 - fs, soft * soft * (3 - 2 * soft));
+            // C3's first frames (2026-11-14): its footage ball's soft dark rim peeked out around the crisp
+            // ball on phones. Under the sprite, a soft ring in the sky/field colour just outside the ball
+            // hides it; it fades as the sprite hands over to the footage ball.
+            const hide = isC3 ? 1 - clamp01((n - 4) / 6) : 0;
+            if (hide > 0 && 1 - fs > 0) {
+              const R = d / 2;
+              const sc2 = canvas.width / w;
+              const px = (x, y) => ctx.getImageData(Math.round(x * sc2), Math.round(y * sc2), 1, 1).data;
+              let rr = 0, gg = 0, bb = 0, k = 0;
+              for (let q = 0; q < 8; q++) {
+                const ang = (q / 8) * Math.PI * 2;
+                const sx = cx + Math.cos(ang) * R * 1.45, sy = cy + Math.sin(ang) * R * 1.45;
+                if (sx < 0 || sy < 0 || sx >= w || sy >= h) continue;
+                const p = px(sx, sy);
+                rr += p[0]; gg += p[1]; bb += p[2]; k++;
+              }
+              if (k) {
+                const col = Math.round(rr / k) + ', ' + Math.round(gg / k) + ', ' + Math.round(bb / k);
+                const g2 = ctx.createRadialGradient(cx, cy, R * 0.9, cx, cy, R * 1.32);
+                g2.addColorStop(0, 'rgba(' + col + ', 1)');
+                g2.addColorStop(0.55, 'rgba(' + col + ', 0.85)');
+                g2.addColorStop(1, 'rgba(' + col + ', 0)');
+                ctx.globalAlpha = hide;
+                ctx.fillStyle = g2;
+                ctx.beginPath();
+                ctx.arc(cx, cy, R * 1.32, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+              }
+            }
+            paintBall(cx, cy, d, 1 - fs, soft * soft * (3 - 2 * soft), (BALL_TRACK.first + BALL_TRACK.frames.length - 2 + n) * SPIN);
           }
         }
       } else if (kind === 'logo') {
@@ -747,6 +869,8 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     add('logo', ASSETS.logo, S.toLogo[0] - 6);
     add('ball', `${ASSETS.base}/${ASSETS.ball}-${phone ? '640' : '1600'}.webp`, S.c2b[0] - 4);
     add('ballSoft', `${ASSETS.base}/${ASSETS.ball}-soft.webp`, S.c2b[0] - 4);
+    add('ballShade', `${ASSETS.base}/${ASSETS.ball}-shade-${phone ? '640' : '1600'}.webp`, S.c2b[0] - 4);
+    add('ballTex', `${ASSETS.base}/${ASSETS.ball}-tex-${phone ? '640' : '1600'}.webp`, S.c2b[0] - 4);
     for (const name of Object.keys(SEG)) {
       const s = ASSETS[name];
       if (!s) continue;
@@ -812,8 +936,8 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
         if (idx !== undefined && img) Object.assign(img, { _clip: name, _i: +idx }); // which frame it is (C2b's ball track)
         if (idx !== undefined) a.seq[name][+idx] = img;
         else onStill(job.key, img);
+        if (idx === undefined) lastKey = ''; // a still can change the picture without changing the layers; a frame is in the key
         if (job.at <= AHEAD) onProgress(Math.min(1, ++initialDone / initial), false);
-        lastKey = '';
         request();
       }
     };
