@@ -5,6 +5,12 @@ export const CHOREO = {
   pin: { desktop: 1000, mobile: 650 }, // pinned length in vh
   trailOut: [96, 99.5], // the progress line fades out over this stretch of the scroll (%)
   logoEnd: 0.78, // the logo's ring settles at this share of the shared circle (toSite)
+  // On portrait screens the C2b ball is at most this share of the screen width (Noah 2026-11-13: it grew
+  // to fill a phone). The footage ball reaches 0.6 of the frame height, which the phone's cover crop
+  // puts at ~1.3x the screen width. A soft limit, so the growth slows into it rather than stopping dead;
+  // over C2b's last frames it eases back to the footage size, which is already under the limit, so C3
+  // (whose ball is in the footage) picks up at exactly the same size.
+  ballMax: 0.44,
   navBack: 96, // the nav comes back from this point of the hero (%), while the logo settles on paper
   // Scrub smoothing in seconds. Lenis already smooths the wheel; a long scrub on top of it adds a
   // second catch-up, so the first wheel click felt dead (2026-11-08: 1 → 0.35).
@@ -92,6 +98,9 @@ export const ASSETS = {
   k1: 'k1v5', // + '-1920.webp' / '-1280.webp': k1-v5.png = k1-v4 with K2's musket (2026-11-13, scripts/k1-musket.cjs); v4 = k1-v3 regraded cool
   k2: 'k2v2', // k2.png with the C2 clean plate on the background line (scripts/fix-k2-background.cjs)
   k4: 'k4v2', // approved K4 (v2, ball shrunk)
+  // The C2b musket ball (2026-11-13): a painted lead sphere with alpha, drawn by the stage over the
+  // ball-free C2b frames (scripts/ball-sprite.cjs; -512 on phones).
+  ball: 'ball-v1',
   logo: '/brand/logo-stacked.svg', // stacked logo (mark over MINUTEMEN MARKETING), traced vector
   // `fix`: frame files replaced after a repair, saved under a new name because /hero/v1 is cached
   // as immutable. `dupes`: files that repeat the previous frame in the 1280 and 960 sets (a 24→15fps
@@ -113,7 +122,10 @@ export const ASSETS = {
   c2: { dir: 'c2', count: 78, pattern: 'f_%04d-fix1.webp', fix: Object.fromEntries([13, 14, 15, 16, 17, 18, 19, 20, 21, 22].map((n) => [n, `f_${String(n).padStart(4, '0')}-fix2.webp`])) },
   // f_0017: the matte-ball repaint drew the ball ~6× too big on this one frame (2026-11-08). Rebuilt
   // from f_0016 + f_0018 with one ball at the midpoint size and position, in all three sets.
-  c2b: { dir: 'c2b', count: 92, pattern: 'f_%04d.webp', fix: { 17: 'f_0017-fix1.webp' }, dupes: [46, 61, 76] },
+  // Frames 17-92 have the painted ball removed (2026-11-13, scripts/c2b-ball.cjs); the stage draws the
+  // crisp sprite `ball` on the tracked path instead (src/hero/ball-track.js). Frame 17 had been rebuilt
+  // as -fix1 (2026-11-08), so its -ball1 starts from that.
+  c2b: { dir: 'c2b', count: 92, pattern: 'f_%04d.webp', fix: Object.fromEntries(Array.from({ length: 76 }, (_, k) => [k + 17, `f_${String(k + 17).padStart(4, '0')}-ball1.webp`])), dupes: [46, 61, 76] },
   c3: { dir: 'c3', count: 122, pattern: 'f_%04d.webp', dupes: [46, 61, 76] },
   c4: { dir: 'c4', count: 91, pattern: 'f_%04d.webp' },
 };

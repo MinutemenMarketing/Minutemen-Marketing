@@ -2,6 +2,7 @@
 // (0–100). Paints only on requestAnimationFrame and only when the computed layers change.
 import { CHOREO, ASSETS, FOCUS, circleTarget } from './choreography.js';
 import { SMOKE, smokePixels } from './smoke.js';
+import { BALL_TRACK } from './ball-track.js';
 
 const S = CHOREO.scenes;
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
@@ -161,8 +162,44 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     const dy = Math.min(0, Math.max(h - dh, h / 2 - fy * dh));
     const px = dx + fx * dw;
     const py = dy + fy * dh;
+    const r = { x: px - (px - dx) * z, y: py - (py - dy) * z, w: dw * z, h: dh * z };
     ctx.globalAlpha = alpha;
-    ctx.drawImage(img, px - (px - dx) * z, py - (py - dy) * z, dw * z, dh * z);
+    ctx.drawImage(img, r.x, r.y, r.w, r.h);
+    ctx.globalAlpha = 1;
+    return r; // where the image landed (C2b's ball is placed on it)
+  }
+
+  // C2b's musket ball (2026-11-13): the footage ball is removed from frames BALL_TRACK.first on, and
+  // this draws the painted sprite on the tracked path over the frame that was just drawn into `r`.
+  // Portrait screens limit its size (CHOREO.ballMax of the screen width).
+  function drawBall(i, r, alpha) {
+    const n = i + 1;
+    const k = n - BALL_TRACK.first;
+    if (k < 0 || k >= BALL_TRACK.frames.length || alpha <= 0) return;
+    const [bx, by, br] = BALL_TRACK.frames[k];
+    const cx = r.x + bx * r.w;
+    const cy = r.y + by * r.h;
+    let d = 2 * br * r.h;
+    if (w < h) {
+      const cap = CHOREO.ballMax * w;
+      const soft = d / Math.pow(1 + Math.pow(d / cap, 6), 1 / 6);
+      const e = clamp01((n - 80) / 12);
+      d = lerp(soft, d, e * e * (3 - 2 * e)); // back to the footage size by the last frame (C3 match)
+    }
+    ctx.globalAlpha = alpha;
+    ctx.imageSmoothingQuality = 'high'; // the 1024px sprite is drawn far smaller on phones
+    if (a.ball) ctx.drawImage(a.ball, cx - d / 2, cy - d / 2, d, d);
+    else {
+      // the sprite has not arrived yet: a plain lead sphere, so the frame is never without its ball
+      const g = ctx.createRadialGradient(cx - d * 0.18, cy - d * 0.2, d * 0.04, cx, cy, d / 2);
+      g.addColorStop(0, '#77746e');
+      g.addColorStop(0.6, '#45433f');
+      g.addColorStop(1, '#262523');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(cx, cy, d / 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
     ctx.globalAlpha = 1;
   }
 
@@ -481,7 +518,9 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
         const ct = remap(CHOREO.c3Remap, t);
         const frameT = clamp01(ct);
         const d = dissolve('c3', frameT);
-        if (d < 1) ops.push(['seq', 'c2b', 1, 1, c2bFx(1), c2bFy(1)]);
+        // C3 crops around its globe, so its ball lands ~55px from C2b's: the sprite under the dissolve
+        // fades out as C3 fades in, so the two balls never show as a double (2026-11-13)
+        if (d < 1) ops.push(['seq', 'c2b', 1, 1, c2bFx(1), c2bFy(1), 1, 1 - d]);
         ops.push(['c3', frameT, d, lerp(1, 0, sine(local(CHOREO.c3Settle, t)))]);
       } else {
         // Placeholder: rise from the last C2b frame and dissolve into the globe.
@@ -530,8 +569,10 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
         const [name, alpha, fx, fy, z] = rest;
         cover(a[name], alpha, fx, fy, z);
       } else if (kind === 'seq') {
-        const [name, t, alpha, fx, fy, z = 1] = rest;
-        cover(frame(name, t), alpha, fx, fy, z);
+        const [name, t, alpha, fx, fy, z = 1, ballAlpha = alpha] = rest;
+        const img = frame(name, t);
+        const r = cover(img, alpha, fx, fy, z);
+        if (r && img._clip === 'c2b') drawBall(img._i, r, ballAlpha);
       } else if (kind === 'view' || kind === 'vseq') {
         // Portrait: a still (view) or clip frame (vseq) at view { f, x } over its plate.
         const [name, t, alpha, f, fx, plateKey] = kind === 'view' ? [rest[0], 0, ...rest.slice(1)] : rest;
@@ -651,6 +692,7 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     add('k2', still(ASSETS.k2), S.c1[0] + 8);
     add('k4', still(ASSETS.k4), S.c3[0] + 2);
     add('logo', ASSETS.logo, S.toLogo[0] - 6);
+    add('ball', `${ASSETS.base}/${ASSETS.ball}${phone ? '-512' : ''}.webp`, S.c2b[0] - 4);
     for (const name of Object.keys(SEG)) {
       const s = ASSETS[name];
       if (!s) continue;
@@ -713,6 +755,7 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
         const img = await loadImage(job.src);
         if (!img && job.at <= AHEAD && ++initialFailed > initial * 0.3) return onFail();
         const [name, idx] = job.key.split(':');
+        if (idx !== undefined && img) Object.assign(img, { _clip: name, _i: +idx }); // which frame it is (C2b's ball track)
         if (idx !== undefined) a.seq[name][+idx] = img;
         else onStill(job.key, img);
         if (job.at <= AHEAD) onProgress(Math.min(1, ++initialDone / initial), false);
