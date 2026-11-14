@@ -187,7 +187,8 @@ export function createStage(canvas, onProgress, onFail = () => {}) {
     const i0 = Math.floor(f), i1 = Math.min(list.length - 1, i0 + 1);
     const n = lerp(list[i0], list[i1], f - i0) + 1;
     const shown = img._i + 1;
-    return Math.floor(n) === shown ? n : shown; // a stand-in frame: stay on what is shown
+    // frame() shows the nearest frame (rounded), so the fractional position is valid while it rounds to it
+    return Math.round(n) === shown ? n : shown; // a stand-in frame: stay on what is shown
   }
   function ballSize(d, n) {
     if (w >= h) return d;
